@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<object name="portal_workflow" meta_type="Plone Workflow Tool">
+  <property name="title" purge="False">
+    Workflow definitions for senaite.storage
+  </property>
+  <bindings>
+    <type type_id="StorageContainer" />
+    <type type_id="StorageLocation" />
+    <type type_id="StorageRootFolder"/>
+    <type type_id="StorageSamplesContainer"/>
+  </bindings>
+</object>

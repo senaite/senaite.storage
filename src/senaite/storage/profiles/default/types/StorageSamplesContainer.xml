@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<object name="StorageSamplesContainer"
+        meta_type="Factory-based Type Information"
+        i18n:domain="senaite.storage"
+        xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+
+  <!-- Basic metadata -->
+  <property name="title" i18n:translate="">Samples container for storage</property>
+  <property name="content_icon">++resource++senaite.storage.static/img/box.png</property>
+  <property name="content_meta_type">StorageSamplesContainer</property>
+  <property name="product">senaite.storage</property>
+  <property name="factory">addStorageSamplesContainer</property>
+  <property name="global_allow">False</property>
+  <property name="filter_content_types">True</property>
+  <property name="allowed_content_types">
+  </property>
+  <property name="allow_discussion">False</property>
+
+  <!-- View information -->
+
+  <!-- Method aliases -->
+  <alias from="(Default)" to="folder_view"/>
+  <alias from="view" to="folder_view"/>
+  <alias from="edit" to="base_edit"/>
+
+  <!-- Actions -->
+
+</object>

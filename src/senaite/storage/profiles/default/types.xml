@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!-- This adds content types in the portal_types tool. The meta_type can be:
+  - "Dexterity FTI": for Dexterity content. This is probably what you want.
+  - "Factory-based Type Information with dynamic views": for Archetypes content
+     and for the Plone Site itself
+  - "Factory-based Type Information": for Archetypes content that does not need
+     dynamic views, the ability to choose a view in the display menu.
+
+  The types.xml should be accompanied by a types folder with details information
+  on the new types. If you are editing an already existing type, then types.xml
+  is not needed: a file in the types folder is enough.
+-->
+<object name="portal_types">
+  <object name="StorageRootFolder" meta_type="Factory-based Type Information"/>
+  <object name="StorageContainer" meta_type="Factory-based Type Information"/>
+  <object name="StorageFacility" meta_type="Factory-based Type Information"/>
+  <object name="StorageSamplesContainer" meta_type="Factory-based Type Information"/>
+</object>

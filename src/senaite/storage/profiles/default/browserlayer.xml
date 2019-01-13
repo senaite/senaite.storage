@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<!-- This registers a specific browser layer which allows components to be
+  available when this add-on is installed
+-->
+<layers>
+  <layer name="senaite.storage"
+         interface="senaite.storage.interfaces.ILayer" />
+</layers>
+

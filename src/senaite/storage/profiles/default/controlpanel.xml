@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!-- This creates an action in Site Setup control panel in Plone. Actions are
+  bundled in categories. In Plone 4, only "Member", "Plone" and "Products" are
+  supported. Senaite core adds the category "bika", that renders the
+  "LIMS Configuration" section" in control panel.
+-->
+<object name="portal_controlpanel"
+        xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+
+  <!-- Link "Storage" in "LIMS Configuration" control panel -->
+  <configlet
+    title="Storage"
+    action_id="senaite_storage"
+    appId="senaite.storage"
+    category="bika"
+    condition_expr=""
+    icon_expr="string:++resource++senaite.storage.static/img/storage.png"
+    url_expr="string:$portal_url/senaite_storage"
+    visible="True"
+    i18n:domain="senaite.storage"
+    i18n:attributes="title">
+    <permission>BIKA: Manage Bika</permission>
+  </configlet>
+
+</object>
