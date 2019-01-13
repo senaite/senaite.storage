@@ -15,7 +15,7 @@
   <include package="bika.lims" file="permissions.zcml" />
 
   <!-- Package includes -->
-  <!--include package=".browser"/-->
+  <include package=".browser"/>
 
   <!-- Static resource directory -->
   <browser:resourceDirectory

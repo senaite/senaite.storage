@@ -12,7 +12,7 @@
 <object name="portal_factory" meta_type="Plone Factory Tool">
   <factorytypes>
     <type portal_type="StorageContainer"/>
-    <type portal_type="StorageLocation"/>
+    <type portal_type="StorageFacility"/>
     <type portal_type="StorageRootFolder"/>
     <type portal_type="StorageSamplesContainer"/>
   </factorytypes>

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <object name="StorageRootFolder"
-        meta_type="Factory-based Type Information"
+        meta_type="Factory-based Type Information with dynamic views"
         i18n:domain="senaite.storage"
         xmlns:i18n="http://xml.zope.org/namespaces/i18n">
 
@@ -18,6 +18,7 @@
   <property name="allow_discussion">False</property>
 
   <!-- View information -->
+  <property name="default_view_fallback">False</property>
 
   <!-- Method aliases -->
   <alias from="(Default)" to="folder_view"/>

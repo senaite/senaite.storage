@@ -8,6 +8,11 @@ from bika.lims import api
 from senaite.storage import PRODUCT_NAME
 from senaite.storage import PROFILE_ID
 from senaite.storage import logger
+from Products.CMFPlone.utils import _createObjectByType
+from bika.lims.idserver import renameAfterCreation
+from bika.lims.utils import tmpID
+
+CREATE_TEST_DATA = True
 
 ACTIONS_TO_HIDE = [
     # Tuples of (id, folder_id)
@@ -58,6 +63,9 @@ def post_install(portal_setup):
 
     # Migrate "classic" storage locations
     migrate_storage_locations(portal)
+
+    # Create test data
+    create_test_data(portal)
 
     logger.info("{} install handler [DONE]".format(PRODUCT_NAME.upper()))
 
@@ -196,3 +204,45 @@ def migrate_storage_locations(portal):
             logger.info("Migrating Storage Locations: {}/{}".format(num, total))
         object = api.get_object(brain)
         # TODO Migrate
+
+def create_test_data(portal):
+    """Populates with storage-like test data
+    """
+    if not CREATE_TEST_DATA:
+        return
+    logger.info("Creating test data ...")
+    facilities = portal.senaite_storage
+    if len(facilities.objectValues()) > 0:
+        logger.info("There are facilities created already [SKIP]")
+        return
+
+    # Facilities
+    for x in range(2):
+        facility = api.create(
+            facilities,
+            "StorageFacility",
+            title="Storage facility {:02d}".format(x+1),
+            Phone="123456789",
+            EmailAddress="storage{:02d}@example.com".format(x+1),
+            PhysicalAddress={
+                "address": "Av. Via Augusta 15 - 25",
+                "city": "Sant Cugat del Valles",
+                "zip": "08174",
+                "state": "",
+                "country": "Spain",}
+        )
+
+        # Fridges
+        for i in range(2):
+            container = api.create(facility, "StorageContainer",
+                                   title="Fridge {:02d}".format(i+1))
+
+            # Racks
+            for j in range(5):
+                rack = api.create(container, "StorageContainer",
+                                  title="Rack {:02d}".format(j+1))
+
+                # Boxes
+                for k in range(5):
+                    box = api.create(rack, "StorageSamplesContainer",
+                                     title="Sample box {:02d}".format(k+1))

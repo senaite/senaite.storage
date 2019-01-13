@@ -4,22 +4,21 @@
 #
 # Copyright 2019 by it's authors.
 
-from Products.ATContentTypes.content import schemata
 from Products.Archetypes.atapi import registerType
+from bika.lims.content.bikaschema import BikaFolderSchema
+from bika.lims.interfaces import IHaveNoBreadCrumbs
 from plone.app.folder.folder import ATFolder
-from plone.app.folder.folder import ATFolderSchema
 from senaite.storage import PRODUCT_NAME
 from senaite.storage.interfaces import IStorageRootFolder
 from zope.interface import implements
 
-schema = ATFolderSchema.copy()
+schema = BikaFolderSchema.copy()
 
 class StorageRootFolder(ATFolder):
     """Storage module root object
     """
-    implements(IStorageRootFolder)
+    implements(IStorageRootFolder, IHaveNoBreadCrumbs)
     displayContentsTab = False
     schema = schema
 
-schemata.finalizeATCTSchema(schema, folderish=True, moveDiscussion=False)
 registerType(StorageRootFolder, PRODUCT_NAME)

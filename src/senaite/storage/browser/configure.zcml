@@ -6,8 +6,8 @@
   <browser:page
       for="senaite.storage.interfaces.IStorageRootFolder"
       name="folder_view"
-      class=".storage"
+      class=".storagerootfolder.StorageRootFolderContentsView"
       permission="bika.lims.ManageBika"
-      layer="senaite.storage.interfaces.ILayer" />
+      layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
 
 </configure>

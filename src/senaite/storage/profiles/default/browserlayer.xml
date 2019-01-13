@@ -4,6 +4,6 @@
 -->
 <layers>
   <layer name="senaite.storage"
-         interface="senaite.storage.interfaces.ILayer" />
+         interface="senaite.storage.interfaces.ISenaiteStorageLayer" />
 </layers>
 

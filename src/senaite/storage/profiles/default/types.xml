@@ -11,8 +11,8 @@
   is not needed: a file in the types folder is enough.
 -->
 <object name="portal_types">
-  <object name="StorageRootFolder" meta_type="Factory-based Type Information"/>
-  <object name="StorageContainer" meta_type="Factory-based Type Information"/>
-  <object name="StorageFacility" meta_type="Factory-based Type Information"/>
-  <object name="StorageSamplesContainer" meta_type="Factory-based Type Information"/>
+  <object name="StorageRootFolder" meta_type="Factory-based Type Information with dynamic views"/>
+  <object name="StorageContainer" meta_type="Factory-based Type Information with dynamic views"/>
+  <object name="StorageFacility" meta_type="Factory-based Type Information with dynamic views"/>
+  <object name="StorageSamplesContainer" meta_type="Factory-based Type Information with dynamic views"/>
 </object>

@@ -9,9 +9,9 @@ from senaite.lims.interfaces import ISenaiteLIMS
 from zope.interface import Interface
 
 
-class ILayer(IBikaLIMS, ISenaiteLIMS):
+class ISenaiteStorageLayer(IBikaLIMS, ISenaiteLIMS):
     """Zope 3 browser Layer interface specific for senaite.storage
-    This interface is referred in profiles/deafult/browserlayer.xml.
+    This interface is referred in profiles/default/browserlayer.xml.
     All views and viewlets register against this layer will appear in the site
     only when the add-on installer has been run.
     """
