@@ -4,13 +4,20 @@
 #
 # Copyright 2019 by it's authors.
 
+from Products.DCWorkflow.Guard import Guard
 from bika.lims import api
+from bika.lims.permissions import AddAnalysis
+from bika.lims.permissions import AddAttachment
+from bika.lims.permissions import CancelAndReinstate
+from bika.lims.permissions import EditAR
+from bika.lims.permissions import EditFieldResults
+from bika.lims.permissions import EditResults
+from bika.lims.permissions import PreserveSample
+from bika.lims.permissions import Publish
+from bika.lims.permissions import ScheduleSampling
 from senaite.storage import PRODUCT_NAME
 from senaite.storage import PROFILE_ID
 from senaite.storage import logger
-from Products.CMFPlone.utils import _createObjectByType
-from bika.lims.idserver import renameAfterCreation
-from bika.lims.utils import tmpID
 
 CREATE_TEST_DATA = True
 
@@ -42,6 +49,60 @@ COLUMNS = [
     # Tuples of (catalog, column name)
 ]
 
+WORKFLOWS_TO_UPDATE = {
+    "bika_ar_workflow": {
+        "permissions": (),
+        "states": {
+            "sample_received": {
+                # Do not remove transitions already there
+                "preserve_transitions": True,
+                "transitions": ("store",),
+            },
+            "stored": {
+                "title": "Stored",
+                "description": "Sample is stored",
+                "transitions": ("recover",),
+                # Copy permissions from sample_received first
+                "permissions_copy_from": "sample_received",
+                # Override permissions
+                "permissions": {
+                    AddAnalysis: (),
+                    AddAttachment: (),
+                    CancelAndReinstate: (),
+                    EditAR: (),
+                    EditFieldResults: (),
+                    EditResults: (),
+                    PreserveSample: (),
+                    Publish: (),
+                    ScheduleSampling: (),
+                }
+            }
+        },
+        "transitions": {
+            "store": {
+                "title": "Store",
+                "new_state": "stored",
+                "action": "Store sample",
+                "guard": {
+                    "guard_permissions": "",
+                    "guard_roles": "",
+                    "guard_expr": "",
+                }
+            },
+            "recover": {
+                "title": "Recover",
+                "new_state": "sample_received",
+                "action": "Recover sample",
+                "guard": {
+                    "guard_permissions": "",
+                    "guard_roles": "",
+                    "guard_expr": "",
+                }
+            }
+        }
+    }
+}
+
 
 def post_install(portal_setup):
     """Runs after the last import step of the *default* profile
@@ -63,6 +124,9 @@ def post_install(portal_setup):
 
     # Migrate "classic" storage locations
     migrate_storage_locations(portal)
+
+    # Injects "store" and "recover" transitions into senaite's workflow
+    setup_workflows(portal)
 
     # Create test data
     create_test_data(portal)
@@ -205,6 +269,106 @@ def migrate_storage_locations(portal):
         object = api.get_object(brain)
         # TODO Migrate
 
+
+def setup_workflows(portal):
+    """Injects 'store' and 'recover' transitions into workflow
+    """
+    logger.info("Setup storage workflow ...")
+    for wf_id, settings in WORKFLOWS_TO_UPDATE.items():
+        update_workflow(portal, wf_id, settings)
+
+
+def update_workflow(portal, workflow_id, settings):
+    """Injects 'store' and 'recover' transitions into workflow
+    """
+    logger.info("Updating workflow '{}' ...".format(workflow_id))
+    wf_tool = api.get_tool("portal_workflow")
+    workflow = wf_tool.getWorkflowById(workflow_id)
+    if not workflow:
+        logger.warn("Workflow '{}' not found [SKIP]".format(workflow_id))
+    states = settings.get("states", {})
+    for state_id, values in states.items():
+        update_workflow_state(portal, workflow, state_id, values)
+
+    transitions = settings.get("transitions", {})
+    for transition_id, values in transitions.items():
+        update_workflow_transition(portal, workflow, transition_id, values)
+
+
+def update_workflow_state(portal, workflow, status_id, settings):
+    logger.info("Updating workflow '{}', status: '{}' ..."
+                .format(workflow.id, status_id))
+
+    # Create the status (if does not exist yet)
+    new_status = workflow.states.get(status_id)
+    if not new_status:
+        workflow.states.addState(status_id)
+        new_status = workflow.states.get(status_id)
+
+    # Set basic info (title, description, etc.)
+    new_status.title = settings.get("title", new_status.title)
+    new_status.description = settings.get("description", new_status.description)
+
+    # Set transitions
+    trans = settings.get("transitions", ())
+    if settings.get("preserve_transitions", False):
+        trans = tuple(set(new_status.transitions+trans))
+    new_status.transitions = trans
+
+    # Set permissions
+    update_workflow_state_permissions(portal, workflow, new_status, settings)
+
+
+def update_workflow_state_permissions(portal, workflow, status, settings):
+    # Copy permissions from another state?
+    permissions_copy_from = settings.get("permissions_copy_from", None)
+    if permissions_copy_from:
+        logger.info("Copying permissions from '{}' to '{}' ..."
+                    .format(permissions_copy_from, status.id))
+        copy_from_state = workflow.states.get(permissions_copy_from)
+        if not copy_from_state:
+            logger.info("State '{}' not found [SKIP]".format(copy_from_state))
+        else:
+            source_permissions = copy_from_state.permission_roles
+            for perm_id, roles in source_permissions.items():
+                logger.info("Setting permission '{}': '{}'"
+                            .format(perm_id, ', '.join(roles)))
+                status.setPermission(perm_id, False, roles)
+
+    # Override permissions
+    logger.info("Overriding permissions for '{}' ...".format(status.id))
+    state_permissions = settings.get('permissions', {})
+    if not state_permissions:
+        logger.info("No permissions set for '{}' [SKIP]".format(status.id))
+        return
+    for permission_id, roles in state_permissions.items():
+        state_roles = roles and roles or ()
+        logger.info("Setting permission '{}': '{}'"
+                    .format(permission_id, ', '.join(state_roles)))
+        status.setPermission(permission_id, False, state_roles)
+
+
+def update_workflow_transition(portal, workflow, transition_id, settings):
+    logger.info("Updating workflow '{}', transition: '{}'"
+                .format(workflow.id, transition_id))
+    if transition_id not in workflow.transitions:
+        workflow.transitions.addTransition(transition_id)
+    transition = workflow.transitions.get(transition_id)
+    transition.setProperties(
+        title=settings.get("title"),
+        new_state_id=settings.get("new_state"),
+        after_script_name=settings.get("after_script", ""),
+        actbox_name=settings.get("action", "")
+    )
+    guard = transition.guard or Guard()
+    guard_props = {"guard_permissions": "",
+                   "guard_roles": "",
+                   "guard_expr": ""}
+    guard_props = settings.get("guard", guard_props)
+    guard.changeFromProperties(guard_props)
+    transition.guard = guard
+
+
 def create_test_data(portal):
     """Populates with storage-like test data
     """
@@ -235,14 +399,22 @@ def create_test_data(portal):
         # Fridges
         for i in range(2):
             container = api.create(facility, "StorageContainer",
-                                   title="Fridge {:02d}".format(i+1))
+                                   title="Fridge {:02d}".format(i+1),
+                                   Rows=4,
+                                   Columns=4)
 
             # Racks
-            for j in range(5):
+            for j in range(container.get_capacity()):
                 rack = api.create(container, "StorageContainer",
-                                  title="Rack {:02d}".format(j+1))
+                                  title="Rack {:02d}".format(j+1),
+                                  Rows=3,
+                                  Columns=2)
+                container.add_object(rack)
 
                 # Boxes
-                for k in range(5):
+                for k in range(rack.get_capacity()):
                     box = api.create(rack, "StorageSamplesContainer",
-                                     title="Sample box {:02d}".format(k+1))
+                                     title="Sample box {:02d}".format(k+1),
+                                     Rows=5,
+                                     Columns=5)
+                    rack.add_object(box)

@@ -4,25 +4,34 @@
 #
 # Copyright 2019 by it's authors.
 
-from Products.Archetypes.BaseContent import BaseContent
+from Products.Archetypes.Schema import Schema
 from Products.Archetypes.atapi import registerType
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.idserver import renameAfterCreation
+from bika.lims import api
+from bika.lims.interfaces import IAnalysisRequest
 from senaite.storage import PRODUCT_NAME
+from senaite.storage.content.storagelayoutcontainer import \
+    StorageLayoutContainer
+from senaite.storage.content.storagelayoutcontainer import schema
 from senaite.storage.interfaces import IStorageSamplesContainer
 from zope.interface import implements
 
-schema = BikaSchema.copy()
+schema = schema.copy() + Schema((
+))
 
-class StorageSamplesContainer(BaseContent):
+class StorageSamplesContainer(StorageLayoutContainer):
     """Container for the storage of samples
     """
     implements(IStorageSamplesContainer)
-    _at_rename_after_creation = True
-    displayContentsTab = False
     schema = schema
 
-    def _renameAfterCreation(self, check_auto_id=False):
-        renameAfterCreation(self)
+    def is_object_allowed(self, object_brain_uid):
+        """Returns whether the type of object can be stored or not in this
+        container. This function returns true if the object is allowed, even
+        if the container already contains the object
+        """
+        # TODO Filer by sample type, volume, etc.
+        # Only objects from IAnalysisRequest are allowed
+        obj = api.get_object(object_brain_uid)
+        return IAnalysisRequest.providedBy(obj)
 
 registerType(StorageSamplesContainer, PRODUCT_NAME)

@@ -25,6 +25,13 @@ class IStorageFacility(Interface):
     where one or more storage containers are located. (room, department, etc.)
     """
 
+class IStorageLayoutContainer(Interface):
+    """Marker interface for objects that act as containers, either of other
+    containers or other type of objects such as samples. All these objects have
+    layout field in common in which the positions where the stored elements are
+    defined.
+    """
+
 class IStorageContainer(Interface):
     """Marker interface for objects that represent an storage container designed
     for the storage of one or more than one elements inside, typically other

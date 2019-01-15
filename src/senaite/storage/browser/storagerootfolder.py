@@ -6,6 +6,7 @@
 
 import collections
 
+from bika.lims import api
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.utils import get_link, get_email_link
 from senaite.storage import senaiteMessageFactory as _
@@ -20,7 +21,7 @@ class StorageRootFolderContentsView(BikaListingView):
         self.title = self.context.translate(_("Storage"))
         self.form_id = "list_storagerootfolder"
         self.sort_on = "sortable_title"
-        self.contentFiltter = dict(
+        self.contentFilter = dict(
             portal_type = "StorageFacility",
             sort_on = "sortable_title",
             sort_order = "ascending"
@@ -38,6 +39,14 @@ class StorageRootFolderContentsView(BikaListingView):
             ("Title", {
                 "title": _("Name"),
                 "index": "sortable_index"}),
+            ("Usage", {
+                "title": _("Usage"),}),
+            ("Samples", {
+                "title": _("Samples"),}),
+            ("Capacity", {
+                "title": _("Capacity"),}),
+            ("Containers", {
+                "title": _("Containers"),}),
             ("Phone", {
                 "title": _("Phone"),}),
             ("EmailAddress", {
@@ -68,4 +77,16 @@ class StorageRootFolderContentsView(BikaListingView):
         phone = obj.getPhone()
         if phone:
             item["replace"]["Phone"] = get_link("tel:{}".format(phone), phone)
+
+        # Usage
+        capacity = obj.get_samples_capacity()
+        samples = obj.get_samples_utilization()
+        usage = capacity and samples*100/capacity or 0
+        item["replace"]["Usage"] = "{}%".format(usage)
+        item["replace"]["Capacity"] = "{:01d}".format(capacity)
+        item["replace"]["Samples"] = "{:01d}".format(samples)
+
+        # Containers
+        containers = obj.get_layout_containers()
+        item["replace"]["Containers"] = "{:01d}".format(len(containers))
         return item

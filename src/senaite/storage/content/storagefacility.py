@@ -15,17 +15,17 @@ from bika.lims.idserver import renameAfterCreation
 from plone.app.folder.folder import ATFolder
 from senaite.storage import PRODUCT_NAME
 from senaite.storage import senaiteMessageFactory as _
-from senaite.storage.interfaces import IStorageFacility
+from senaite.storage.interfaces import IStorageFacility, IStorageLayoutContainer
 from zope.interface import implements
 
-field_phone = StringField(
+Phone = StringField(
     name = 'Phone',
     widget = StringWidget(
         label = _("Phone")
     )
 )
 
-field_email = StringField(
+EmailAddress = StringField(
     name = 'EmailAddress',
     widget = StringWidget(
         label=_("Email Address"),
@@ -33,10 +33,10 @@ field_email = StringField(
     validators = ('isEmail',)
 )
 
-field_address = AddressField(
-    name = 'PhysicalAddress',
+Address = AddressField(
+    name = 'Address',
     widget = AddressWidget(
-       label=_("Physical address"),
+       label=_("Address"),
        render_own_label=True,
     ),
     subfield_validators = {
@@ -44,14 +44,12 @@ field_address = AddressField(
         'state': 'inline_field_validator',
         'district': 'inline_field_validator',
     },
-
 )
 
-
 schema = BikaFolderSchema.copy() + Schema((
-    field_phone,
-    field_email,
-    field_address
+    Phone,
+    EmailAddress,
+    Address,
 ))
 
 class StorageFacility(ATFolder):
@@ -66,6 +64,26 @@ class StorageFacility(ATFolder):
         renameAfterCreation(self)
 
     def getPossibleAddresses(self):
-        return [field_address.getName()]
+        return [Address.getName()]
+
+    def get_layout_containers(self):
+        """Returns the containers that belong to this facility and implement
+        IStorageLayoutContainer
+        """
+        return filter(lambda obj: IStorageLayoutContainer.providedBy(obj),
+                            self.objectValues())
+
+    def get_samples_capacity(self):
+        """Returns the total number of samples this facility can store
+        """
+        return sum(map(lambda con: con.get_samples_capacity(),
+                       self.get_layout_containers()))
+
+    def get_samples_utilization(self):
+        """Returns the total number of samples this facility actually stores
+        """
+        return sum(map(lambda con: con.get_samples_utilization(),
+                       self.get_layout_containers()))
+
 
 registerType(StorageFacility, PRODUCT_NAME)
