@@ -18,8 +18,10 @@ from bika.lims.permissions import ScheduleSampling
 from senaite.storage import PRODUCT_NAME
 from senaite.storage import PROFILE_ID
 from senaite.storage import logger
+import random
 
 CREATE_TEST_DATA = True
+CREATE_TEST_DATA_RANDOM = False
 
 ACTIONS_TO_HIDE = [
     # Tuples of (id, folder_id)
@@ -380,8 +382,13 @@ def create_test_data(portal):
         logger.info("There are facilities created already [SKIP]")
         return
 
+    def get_random(min, max):
+        if not CREATE_TEST_DATA_RANDOM:
+            return min
+        return int(round(random.uniform(min, max)))
+
     # Facilities
-    for x in range(2):
+    for x in range(get_random(3,8)):
         facility = api.create(
             facilities,
             "StorageFacility",
@@ -397,24 +404,24 @@ def create_test_data(portal):
         )
 
         # Fridges
-        for i in range(2):
+        for i in range(get_random(2,5)):
             container = api.create(facility, "StorageContainer",
                                    title="Fridge {:02d}".format(i+1),
-                                   Rows=4,
-                                   Columns=4)
+                                   Rows=get_random(4,8),
+                                   Columns=get_random(4,6))
 
             # Racks
             for j in range(container.get_capacity()):
                 rack = api.create(container, "StorageContainer",
                                   title="Rack {:02d}".format(j+1),
-                                  Rows=3,
-                                  Columns=2)
+                                  Rows=get_random(3,4),
+                                  Columns=get_random(2,3))
                 container.add_object(rack)
 
                 # Boxes
                 for k in range(rack.get_capacity()):
                     box = api.create(rack, "StorageSamplesContainer",
                                      title="Sample box {:02d}".format(k+1),
-                                     Rows=5,
-                                     Columns=5)
+                                     Rows=get_random(5,10),
+                                     Columns=get_random(5,10))
                     rack.add_object(box)

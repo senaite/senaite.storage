@@ -187,6 +187,13 @@ class StorageLayoutContainer(ATFolder):
         """
         raise NotImplementedError("Must be implemented by subclass")
 
+    def get_layout_containers(self):
+        """Returns the containers that belongs to this container and implement
+        IStorageLayoutContainer
+        """
+        return filter(lambda obj: IStorageLayoutContainer.providedBy(obj),
+                            self.objectValues())
+
     def get_first_empty_position(self):
         """Returns the first empty position of the layout as a tuple (row, col)
         If there are no empty positions, returns None
@@ -292,9 +299,6 @@ class StorageLayoutContainer(ATFolder):
 
         uid = api.get_uid(object_brain_uid)
         obj = api.get_object(object_brain_uid)
-
-        logger.info("Adding object '{}' at position {}.{}"
-                     .format(obj.Title(), row, column))
 
         # If the object does not implement StorageLayoutContainer, then we
         # assume the object is not a container, rather the content that needs to

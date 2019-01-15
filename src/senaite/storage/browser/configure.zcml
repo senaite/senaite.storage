@@ -3,10 +3,35 @@
     xmlns:browser="http://namespaces.zope.org/browser"
     i18n_domain="senaite.storage">
 
+  <!-- Listing view of facilities for storage -->
   <browser:page
       for="senaite.storage.interfaces.IStorageRootFolder"
       name="folder_view"
       class=".storagerootfolder.StorageRootFolderContentsView"
+      permission="bika.lims.ManageBika"
+      layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
+
+  <!-- Listing view of containers from a storage facility -->
+  <browser:page
+      for="senaite.storage.interfaces.IStorageFacility"
+      name="folder_view"
+      class=".containers.ContainersView"
+      permission="bika.lims.ManageBika"
+      layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
+
+  <!-- Listing view of containers from a container -->
+  <browser:page
+      for="senaite.storage.interfaces.IStorageContainer"
+      name="folder_view"
+      class=".containers.ContainersView"
+      permission="bika.lims.ManageBika"
+      layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
+
+  <!-- Listing view of samples from a samples container -->
+  <browser:page
+      for="senaite.storage.interfaces.IStorageSamplesContainer"
+      name="folder_view"
+      class=".containers.ContainersView"
       permission="bika.lims.ManageBika"
       layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
 
