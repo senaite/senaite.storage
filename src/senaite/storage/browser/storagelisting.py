@@ -10,6 +10,8 @@ from bika.lims import api
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.utils import get_link, get_email_link, get_progress_bar_html
 from senaite.storage import senaiteMessageFactory as _
+from senaite.storage.interfaces import IStorageFacility, \
+    IStorageSamplesContainer
 
 
 class StorageListing(BikaListingView):

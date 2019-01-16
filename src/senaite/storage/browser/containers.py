@@ -9,6 +9,7 @@ import collections
 from bika.lims import api
 from senaite.storage import senaiteMessageFactory as _
 from senaite.storage.browser.storagelisting import StorageListing
+from senaite.storage.interfaces import IStorageFacility
 
 
 class ContainersView(StorageListing):
@@ -20,15 +21,13 @@ class ContainersView(StorageListing):
         self.title = context.Title()
         self.form_id = "list_storage_containers"
         self.contentFilter = {
-            'sort_order': 'sortable_title',
-            'path': {
+            "sort_on": "sortable_title",
+            "sort_order": "ascending",
+            "path": {
                 "query": "/".join(context.getPhysicalPath()),
-                'depth': 1,
+                "depth": 1,
             }
         }
-        self.icon = "{}/{}".format(
-            self.portal_url,
-            "++resource++senaite.storage.static/img/container_big.png")
 
         self.columns = collections.OrderedDict((
             ("Title", {
@@ -55,6 +54,11 @@ class ContainersView(StorageListing):
                 "columns": self.columns.keys(),
             },
         ]
+        icon_name = "container_big.png"
+        if IStorageFacility.providedBy(self.context):
+            icon_name = "facility_big.png"
+        self.icon = "{}/++resource++senaite.storage.static/img/{}"\
+            .format(self.portal_url, icon_name)
 
         self.context_actions[_("Add")] = {
             "url": "createObject?type_name=StorageContainer",

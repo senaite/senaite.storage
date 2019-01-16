@@ -19,7 +19,7 @@ class StorageRootFolderContentsView(StorageListing):
 
     def __init__(self, context, request):
         super(StorageRootFolderContentsView, self).__init__(context, request)
-        self.title = self.context.translate(_("Storage"))
+        self.title = self.context.translate(_("Samples storage"))
         self.form_id = "list_storagerootfolder"
         self.contentFilter = dict(
             portal_type = "StorageFacility",
@@ -28,7 +28,7 @@ class StorageRootFolderContentsView(StorageListing):
         )
         self.icon = "{}/{}".format(
             self.portal_url,
-            "++resource++senaite.storage.static/img/facility_big.png")
+            "++resource++senaite.storage.static/img/storage_big.png")
 
         self.columns = collections.OrderedDict((
             ("Title", {
