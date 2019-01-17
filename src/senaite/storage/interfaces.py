@@ -16,14 +16,22 @@ class ISenaiteStorageLayer(IBikaLIMS, ISenaiteLIMS):
     only when the add-on installer has been run.
     """
 
+
+class ISenaiteStorageCatalog(Interface):
+    """Marker interface for senaite_storage_catalog CatalogTool
+    """
+
+
 class IStorageRootFolder(Interface):
     """Marker interface for Storage's root folders
     """
+
 
 class IStorageFacility(Interface):
     """Marker interface for objects that represent a physical location or place
     where one or more storage containers are located. (room, department, etc.)
     """
+
 
 class IStorageLayoutContainer(Interface):
     """Marker interface for objects that act as containers, either of other
@@ -32,11 +40,13 @@ class IStorageLayoutContainer(Interface):
     defined.
     """
 
+
 class IStorageContainer(Interface):
     """Marker interface for objects that represent an storage container designed
     for the storage of one or more than one elements inside, typically other
     containers. E.g: fridge, rack, shelf, floating rack, tube rack, box, etc.
     """
+
 
 class IStorageSamplesContainer(IStorageContainer):
     """Marker interface for objects that represent a type of storage container

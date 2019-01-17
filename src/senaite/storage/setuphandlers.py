@@ -20,6 +20,8 @@ from senaite.storage import PROFILE_ID
 from senaite.storage import logger
 import random
 
+from senaite.storage.catalog import SENAITE_STORAGE_CATALOG
+
 CREATE_TEST_DATA = True
 CREATE_TEST_DATA_RANDOM = False
 
@@ -37,14 +39,12 @@ NEW_CONTENT_TYPES = [
 
 CATALOGS_BY_TYPE = [
     # Tuples of (type, [catalog])
-    ("StorageContainer", ["senaite_storage_catalog"]),
-    ("StorageFacility", ["senaite_storage_catalog"]),
-    ("StorageRootFolder", ["senaite_storage_catalog"]),
-    ("StorageSamplesContainer", ["senaite_storage_catalog"]),
+    ("StorageSamplesContainer", ["portal_catalog", SENAITE_STORAGE_CATALOG]),
 ]
 
 INDEXES = [
-    # Tuples of (catalog, id, indexed attribute, type)
+    # Tuples of (catalog, index_name, index_type)
+    (SENAITE_STORAGE_CATALOG, "get_samples_uids", "KeywordIndex")
 ]
 
 COLUMNS = [
@@ -116,7 +116,7 @@ def post_install(portal_setup):
     portal = context.getSite()  # noqa
 
     # Setup catalogs
-    #setup_catalogs(portal)
+    setup_catalogs(portal)
 
     # Reindex new content types
     reindex_new_content_types(portal)
@@ -149,7 +149,7 @@ def setup_catalogs(portal):
         # get the desired catalogs this type should be in
         desired_catalogs = map(api.get_tool, catalogs)
         # check if the catalogs changed for this portal_type
-        if set(current_catalogs).difference(desired_catalogs):
+        if set(desired_catalogs).difference(current_catalogs):
             # fetch the brains to reindex
             brains = api.search({"portal_type": type_name})
             # updated the catalogs
@@ -163,15 +163,15 @@ def setup_catalogs(portal):
 
     # Setup catalog indexes
     to_index = []
-    for catalog, name, attribute, meta_type in INDEXES:
+    for catalog, name, meta_type in INDEXES:
         c = api.get_tool(catalog)
         indexes = c.indexes()
         if name in indexes:
             logger.info("Index '%s' already in Catalog [SKIP]" % name)
             continue
 
-        logger.info("Adding Index '%s' for field '%s' to catalog ..."
-                    % (meta_type, name))
+        logger.info("Adding Index '%s' for field '%s' to catalog '%s"
+                    % (meta_type, name, catalog))
         c.addIndex(name, meta_type)
         to_index.append((c, name))
         logger.info("Added Index '%s' for field '%s' to catalog [DONE]"
