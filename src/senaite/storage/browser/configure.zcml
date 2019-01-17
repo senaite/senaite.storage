@@ -35,4 +35,20 @@
       permission="bika.lims.ManageBika"
       layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
 
+  <!-- Workflow action button clicked inside Analysis Request -->
+  <browser:page
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="workflow_action"
+      class=".workflow.AnalysisRequestWorkflowAction"
+      permission="zope.Public"
+      layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
+
+  <!-- Workflow action button clicked in Analysis Request listings -->
+  <browser:page
+      for="bika.lims.interfaces.IAnalysisRequestsFolder"
+      name="workflow_action"
+      class=".workflow.AnalysisRequestsWorkflowAction"
+      permission="zope.Public"
+      layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
+
 </configure>
