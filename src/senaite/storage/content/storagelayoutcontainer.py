@@ -266,16 +266,17 @@ class StorageLayoutContainer(ATFolder):
                      self.getPositionsLayout())
         self.setPositionsLayout(els)
 
-        if not notify_parent:
-            return True
+        if notify_parent:
+            self.notify_parent()
+        return True
 
-        # Notify the change to the parent, so it gets updated with the changes
-        # regarding to capacity and utilization
-        parent = api.get_object(self)
+    def notify_parent(self):
+        """Notifies the parent to update the information it holds about this
+        container
+        """
+        parent = api.get_parent(self)
         if IStorageLayoutContainer.providedBy(parent):
             parent.update_object(self)
-
-        return True
 
     def update_object(self, object_brain_uid):
         """Updates the object from the container, if in there
@@ -364,13 +365,7 @@ class StorageLayoutContainer(ATFolder):
                 continue
             layout.append(item.copy())
         self.setPositionsLayout(layout)
-
-        # Notify the change to the parent, so it gets updated with the changes
-        # regarding to capacity and utilization
-        parent = api.get_parent(self)
-        if IStorageLayoutContainer.providedBy(parent):
-            parent.update_object(self)
-
+        self.notify_parent()
         return True
 
     def get_layout_subfield_sum(self, subfield):
