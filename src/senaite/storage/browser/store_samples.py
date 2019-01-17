@@ -13,6 +13,7 @@ from senaite.storage import senaiteMessageFactory as _s
 import collections
 
 from senaite.storage.browser import BaseView
+from senaite.storage.interfaces import IStorageFacility
 
 
 class StoreSamplesView(BaseView):
@@ -44,7 +45,21 @@ class StoreSamplesView(BaseView):
 
         # Handle store
         if form_submitted and form_store:
-            samples = list()
+            samples = []
+            for sample in form.get("samples", []):
+                sample_uid = sample.get("uid")
+                container_uid = sample.get("container_uid")
+                if not sample_uid or not container_uid:
+                    continue
+
+                sample = self.get_object_by_uid(sample_uid)
+                container = self.get_object_by_uid(container_uid)
+                logger.info("Storing sample {} in {}".format(sample.getId(),
+                                                             container.getId()))
+                # Store
+                if container.add_object(sample):
+                    samples.append(sample)
+
             message = _s("Stored {} samples: {}".format(
                 len(samples), ", ".join(map(api.get_title, samples))))
             return self.redirect(message=message)
@@ -65,6 +80,43 @@ class StoreSamplesView(BaseView):
                 "id": api.get_id(obj),
                 "uid": api.get_uid(obj),
                 "title": api.get_title(obj),
+                "path": api.get_path(obj),
+                "url": api.get_url(obj),
+                "sample_type": api.get_title(obj.getSampleType())
+            }
+
+    def get_storage_containers_data(self):
+        portal = api.get_portal()
+        folder = portal.senaite_storage
+        query = {
+            "portal_type": "StorageSamplesContainer",
+            "sort_on": "sortable_title",
+            "sort_order": "ascending",
+            "path": {
+                "query": "/".join(folder.getPhysicalPath()),
+            }
+        }
+
+        def get_breadcrumbs(obj, breadcrumbs=None):
+            obj = api.get_object(obj)
+            if not breadcrumbs:
+                breadcrumbs = api.get_title(obj)
+            parent = api.get_parent(obj)
+            parent_title = api.get_title(parent)
+            breadcrumbs = "{} > {}".format(parent_title, breadcrumbs)
+            if IStorageFacility.providedBy(obj):
+                return breadcrumbs
+            return get_breadcrumbs(parent, breadcrumbs)
+
+        for obj in api.search(query, "portal_catalog"):
+            obj = api.get_object(obj)
+            if obj.is_full():
+                continue
+            yield {
+                "obj": obj,
+                "id": api.get_id(obj),
+                "uid": api.get_uid(obj),
+                "title": get_breadcrumbs(obj),
                 "path": api.get_path(obj),
                 "url": api.get_url(obj)
             }

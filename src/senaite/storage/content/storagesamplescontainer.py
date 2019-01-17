@@ -14,6 +14,7 @@ from senaite.storage.content.storagelayoutcontainer import \
 from senaite.storage.content.storagelayoutcontainer import schema
 from senaite.storage.interfaces import IStorageSamplesContainer
 from zope.interface import implements
+from bika.lims import workflow as wf
 
 schema = schema.copy() + Schema((
 ))
@@ -34,5 +35,19 @@ class StorageSamplesContainer(StorageLayoutContainer):
         # Only objects from IAnalysisRequest are allowed
         obj = api.get_object(object_brain_uid)
         return IAnalysisRequest.providedBy(obj)
+
+    def add_object_at(self, object_brain_uid, row, column):
+        """Adds an object to the specified position. If an object already exists
+        at the given position, return False. Otherwise, return True
+        """
+        stored = super(StorageSamplesContainer, self).add_object_at(
+            object_brain_uid, row, column)
+        if not stored:
+            return False
+
+        # Transition the sample to "stored" state
+        object = api.get_object(object_brain_uid)
+        wf.doActionFor(object, "store")
+        return stored
 
 registerType(StorageSamplesContainer, PRODUCT_NAME)
