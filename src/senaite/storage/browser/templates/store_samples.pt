@@ -1,0 +1,80 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="senaite.storage">
+  <head>
+    <metal:block fill-slot="javascript_head_slot"
+                 tal:define="portal context/@@plone_portal_state/portal;">
+      <script type="text/javascript"
+              tal:attributes="src string:${portal/absolute_url}/++resource++senaite.storage.static/js/storage_samples.js"></script>
+    </metal:block>
+    <metal:block fill-slot="style_slot"
+                 tal:define="portal context/@@plone_portal_state/portal;">
+    </metal:block>
+  </head>
+  <body>
+
+    <!-- Title -->
+    <metal:title fill-slot="content-title">
+      <h1 i18n:translate="">
+        Store samples
+      </h1>
+    </metal:title>
+
+    <!-- Description -->
+    <metal:description fill-slot="content-description">
+      <p i18n:translate="">
+        <a tal:attributes="href view/back_url"
+           i18n:name="back_link"
+           i18n:translate="">
+          &larr; Back
+        </a>
+      </p>
+    </metal:description>
+
+    <!-- Content -->
+    <metal:core fill-slot="content-core">
+      <div id="store-samples-view"
+           class="row"
+           tal:define="portal context/@@plone_portal_state/portal;">
+
+        <div class="col-sm-12">
+          <form class="form"
+                id="store_samples_form"
+                name="store_samples_form"
+                method="POST">
+
+            <!-- Hidden Fields -->
+            <input type="hidden" name="submitted" value="1"/>
+            <input tal:replace="structure context/@@authenticator/authenticator"/>
+
+            <tal:ars repeat="sample view/get_samples_data">
+              <!-- Remember the initial UIDs coming in -->
+              <input type="hidden" name="uids:list" tal:attributes="value sample/uid"/>
+
+            </tal:ars>
+
+            <!-- Form Controls -->
+            <div>
+              <!-- Store samples -->
+              <input class="btn btn-success btn-sm"
+                     type="submit"
+                     name="button_store"
+                     i18n:attributes="value"
+                     value="Store Samples ⇶"/>
+              <!-- Cancel -->
+              <input class="btn btn-default btn-sm"
+                     type="submit"
+                     name="button_cancel"
+                     i18n:attributes="value"
+                     value="Cancel ⎋"/>
+            </div>
+
+          </form>
+        </div>
+
+      </div>
+    </metal:core>
+  </body>
+</html>

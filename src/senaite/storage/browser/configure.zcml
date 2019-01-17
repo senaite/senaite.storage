@@ -35,6 +35,15 @@
       permission="bika.lims.ManageBika"
       layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
 
+  <!-- Store Samples View -->
+  <browser:page
+      for="*"
+      name="storage_store_samples"
+      class=".store_samples.StoreSamplesView"
+      permission="bika.lims.ManageAnalysisRequests"
+      layer="senaite.storage.interfaces.ISenaiteStorageLayer"
+  />
+
   <!-- Workflow action button clicked inside Analysis Request -->
   <browser:page
       for="bika.lims.interfaces.IAnalysisRequest"

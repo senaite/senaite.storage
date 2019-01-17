@@ -4,12 +4,10 @@
 #
 # Copyright 2019 by it's authors.
 
+from bika.lims import api
 from bika.lims.browser.analysisrequest.workflow import \
     AnalysisRequestWorkflowAction as CoreWorkflowAction
-from bika.lims.interfaces import IAnalysisRequest
-from senaite.storage import logger
 from senaite.storage import senaiteMessageFactory as _
-from bika.lims import api
 
 
 def get_storage_view_url(back_url, uids):
@@ -17,7 +15,7 @@ def get_storage_view_url(back_url, uids):
     """
     if isinstance(uids, basestring):
         uids = uids.split(",")
-    return "{}/storage_store_sample?uids={}".format(back_url, ",".join(uids))
+    return "{}/storage_store_samples?uids={}".format(back_url, ",".join(uids))
 
 
 class AnalysisRequestWorkflowAction(CoreWorkflowAction):
