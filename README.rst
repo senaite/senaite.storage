@@ -21,7 +21,7 @@
 Introduction
 ============
 
-SENAITE STORAGE adds Sample storage capabilities to SENAITE.
+SENAITE STORAGE adds **Sample storage** capabilities to SENAITE.
 
 
 Installation
@@ -90,6 +90,24 @@ The following versions are required for SENAITE STORAGE:
 -  senaite.core >= 1.2.9
 -  senaite.lims >= 1.2.0
 
+
+Screenshots
+-----------
+
+.. image:: https://raw.githubusercontent.com/senaite/senaite.storage/master/static/storage_facilities.png
+   :alt: Storage facilities
+   :width: 760px
+   :align: center
+
+.. image:: https://raw.githubusercontent.com/senaite/senaite.storage/master/static/container_listing.png
+   :alt: Containers and sample containers
+   :width: 760px
+   :align: center
+
+.. image:: https://raw.githubusercontent.com/senaite/senaite.storage/master/static/samples_listing.png
+   :alt: Store transition in samples listings
+   :width: 760px
+   :align: center
 
 .. _Plone 4: https://docs.plone.org/4/en/manage/installing/index.html
 .. _senaite.lims: https://github.com/senaite/senaite.lims#installation
