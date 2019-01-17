@@ -34,12 +34,10 @@ class StorageRootFolderContentsView(StorageListing):
             ("Title", {
                 "title": _("Name"),
                 "index": "sortable_index"}),
-            ("Usage", {
-                "title": _("Usage"),}),
-            ("Samples", {
+            ("SamplesUsage", {
                 "title": _("Samples"),}),
-            ("Capacity", {
-                "title": _("Capacity"),}),
+            ("Samples", {
+                "title": _("Samples usage"),}),
             ("Containers", {
                 "title": _("Containers"),}),
             ("Phone", {

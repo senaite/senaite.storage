@@ -6,12 +6,9 @@
 
 import collections
 
-from bika.lims import api
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.utils import get_link, get_email_link, get_progress_bar_html
+from bika.lims.utils import get_link, get_progress_bar_html
 from senaite.storage import senaiteMessageFactory as _
-from senaite.storage.interfaces import IStorageFacility, \
-    IStorageSamplesContainer
 
 
 class StorageListing(BikaListingView):
@@ -30,12 +27,12 @@ class StorageListing(BikaListingView):
             ("Title", {
                 "title": _("Name"),
                 "index": "sortable_index"}),
-            ("Usage", {
-                "title": _("Usage"),}),
+            ("SamplesUsage", {
+                "title": _("% Samples"),}),
             ("Samples", {
                 "title": _("Samples"),}),
-            ("Capacity", {
-                "title": _("Capacity"),}),
+            ("Containers", {
+                "title": _("Containers"),}),
         ))
 
         self.review_states = [
@@ -56,9 +53,9 @@ class StorageListing(BikaListingView):
             css_class = "bg-danger"
         elif percentage > 75:
             css_class = "bg-warning"
-        progress_bar = get_progress_bar_html(percentage)
-        return progress_bar.replace('class="progress-bar',
-                                    'class="progress-bar {}'.format(css_class))
+        p_bar = get_progress_bar_html(percentage)
+        return p_bar.replace('class="progress-bar',
+                             'class="progress-bar {}'.format(css_class))
 
     def folderitem(self, obj, item, index):
         """Applies new properties to item that is currently being rendered as a
@@ -66,11 +63,12 @@ class StorageListing(BikaListingView):
         """
         item["replace"]["Title"] = get_link(item["url"], item["Title"])
 
-        # Usage
+        # Samples usage
         capacity = obj.get_samples_capacity()
         samples = obj.get_samples_utilization()
-        usage = capacity and samples*100/capacity or 0
-        item["replace"]["Usage"] = self.get_usage_bar_html(usage)
-        item["replace"]["Capacity"] = "{:01d}".format(capacity)
-        item["replace"]["Samples"] = "{:01d}".format(samples)
+        percentage = capacity and samples*100/capacity or 0
+        item["replace"]["SamplesUsage"] = self.get_usage_bar_html(percentage)
+        item["replace"]["Samples"] = "{:01d} / {:01d} ({:01d}%)"\
+            .format(samples, capacity, percentage)
+
         return item
