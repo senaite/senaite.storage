@@ -5,6 +5,7 @@
 # Copyright 2019 by it's authors.
 
 from Products.ATExtensions.ateapi import RecordsField
+from Products.ATExtensions.widget import RecordsWidget
 from Products.Archetypes.Field import IntegerField
 from Products.Archetypes.Schema import Schema
 from Products.Archetypes.Widget import IntegerWidget
@@ -16,8 +17,7 @@ from bika.lims.idserver import renameAfterCreation
 from plone.app.folder.folder import ATFolder
 from senaite.storage import logger
 from senaite.storage import senaiteMessageFactory as _
-from senaite.storage.interfaces import IStorageLayoutContainer, \
-    IStorageSamplesContainer
+from senaite.storage.interfaces import IStorageLayoutContainer
 from zope.interface import implements
 
 Rows = IntegerField(
@@ -60,7 +60,6 @@ Columns = IntegerField(
 # the capacity and utilization of the objects this container stores.
 PositionsLayout = RecordsField(
     name = "PositionsLayout",
-    visible = False,
     subfields = (
         "row",
         "column",
@@ -71,7 +70,10 @@ PositionsLayout = RecordsField(
         "row": "int",
         "column": "int",
         "samples_capacity": "int",
-        "samples_utilization": "int"}
+        "samples_utilization": "int"},
+    widget=RecordsWidget(
+        visible = False
+    )
 )
 
 schema = BikaFolderSchema.copy() + Schema((
@@ -87,6 +89,7 @@ class StorageLayoutContainer(ATFolder):
     _at_rename_after_creation = True
     displayContentsTab = False
     schema = schema
+    default_samples_capacity = 0
 
     def _renameAfterCreation(self, check_auto_id=False):
         renameAfterCreation(self)
@@ -99,18 +102,19 @@ class StorageLayoutContainer(ATFolder):
         self.getField('Columns').set(self, value)
         self.rebuild_layout()
 
+    def get_default_layout_item(self, row=0, column=0):
+        """Returns a default item for the positions layout
+        """
+        return dict(row=row, column=column, uid="", samples_utilization=0,
+                    samples_capacity=self.default_samples_capacity)
+
     def rebuild_layout(self):
         """Rebuilds the layout with all positions
         """
         new_layout = list()
         for num_row in range(self.getRows()):
             for num_col in range(self.getColumns()):
-                new_item = {
-                    "row": num_row,
-                    "column": num_col,
-                    "uid": "",
-                    "samples_capacity": 1,
-                    "samples_utilization": 0 }
+                new_item = self.get_default_layout_item(num_row, num_col)
                 item = self.get_item_at(num_row, num_col)
                 new_item = item and item.copy() or new_item
                 new_layout.append(new_item)
@@ -132,26 +136,57 @@ class StorageLayoutContainer(ATFolder):
             return False
         return True
 
+    def is_empty_position(self, row, column):
+        """Returns whether the position defined is empty or not
+        """
+        return not self.is_taken_position(row, column)
+
+    def is_taken_position(self, row, column):
+        """Returns whether the position defined is taken or not
+        """
+        if not self.is_valid_position(row, column):
+            return True
+        item  = self.get_item_at(row, column)
+        return item and self.is_taken(item) or False
+
+    def is_empty(self, item):
+        """Returns if an item from the layout is empty
+        """
+        return not self.is_taken(item)
+
+    def is_taken(self, item):
+        """Returns whether an item from the layout has an element assigned
+        """
+        return item.get("uid", "") and True or False
+
+    def get_available_positions(self):
+        """Returns a list of tuples with available positions
+        """
+        els = filter(self.is_empty, self.getPositionsLayout())
+        return map(lambda el: (el["row"], el["column"]), els)
+
+    def get_non_available_positions(self):
+        """Returns a list of tuples with non-available positions
+        """
+        els = filter(self.is_taken, self.getPositionsLayout())
+        return map(lambda el: (el["row"], el["column"]), els)
+
     def get_item_at(self, row, column):
         """Returns the layout item this container contains at the given position
         """
         if not self.is_valid_position(row, column):
             return None
-        row_idx = api.to_int(row)
-        col_idx = api.to_int(column)
         for item in self.getPositionsLayout():
-            if api.to_int(item["row"]) != row_idx:
-                continue
-            if api.to_int(item["column"]) != col_idx:
-                continue
-            return item
+            if api.to_int(item["row"]) == api.to_int(row):
+                if api.to_int(item["column"]) == api.to_int(column):
+                    return item
         return None
 
     def get_uid_at(self, row, column):
         """Returns a uid this container contains at the given position.
         """
         item = self.get_item_at(row, column)
-        return item and item["uid"] or None
+        return item and item.get("uid","") or None
 
     def get_object_at(self, row, column):
         """Returns an object this container contains at the given position
@@ -168,7 +203,8 @@ class StorageLayoutContainer(ATFolder):
         uid = api.get_uid(object_brain_uid)
         if not uid:
             return None
-        els = filter(lambda el: el['uid'] == uid, self.getPositionsLayout())
+        els = filter(lambda el: el.get("uid","") == uid,
+                     self.getPositionsLayout())
         if not els:
             return None
         return (api.to_int(els[0]['row']), api.to_int(els[0]['column']))
@@ -198,18 +234,13 @@ class StorageLayoutContainer(ATFolder):
         """Returns the first empty position of the layout as a tuple (row, col)
         If there are no empty positions, returns None
         """
-        els = filter(lambda el: not el['uid'], self.getPositionsLayout())
-        if not els:
-            return None
-        els = map(lambda el: (api.to_int(el['row']),
-                              api.to_int(el['column'])), els) or (0,0)
-        return min(els)
+        return min(self.get_available_positions()) or None
 
     def get_minimum_size(self):
         """Returns a tuple (rows, columns) that represents the minimum size this
         container can have without removing any of the objects it contains
         """
-        els = filter(lambda el: el['uid'], self.getPositionsLayout())
+        els = filter(self.is_taken, self.getPositionsLayout())
         rows = map(lambda el: api.to_int(el['row']), els) or [0]
         cols = map(lambda el: api.to_int(el['column']), els) or [0]
         return (max(rows)+1, max(cols)+1)
@@ -231,7 +262,8 @@ class StorageLayoutContainer(ATFolder):
         uid = api.get_uid(object_brain_uid)
         if not uid:
             return False
-        els = filter(lambda el: el['uid'] != uid, self.getPositionsLayout())
+        els = filter(lambda el: el.get("uid","") != uid,
+                     self.getPositionsLayout())
         self.setPositionsLayout(els)
 
         if not notify_parent:
@@ -260,6 +292,8 @@ class StorageLayoutContainer(ATFolder):
         """
         # Is the position valid?
         if not self.is_valid_position(row, column):
+            logger.warn("Position ({}, {}) not valid for '{}'"
+                        .format(row, column, self.getId()))
             return False
 
         # Is a valid object or a valid uid?
@@ -267,17 +301,24 @@ class StorageLayoutContainer(ATFolder):
         if not uid:
             return False
 
-        # If position occupied, the addition is not allowed
+        # If position taken, the addition is not allowed
         if self.get_uid_at(row, column):
+            logger.warn("Position ({}, {}) from '{}' is already taken"
+                        .format(row, column, self.getId()))
             return False
 
         # If the container already contains the object, do nothing
         if self.has_object(object_brain_uid):
+            object_id = api.get_object(object_brain_uid).getId()
+            logger.warn("Container '{}' contains the object '{}' already"
+                        .format(self.getId(), object_id))
             return False
 
         # Check if this type of object suits well with this container
         obj = api.get_object(object_brain_uid)
         if not self.is_object_allowed(obj):
+            logger.warn("Container '{}' does not allow the object '{}'"
+                        .format(self.getId(), obj.getId()))
             return False
 
         return True
@@ -287,6 +328,7 @@ class StorageLayoutContainer(ATFolder):
         """
         position = self.get_first_empty_position()
         if not position:
+            logger.warn("Cannot add object. No empty positions available")
             return False
         return self.add_object_at(object_brain_uid, position[0], position[1])
 
@@ -364,7 +406,8 @@ class StorageLayoutContainer(ATFolder):
         If recursive is set to True, the function reset the samples usage for
         contained containers too.
         """
-        items = map(lambda item: item["uid"], self.getPositionsLayout())
+        items = filter(self.is_taken, self.getPositionsLayout())
+        items = map(lambda item: item.get["uid"], items)
         uids = filter(api.is_uid, items)
         if not uids:
             return

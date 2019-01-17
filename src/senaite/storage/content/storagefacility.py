@@ -66,6 +66,16 @@ class StorageFacility(ATFolder):
     def getPossibleAddresses(self):
         return [Address.getName()]
 
+    def get_capacity(self):
+        """Returns the total number of containers that belong to this facility
+        """
+        return len(self.get_layout_containers())
+
+    def get_available_positions(self):
+        """Returns the number of available containers
+        """
+        return self.get_capacity()
+
     def get_layout_containers(self):
         """Returns the containers that belong to this facility and implement
         IStorageLayoutContainer

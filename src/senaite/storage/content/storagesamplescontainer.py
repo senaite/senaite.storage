@@ -23,6 +23,7 @@ class StorageSamplesContainer(StorageLayoutContainer):
     """
     implements(IStorageSamplesContainer)
     schema = schema
+    default_samples_capacity = 1
 
     def is_object_allowed(self, object_brain_uid):
         """Returns whether the type of object can be stored or not in this
