@@ -16,6 +16,7 @@
 
   <!-- Package includes -->
   <include package=".browser"/>
+  <include package=".subscribers"/>
 
   <!-- Static resource directory -->
   <browser:resourceDirectory
