@@ -411,17 +411,15 @@ def create_test_data(portal):
                                    Columns=get_random(4,6))
 
             # Racks
-            for j in range(container.get_capacity()):
+            for j in range(get_random(4, container.get_capacity())):
                 rack = api.create(container, "StorageContainer",
                                   title="Rack {:02d}".format(j+1),
                                   Rows=get_random(3,4),
                                   Columns=get_random(2,3))
-                container.add_object(rack)
 
                 # Boxes
-                for k in range(rack.get_capacity()):
+                for k in range(get_random(2, rack.get_capacity())):
                     box = api.create(rack, "StorageSamplesContainer",
                                      title="Sample box {:02d}".format(k+1),
                                      Rows=get_random(5,10),
                                      Columns=get_random(5,10))
-                    rack.add_object(box)
