@@ -17,7 +17,7 @@ from bika.lims.idserver import renameAfterCreation
 from plone.app.folder.folder import ATFolder
 from senaite.storage import logger
 from senaite.storage import senaiteMessageFactory as _
-from senaite.storage.interfaces import IStorageLayoutContainer
+from senaite.storage.interfaces import IStorageLayoutContainer, IStorageFacility
 from zope.interface import implements
 
 Rows = IntegerField(
@@ -93,6 +93,17 @@ class StorageLayoutContainer(ATFolder):
 
     def _renameAfterCreation(self, check_auto_id=False):
         renameAfterCreation(self)
+
+    def get_full_title(self, breadcrumbs=None):
+        """Returns the full title of this container in breadcrumbs format
+        """
+        if not breadcrumbs:
+            breadcrumbs = "{} - {}".format(self.Title(), self.getId())
+        parent = self.aq_parent
+        breadcrumbs = "{} > {}".format(api.get_title(parent), breadcrumbs)
+        if IStorageFacility.providedBy(parent):
+            return breadcrumbs
+        return parent.get_full_title(breadcrumbs)
 
     def setRows(self, value):
         self.getField('Rows').set(self, value)

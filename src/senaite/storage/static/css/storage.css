@@ -7,3 +7,16 @@
 .bg-danger {
     background-color: #ff3547 !important;
 }
+
+/**
+This makes the reset button from reference widget in storage samples a bit cleaner
+**/
+body.template-storage_store_samples .ui-state-default.ui-corner-all.undefined.cg-resetButton {
+    border: none;
+    background-color: transparent !important;
+    padding-bottom: 7px;
+    margin-left: 5px;
+}
+body.template-storage_store_samples div.ArchetypesReferenceWidget input {
+    width: 90%;
+}

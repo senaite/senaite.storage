@@ -8,9 +8,13 @@
                  tal:define="portal context/@@plone_portal_state/portal;">
       <script type="text/javascript"
               tal:attributes="src string:${portal/absolute_url}/++resource++senaite.storage.static/js/storage_samples.js"></script>
+      <script type="text/javascript"
+              tal:attributes="src string:${portal/absolute_url}/bika_widgets/referencewidget.js"></script>
     </metal:block>
     <metal:block fill-slot="style_slot"
                  tal:define="portal context/@@plone_portal_state/portal;">
+      <link rel="stylesheet" type="text/css" media="all" href=""
+            tal:attributes="href string:${portal/absolute_url}/bika_widgets/referencewidget.css"/>
     </metal:block>
   </head>
   <body>
@@ -53,7 +57,7 @@
               <!-- Remember the initial UIDs coming in -->
               <input type="hidden" name="uids:list" tal:attributes="value sample/uid"/>
 
-              <table class="table table-bordered" style="margin-bottom:5em;">
+              <table class="table table-bordered" style="margin-bottom:1.5em;">
                 <thead>
                   <tr>
                     <th colspan="3" class="info">
@@ -79,18 +83,45 @@
                       <!-- Storage container -->
                       <input type="hidden" name="samples.uid:records" tal:attributes="value sample/uid"/>
                       <div class="col-sm-6">
-                        <label i18n:translate="">Storage container</label>
-                        <div class="form-group">
-                          <select name="samples.container_uid:records" class="form-control">
-                            <option value=""></option>
-                            <tal:options repeat="container view/get_storage_containers_data;">
-                              <option tal:attributes="value container/uid;"
-                                      tal:content="container/title">
-                                Container
-                              </option>
-                            </tal:options>
-                          </select>
-                        </div>
+                        <label i18n:translate="">Samples container</label>
+                        <div class="form-group field ArchetypesReferenceWidget">
+                          <input
+                            tal:attributes="name string:container.${sample/uid}"
+                            type="text"
+                            ui_item="get_full_title"
+                            autocomplete="false"
+                            class="blurrable firstToFocus referencewidget"
+                            base_query='{
+                              "portal_type": "StorageSamplesContainer",
+                              "review_state": "active"
+                            }'
+                            search_query='{}'
+                            catalog_name="portal_catalog"
+                            combogrid_options='{
+                              "colModel": [
+                                {"columnName": "id", "align": "left", "label": "Id", "width": "10"},
+                                {"columnName": "get_full_title", "align": "left", "label": "Container full path", "width": "90"},
+                                {"columnName": "UID", "hidden": true}],
+                              "search_fields": ["id"],
+                              "catalog_name": "portal_catalog",
+                              "url": "referencewidget_search",
+                              "discard_empty": [],
+                              "showOn": true,
+                              "searchIcon": true,
+                              "minLength": "0",
+                              "resetButton": true,
+                              "sord": "asc",
+                              "sidx": "id",
+                              "width": "700px",
+                              "force_all": false,
+                              "portal_types": {}}'
+                          />
+                          <input type="hidden"
+                                 tal:attributes="id string:container.${sample/uid}_uid"
+                                 name="samples.container_uid:records"
+                                 value="" />
+        </div>
+
                       </div>
                     </td>
                   </tr>
