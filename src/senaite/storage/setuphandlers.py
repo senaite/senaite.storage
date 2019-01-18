@@ -37,6 +37,25 @@ NEW_CONTENT_TYPES = [
     ("senaite_storage", None),
 ]
 
+ID_FORMATTING = [
+    # An array of dicts. Each dict represents an ID formatting configuration
+    {
+        "portal_type": "StorageContainer",
+        "form": "SC-{seq:05d}",
+        "prefix": "sstoragecontainer",
+        "sequence_type": "generated",
+        "counter_type": "",
+        "split_length": 1,
+    }, {
+        "portal_type": "StorageSamplesContainer",
+        "form": "SS-{seq:05d}",
+        "prefix": "sstoragesamplescontainer",
+        "sequence_type": "generated",
+        "counter_type": "",
+        "split_length": 1,
+    },
+]
+
 CATALOGS_BY_TYPE = [
     # Tuples of (type, [catalog])
     ("StorageSamplesContainer", ["portal_catalog", SENAITE_STORAGE_CATALOG]),
@@ -120,6 +139,9 @@ def post_install(portal_setup):
 
     # Reindex new content types
     reindex_new_content_types(portal)
+
+    # Setup ID Formatting for Storage content types
+    setup_id_formatting(portal)
 
     # Hide actions
     hide_actions(portal)
@@ -290,14 +312,14 @@ def update_workflow(portal, workflow_id, settings):
         logger.warn("Workflow '{}' not found [SKIP]".format(workflow_id))
     states = settings.get("states", {})
     for state_id, values in states.items():
-        update_workflow_state(portal, workflow, state_id, values)
+        update_workflow_state(workflow, state_id, values)
 
     transitions = settings.get("transitions", {})
     for transition_id, values in transitions.items():
-        update_workflow_transition(portal, workflow, transition_id, values)
+        update_workflow_transition(workflow, transition_id, values)
 
 
-def update_workflow_state(portal, workflow, status_id, settings):
+def update_workflow_state(workflow, status_id, settings):
     logger.info("Updating workflow '{}', status: '{}' ..."
                 .format(workflow.id, status_id))
 
@@ -318,10 +340,10 @@ def update_workflow_state(portal, workflow, status_id, settings):
     new_status.transitions = trans
 
     # Set permissions
-    update_workflow_state_permissions(portal, workflow, new_status, settings)
+    update_workflow_state_permissions(workflow, new_status, settings)
 
 
-def update_workflow_state_permissions(portal, workflow, status, settings):
+def update_workflow_state_permissions(workflow, status, settings):
     # Copy permissions from another state?
     permissions_copy_from = settings.get("permissions_copy_from", None)
     if permissions_copy_from:
@@ -350,7 +372,7 @@ def update_workflow_state_permissions(portal, workflow, status, settings):
         status.setPermission(permission_id, False, state_roles)
 
 
-def update_workflow_transition(portal, workflow, transition_id, settings):
+def update_workflow_transition(workflow, transition_id, settings):
     logger.info("Updating workflow '{}', transition: '{}'"
                 .format(workflow.id, transition_id))
     if transition_id not in workflow.transitions:
@@ -369,6 +391,42 @@ def update_workflow_transition(portal, workflow, transition_id, settings):
     guard_props = settings.get("guard", guard_props)
     guard.changeFromProperties(guard_props)
     transition.guard = guard
+
+
+def setup_id_formatting(portal, format=None):
+    """Setup default ID Formatting for storage content types
+    """
+    if not format:
+        logger.info("Setting up ID formatting ...")
+        for formatting in ID_FORMATTING:
+            setup_id_formatting(portal, format=formatting)
+        return
+
+    bs = portal.bika_setup
+    p_type = format.get("portal_type", None)
+    if not p_type:
+        return
+    id_map = bs.getIDFormatting()
+    id_format = filter(lambda id: id.get("portal_type", "") == p_type, id_map)
+    if id_format:
+        logger.info("ID Format for {} already set: '{}' [SKIP]"
+                    .format(p_type, id_format[0]["form"]))
+        return
+
+    form = format.get("form", "")
+    if not form:
+        logger.info("Param 'form' for portal type {} not set [SKIP")
+        return
+
+    logger.info("Applying format '{}' for {}".format(form, p_type))
+    ids = list()
+    for record in id_map:
+        if record.get('portal_type', '') == p_type:
+            continue
+        ids.append(record)
+    ids.append(format)
+    bs.setIDFormatting(ids)
+
 
 
 def create_test_data(portal):
