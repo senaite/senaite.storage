@@ -6,6 +6,8 @@
 
 import collections
 
+from bika.lims import api
+from bika.lims.api import get_icon
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.utils import get_link, get_progress_bar_html
 from senaite.storage import senaiteMessageFactory as _
@@ -26,7 +28,9 @@ class StorageListing(BikaListingView):
         self.columns = collections.OrderedDict((
             ("Title", {
                 "title": _("Name"),
-                "index": "sortable_index"}),
+                "index": "sortable_title"}),
+            ("Id", {
+                "title": _("ID")}),
             ("SamplesUsage", {
                 "title": _("% Samples"),}),
             ("Samples", {
@@ -62,6 +66,7 @@ class StorageListing(BikaListingView):
         row in the list
         """
         item["replace"]["Title"] = get_link(item["url"], item["Title"])
+        item["replace"]["Id"] = get_link(item["url"], api.get_id(obj))
 
         # Samples usage
         capacity = obj.get_samples_capacity()
@@ -70,5 +75,8 @@ class StorageListing(BikaListingView):
         item["replace"]["SamplesUsage"] = self.get_usage_bar_html(percentage)
         item["replace"]["Samples"] = "{:01d} / {:01d} ({:01d}%)"\
             .format(samples, capacity, percentage)
+
+        # Container types icons
+        item["before"]["Title"] = get_icon(obj)
 
         return item

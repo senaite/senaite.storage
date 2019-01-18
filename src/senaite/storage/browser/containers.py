@@ -35,6 +35,8 @@ class ContainersView(StorageListing):
             ("Title", {
                 "title": _("Name"),
                 "index": "sortable_index"}),
+            ("Id", {
+                "title": _("ID")}),
             ("Temperature", {
                 "title": _("Temperature"),}),
             ("SamplesUsage", {
