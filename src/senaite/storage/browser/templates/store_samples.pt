@@ -92,18 +92,18 @@
                             autocomplete="false"
                             class="blurrable firstToFocus referencewidget"
                             base_query='{
-                              "portal_type": "StorageSamplesContainer",
+                              "is_full": false,
                               "review_state": "active"
                             }'
                             search_query='{}'
-                            catalog_name="portal_catalog"
+                            catalog_name="senaite_storage_catalog"
                             combogrid_options='{
                               "colModel": [
                                 {"columnName": "id", "align": "left", "label": "Id", "width": "10"},
                                 {"columnName": "get_full_title", "align": "left", "label": "Container full path", "width": "90"},
                                 {"columnName": "UID", "hidden": true}],
-                              "search_fields": ["id"],
-                              "catalog_name": "portal_catalog",
+                              "search_fields": ["get_searchable_text"],
+                              "catalog_name": "senaite_storage_catalog",
                               "url": "referencewidget_search",
                               "discard_empty": [],
                               "showOn": true,
@@ -111,17 +111,16 @@
                               "minLength": "0",
                               "resetButton": true,
                               "sord": "asc",
-                              "sidx": "id",
+                              "sidx": "get_full_title",
                               "width": "700px",
-                              "force_all": false,
+                              "force_all": true,
                               "portal_types": {}}'
                           />
                           <input type="hidden"
                                  tal:attributes="id string:container.${sample/uid}_uid"
                                  name="samples.container_uid:records"
                                  value="" />
-        </div>
-
+                        </div>
                       </div>
                     </td>
                   </tr>

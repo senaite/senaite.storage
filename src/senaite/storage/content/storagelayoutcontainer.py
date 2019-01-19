@@ -105,6 +105,25 @@ class StorageLayoutContainer(ATFolder):
             return breadcrumbs
         return parent.get_full_title(breadcrumbs)
 
+    def get_all_ids(self):
+        """Returns the list of ids this container is contained in, the id of the
+        current container included. Used as an index for catalog searches
+        """
+        def feed_parent_ids(container, ids):
+            ids.append(container.getId())
+            if IStorageFacility.providedBy(container.aq_parent):
+                return ids
+            return feed_parent_ids(container.aq_parent, ids)
+        return feed_parent_ids(self, [])
+
+    def get_searchable_text(self):
+        """Returns a string containing terms for searches. Used as an index for
+        wide-range catalog searches
+        """
+        terms = self.get_all_ids()
+        terms.append(self.Title())
+        return ' '.join(terms)
+
     def setRows(self, value):
         self.getField('Rows').set(self, value)
         self.rebuild_layout()

@@ -52,7 +52,7 @@ class StorageSamplesContainer(StorageLayoutContainer):
         # to the previous one automatically (integrity-check)
         sample = api.get_object(object_brain_uid)
         wf.doActionFor(sample, "store")
-        self.reindexObject(idxs="get_samples_uids")
+        self.reindexObject(idxs=["get_samples_uids", "is_full"])
         return stored
 
     def remove_object(self, object_brain_uid, notify_parent=True):
@@ -69,7 +69,7 @@ class StorageSamplesContainer(StorageLayoutContainer):
         # the container being notified.
         sample = api.get_object(object_brain_uid)
         wf.doActionFor(sample, "recover")
-        self.reindexObject(idxs="get_samples_uids")
+        self.reindexObject(idxs=["get_samples_uids", "is_full"])
         return removed
 
     def get_samples_uids(self):

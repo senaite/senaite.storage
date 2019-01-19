@@ -6,6 +6,7 @@
 
 from Products.DCWorkflow.Guard import Guard
 from bika.lims import api
+from bika.lims.catalog.catalog_utilities import addZCTextIndex
 from bika.lims.permissions import AddAnalysis
 from bika.lims.permissions import AddAttachment
 from bika.lims.permissions import CancelAndReinstate
@@ -63,11 +64,24 @@ CATALOGS_BY_TYPE = [
 
 INDEXES = [
     # Tuples of (catalog, index_name, index_type)
-    (SENAITE_STORAGE_CATALOG, "get_samples_uids", "KeywordIndex")
+    # This index is required by reference_widget in searches
+    (SENAITE_STORAGE_CATALOG, "allowedRolesAndUsers", "KeywordIndex"),
+    # Ids of parent containers and current
+    (SENAITE_STORAGE_CATALOG, "get_all_ids", "KeywordIndex"),
+    # Keeps the sample uids stored in each sample container
+    (SENAITE_STORAGE_CATALOG, "get_samples_uids", "KeywordIndex"),
+    # For searches, made of get_all_ids + Title
+    (SENAITE_STORAGE_CATALOG, "get_searchable_text", "ZCTextIndex"),
+    # Index used in searches to filter sample containers with available slots
+    (SENAITE_STORAGE_CATALOG, "is_full", "BooleanIndex"),
+    (SENAITE_STORAGE_CATALOG, "review_state", "FieldIndex"),
 ]
 
 COLUMNS = [
     # Tuples of (catalog, column name)
+    (SENAITE_STORAGE_CATALOG, "Title"),
+    # To get the UID of the selected container in searches (reference widget)
+    (SENAITE_STORAGE_CATALOG, "UID")
 ]
 
 WORKFLOWS_TO_UPDATE = {
@@ -194,7 +208,10 @@ def setup_catalogs(portal):
 
         logger.info("Adding Index '%s' for field '%s' to catalog '%s"
                     % (meta_type, name, catalog))
-        c.addIndex(name, meta_type)
+        if meta_type == "ZCTextIndex":
+            addZCTextIndex(c, name)
+        else:
+            c.addIndex(name, meta_type)
         to_index.append((c, name))
         logger.info("Added Index '%s' for field '%s' to catalog [DONE]"
                     % (meta_type, name))
