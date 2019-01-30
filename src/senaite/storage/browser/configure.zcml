@@ -31,7 +31,7 @@
   <browser:page
       for="senaite.storage.interfaces.IStorageSamplesContainer"
       name="folder_view"
-      class=".containers.ContainersView"
+      class=".samples.SamplesListing"
       permission="bika.lims.ManageBika"
       layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
 
