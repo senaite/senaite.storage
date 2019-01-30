@@ -7,11 +7,10 @@
 import collections
 
 from bika.lims import api
-from bika.lims.api import get_icon
+from bika.lims import bikaMessageFactory as _s
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.catalog.analysisrequest_catalog import \
     CATALOG_ANALYSIS_REQUEST_LISTING
-from bika.lims.utils import get_link, get_progress_bar_html
 from senaite.storage import senaiteMessageFactory as _
 
 
@@ -21,7 +20,7 @@ class SamplesListing(BikaListingView):
 
     def __init__(self, context, request):
         super(SamplesListing, self).__init__(context, request)
-        request.set("disable_border", 1)
+        request.set("disable_sorder", 1)
         self.title = context.Title()
         self.form_id = "list_storage_samples"
         self.sort_on = "sortable_title"
@@ -36,33 +35,37 @@ class SamplesListing(BikaListingView):
         }
 
         self.columns = collections.OrderedDict((
+            ("position", {
+                "title": _("Position"),
+                "sortable": True,
+                "toggle": True}),
             ("getId", {
-                "title": _("Sample ID"),
+                "title": _s("Sample ID"),
                 "attr": "getId",
                 "replace_url": "getURL",
                 "index": "getId"}),
             ("getDateSampled", {
-                "title": _("Date Sampled"),
+                "title": _s("Date Sampled"),
                 "toggle": True}),
             ("getDateReceived", {
-                "title": _("Date Received"),
-                "toggle": False}),
+                "title": _s("Date Received"),
+                "toggle": True}),
             ("Client", {
-                "title": _("Client"),
+                "title": _s("Client"),
                 "index": "getClientTitle",
                 "attr": "getClientTitle",
                 "replace_url": "getClientURL",
                 "toggle": True}),
             ("getClientReference", {
-                "title": _("Client Ref"),
+                "title": _s("Client Ref"),
                 "sortable": True,
                 "index": "getClientReference",
                 "toggle": False}),
             ("getClientSampleID", {
-                "title": _("Client SID"),
+                "title": _s("Client SID"),
                 "toggle": False}),
             ("getSampleTypeTitle", {
-                "title": _("Sample Type"),
+                "title": _s("Sample Type"),
                 "sortable": True,
                 "toggle": True}),
         ))
@@ -71,7 +74,7 @@ class SamplesListing(BikaListingView):
             {
                 "id": "default",
                 "contentFilter": {},
-                "title": _("All"),
+                "title": _s("All"),
                 "transitions": [],
                 "columns": self.columns.keys(),
             },
@@ -91,7 +94,8 @@ class SamplesListing(BikaListingView):
     def folderitems(self, full_objects=False, classic=False):
         """We add this function to tell baselisting to use brains instead of
         full objects"""
-        return BikaListingView.folderitems(self, full_objects, classic)
+        items = BikaListingView.folderitems(self, full_objects, classic)
+        return sorted(items, key=lambda item: item["position"])
 
     def folderitem(self, obj, item, index):
         """Applies new properties to item that is currently being rendered as a
@@ -101,4 +105,6 @@ class SamplesListing(BikaListingView):
         sampled = obj.getDateSampled
         item["getDateReceived"] = self.ulocalized_time(received, long_format=1)
         item["getDateSampled"] = self.ulocalized_time(sampled, long_format=1)
+        position = self.context.get_object_position(api.get_uid(obj))
+        item["position"] = self.context.position_to_alpha(position[0], position[1])
         return item
