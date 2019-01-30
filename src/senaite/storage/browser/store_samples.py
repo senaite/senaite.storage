@@ -49,16 +49,18 @@ class StoreSamplesView(BaseView):
             for sample in form.get("samples", []):
                 sample_uid = sample.get("uid")
                 container_uid = sample.get("container_uid")
+                alpha_position = sample.get("container_position")
                 if not sample_uid or not container_uid:
                     continue
 
-                sample = self.get_object_by_uid(sample_uid)
+                sample_obj = self.get_object_by_uid(sample_uid)
                 container = self.get_object_by_uid(container_uid)
-                logger.info("Storing sample {} in {}".format(sample.getId(),
+                logger.info("Storing sample {} in {}".format(sample_obj.getId(),
                                                              container.getId()))
                 # Store
-                if container.add_object(sample):
-                    samples.append(sample)
+                position = container.alpha_to_position(alpha_position)
+                if container.add_object_at(sample_obj, position[0], position[1]):
+                    samples.append(sample_obj)
 
             message = _s("Stored {} samples: {}".format(
                 len(samples), ", ".join(map(api.get_title, samples))))

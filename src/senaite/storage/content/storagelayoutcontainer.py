@@ -4,14 +4,19 @@
 #
 # Copyright 2019 by it's authors.
 
+import string
+import math
+import re
 from Products.ATExtensions.ateapi import RecordsField
 from Products.ATExtensions.widget import RecordsWidget
-from Products.Archetypes.Field import IntegerField
+from Products.Archetypes.Field import IntegerField, ComputedField, LinesField
 from Products.Archetypes.Schema import Schema
-from Products.Archetypes.Widget import IntegerWidget
+from Products.Archetypes.Widget import IntegerWidget, ComputedWidget, \
+    LinesWidget
 from Products.validation.validators.ExpressionValidator import \
     ExpressionValidator
 from bika.lims import api
+from bika.lims import alphanumber
 from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims.idserver import renameAfterCreation
 from plone.app.folder.folder import ATFolder
@@ -76,10 +81,20 @@ PositionsLayout = RecordsField(
     )
 )
 
+AvailablePositions = LinesField(
+    name = "AvailablePositions",
+    required = 0,
+    subfields = ("row", "column"),
+    widget=LinesWidget(
+        visible = False
+    )
+)
+
 schema = BikaFolderSchema.copy() + Schema((
     Rows,
     Columns,
     PositionsLayout,
+    AvailablePositions,
 ))
 
 class StorageLayoutContainer(ATFolder):
@@ -138,6 +153,26 @@ class StorageLayoutContainer(ATFolder):
         return dict(row=row, column=column, uid="", samples_utilization=0,
                     samples_capacity=self.default_samples_capacity)
 
+    def position_to_alpha(self, row, column):
+        """Returns a position in alphanumeric format (e.g A01)
+        """
+        def n2a(n, b=string.ascii_uppercase):
+            d, m = divmod(n, len(b))
+            return n2a(d - 1, b) + b[m] if d else b[m]
+        alpha_part = n2a(row)
+        lead_zeros = len(str(self.getColumns())) - 1
+        num_part = "%0{}d".format(lead_zeros) % (column + 1)
+        return "{}{}".format(alpha_part, num_part)
+
+    def alpha_to_position(self, alpha):
+        """Converts an alphanumeric value to a position
+        """
+        num_columns = self.getColumns()
+        num = alphanumber.to_decimal(alpha, alphabet=string.ascii_uppercase)
+        col = (num - 1) % num_columns
+        row = int(math.floor(float(num - 1) / num_columns))
+        return (row, col)
+
     def rebuild_layout(self):
         """Rebuilds the layout with all positions
         """
@@ -149,6 +184,9 @@ class StorageLayoutContainer(ATFolder):
                 new_item = item and item.copy() or new_item
                 new_layout.append(new_item)
         self.getField("PositionsLayout").set(self, new_layout)
+        available = map(lambda el: self.position_to_alpha(el[0], el[1]),
+                        self.get_available_positions())
+        self.setAvailablePositions(available)
 
     def setPositionsLayout(self, values):
         self.getField("PositionsLayout").set(self, values)
@@ -190,7 +228,7 @@ class StorageLayoutContainer(ATFolder):
         return item.get("uid", "") and True or False
 
     def get_available_positions(self):
-        """Returns a list of tuples with available positions
+        """Returns a list of dics with available positions
         """
         els = filter(self.is_empty, self.getPositionsLayout())
         return map(lambda el: (el["row"], el["column"]), els)

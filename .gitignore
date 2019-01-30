@@ -79,3 +79,8 @@ coverage.xml
 .venv
 venv/
 ENV/
+
+# node
+node_modules
+package-lock.json
+*.lock

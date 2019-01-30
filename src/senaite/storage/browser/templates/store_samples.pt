@@ -7,9 +7,9 @@
     <metal:block fill-slot="javascript_head_slot"
                  tal:define="portal context/@@plone_portal_state/portal;">
       <script type="text/javascript"
-              tal:attributes="src string:${portal/absolute_url}/++resource++senaite.storage.static/js/storage_samples.js"></script>
-      <script type="text/javascript"
               tal:attributes="src string:${portal/absolute_url}/bika_widgets/referencewidget.js"></script>
+      <script type="text/javascript"
+              tal:attributes="src string:${portal/absolute_url}/++resource++senaite.storage.static/js/store_samples.js"></script>
     </metal:block>
     <metal:block fill-slot="style_slot"
                  tal:define="portal context/@@plone_portal_state/portal;">
@@ -86,7 +86,8 @@
                         <label i18n:translate="">Samples container</label>
                         <div class="form-group field ArchetypesReferenceWidget">
                           <input
-                            tal:attributes="name string:container.${sample/uid}"
+                            tal:attributes="name string:container.${sample/uid};
+                                            sample_uid string:${sample/uid}"
                             type="text"
                             ui_item="get_full_title"
                             autocomplete="false"
@@ -120,6 +121,14 @@
                                  tal:attributes="id string:container.${sample/uid}_uid"
                                  name="samples.container_uid:records"
                                  value="" />
+                        </div>
+                      </div>
+                      <div class="col-sm-6">
+                        <label i18n:translate="">Position</label>
+                        <div class="form-group">
+                          <select name="samples.container_position:records"
+                                  tal:attributes="id string:container_position.${sample/uid}_uid">
+                          </select>
                         </div>
                       </div>
                     </td>

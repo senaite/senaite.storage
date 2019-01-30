@@ -7,6 +7,8 @@
 from Products.Archetypes.Schema import Schema
 from Products.Archetypes.atapi import registerType
 from bika.lims import api
+from bika.lims.catalog.analysisrequest_catalog import \
+    CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.interfaces import IAnalysisRequest
 from senaite.storage import PRODUCT_NAME
 from senaite.storage.content.storagelayoutcontainer import \
@@ -77,5 +79,20 @@ class StorageSamplesContainer(StorageLayoutContainer):
         """
         uids = map(lambda item: item.get("uid", ""), self.getPositionsLayout())
         return filter(api.is_uid, uids)
+
+    # TODO Finish this (index and searches are still missing)
+    def get_sample_types_uids(self):
+        """Returns the uids of the samples types of the samples this container
+        contains, if any. This is mostly used for suggest searches with
+        ZCTextIndex, that gives a higher score when the term is found more than
+        once. Hence the list may contain duplicates
+        """
+        samples_uids = self.get_samples_uids()
+        if not samples_uids:
+            return []
+        query = dict(UID=samples_uids)
+        brains = api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
+        return map(lambda brain: brain.getSampleTypeUID, brains)
+
 
 registerType(StorageSamplesContainer, PRODUCT_NAME)
