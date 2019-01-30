@@ -1,6 +1,6 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
-    i18n_domain="senaite.core">
+    i18n_domain="senaite.storage">
 
   <!-- Modified a container. Updates capacity and usage to parent -->
   <subscriber
@@ -14,6 +14,13 @@
     for="senaite.storage.interfaces.IStorageLayoutContainer
          zope.lifecycleevent.interfaces.IObjectRemovedEvent"
     handler="senaite.storage.subscribers.StorageContentRemovedEventHandler"
+  />
+
+  <!-- Event handler for Sample's recover transition -->
+  <subscriber
+      for="bika.lims.interfaces.IAnalysisRequest
+           Products.DCWorkflow.interfaces.IAfterTransitionEvent"
+      handler=".sample.AfterTransitionSampleEventHandler"
   />
 
 </configure>

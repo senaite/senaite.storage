@@ -26,7 +26,7 @@ class SamplesListing(BikaListingView):
         self.sort_on = "sortable_title"
         self.show_select_row = False
         self.show_select_all_checkboxes = False
-        self.show_select_column = False
+        self.show_select_column = True
         self.catalog = CATALOG_ANALYSIS_REQUEST_LISTING
         self.contentFilter = {
             "UID": context.get_samples_uids(),
