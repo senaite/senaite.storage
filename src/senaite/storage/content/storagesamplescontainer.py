@@ -52,8 +52,8 @@ class StorageSamplesContainer(StorageLayoutContainer):
         # TODO check if the sample has a container assigned in BeforeTransition
         # If it does not have a container assigned, change the workflow state
         # to the previous one automatically (integrity-check)
-        sample = api.get_object(object_brain_uid)
         self.reindexObject(idxs=["get_samples_uids", "is_full"])
+        sample = api.get_object(object_brain_uid)
         wf.doActionFor(sample, "store")
         return stored
 
@@ -69,9 +69,9 @@ class StorageSamplesContainer(StorageLayoutContainer):
         # TODO Better to do this remove_object call from WF's AfterTransition
         # Otherwise, transition can be triggered through DC Workflow without
         # the container being notified.
+        self.reindexObject(idxs=["get_samples_uids", "is_full"])
         sample = api.get_object(object_brain_uid)
         wf.doActionFor(sample, "recover")
-        self.reindexObject(idxs=["get_samples_uids", "is_full"])
         return removed
 
     def get_samples_uids(self):

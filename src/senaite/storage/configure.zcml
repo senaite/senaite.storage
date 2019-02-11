@@ -18,6 +18,7 @@
   <include package=".browser"/>
   <include package=".monkeys"/>
   <include package=".subscribers"/>
+  <include package=".workflow"/>
 
   <!-- Static resource directory -->
   <browser:resourceDirectory
