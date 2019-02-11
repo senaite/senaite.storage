@@ -50,7 +50,7 @@ class StoreSamplesView(BaseView):
                 sample_uid = sample.get("uid")
                 container_uid = sample.get("container_uid")
                 alpha_position = sample.get("container_position")
-                if not sample_uid or not container_uid:
+                if not sample_uid or not container_uid or not alpha_position:
                     continue
 
                 sample_obj = self.get_object_by_uid(sample_uid)
