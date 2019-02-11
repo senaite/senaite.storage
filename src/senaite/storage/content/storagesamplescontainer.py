@@ -53,8 +53,8 @@ class StorageSamplesContainer(StorageLayoutContainer):
         # If it does not have a container assigned, change the workflow state
         # to the previous one automatically (integrity-check)
         sample = api.get_object(object_brain_uid)
-        wf.doActionFor(sample, "store")
         self.reindexObject(idxs=["get_samples_uids", "is_full"])
+        wf.doActionFor(sample, "store")
         return stored
 
     def remove_object(self, object_brain_uid, notify_parent=True):

@@ -5,11 +5,10 @@
 # Copyright 2019 by it's authors.
 
 from bika.lims import api
+from bika.lims import workflow as wf
 from bika.lims.browser.analysisrequest.workflow import \
     AnalysisRequestWorkflowAction as CoreWorkflowAction
 from senaite.storage import senaiteMessageFactory as _
-from senaite.storage.catalog import SENAITE_STORAGE_CATALOG
-from senaite.storage import logger
 
 
 def get_storage_view_url(back_url, uids):
@@ -18,25 +17,6 @@ def get_storage_view_url(back_url, uids):
     if isinstance(uids, basestring):
         uids = uids.split(",")
     return "{}/storage_store_samples?uids={}".format(back_url, ",".join(uids))
-
-
-def get_storage_sample(sample_obj_brain_or_uid):
-    """Returns the storage container the sample passed in is stored in
-    """
-    query = dict(portal_type="StorageSamplesContainer",
-                 get_samples_uids=[api.get_uid(sample_obj_brain_or_uid)])
-    brains = api.search(query, SENAITE_STORAGE_CATALOG)
-    return brains and api.get_object(brains[0]) or None
-
-
-def recover_sample(sample):
-    """Unassings the sample from its storage container and "recover"
-    """
-    container = get_storage_sample(api.get_uid(sample))
-    if not container:
-        logger.warn("Container for Sample {} not found".format(sample.getId()))
-        return False
-    return container.remove_object(sample)
 
 
 class AnalysisRequestWorkflowAction(CoreWorkflowAction):
@@ -54,7 +34,8 @@ class AnalysisRequestWorkflowAction(CoreWorkflowAction):
         """Function called when transition "recover" is fired from the Analysis
         Request view
         """
-        if recover_sample(self.context):
+        success = wf.doActionFor(self.context, "recover")
+        if success[0]:
             self.redirect(message=_("Sample recovered"))
         self.redirect(message=_("Cannot recover the sample"), level="error")
 
@@ -87,8 +68,9 @@ class AnalysisRequestsWorkflowAction(CoreWorkflowAction):
         processed = []
         for sample_uid in uids:
             sample = api.get_object(sample_uid)
-            if recover_sample(sample):
-                processed.append(sample.getId())
+            success = wf.doActionFor(sample, "recover")
+            if success[0]:
+                processed.append(api.get_id(sample))
 
         if not processed:
             message = _("Unable to recover the samples")

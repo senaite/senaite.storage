@@ -25,7 +25,7 @@ import random
 
 from senaite.storage.catalog import SENAITE_STORAGE_CATALOG
 
-CREATE_TEST_DATA = False
+CREATE_TEST_DATA = True
 CREATE_TEST_DATA_RANDOM = False
 
 ACTIONS_TO_HIDE = [

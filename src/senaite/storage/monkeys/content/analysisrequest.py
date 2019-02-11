@@ -1,6 +1,6 @@
 from bika.lims import api
 from bika.lims import workflow as wf
-from senaite.storage.catalog import SENAITE_STORAGE_CATALOG
+from senaite.storage import api as _api
 
 
 def getDateStored(self):
@@ -12,10 +12,7 @@ def getDateStored(self):
 def getSamplesContainer(self):
     """Returns the samples container the sample is located in
     """
-    query = dict(portal_type="SamplesContainer",
-                 get_samples_uids=api.get_uid(self))
-    brains = api.search(query, SENAITE_STORAGE_CATALOG)
-    return brains and api.get_object(brains[0]) or None
+    return _api.get_storage_sample(self)
 
 
 def getSamplesContainerID(self):
