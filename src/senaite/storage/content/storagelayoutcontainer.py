@@ -302,7 +302,10 @@ class StorageLayoutContainer(ATFolder):
         """Returns the first empty position of the layout as a tuple (row, col)
         If there are no empty positions, returns None
         """
-        return min(self.get_available_positions()) or None
+        available_positions = self.get_available_positions()
+        if not available_positions:
+            return None
+        return min(available_positions)
 
     def get_minimum_size(self):
         """Returns a tuple (rows, columns) that represents the minimum size this
