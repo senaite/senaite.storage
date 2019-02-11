@@ -4,10 +4,12 @@
 #
 # Copyright 2019 by it's authors.
 
+import plone
 from bika.lims import api
 from bika.lims import workflow as wf
 from bika.lims.browser.analysisrequest.workflow import \
     AnalysisRequestWorkflowAction as CoreWorkflowAction
+from bika.lims.browser.bika_listing import WorkflowAction
 from senaite.storage import senaiteMessageFactory as _
 
 

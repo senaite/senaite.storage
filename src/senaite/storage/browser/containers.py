@@ -22,6 +22,7 @@ class ContainersView(StorageListing):
         super(ContainersView, self).__init__(context, request)
         self.title = context.Title()
         self.form_id = "list_storage_containers"
+        self.show_select_column = True
         self.contentFilter = {
             "sort_on": "sortable_title",
             "sort_order": "ascending",
@@ -49,15 +50,15 @@ class ContainersView(StorageListing):
                 "title": _("Containers usage"),}),
         ))
 
-        self.review_states = [
-            {
+        self.review_states = [{
                 "id": "default",
                 "contentFilter": {"review_state": "active"},
                 "title": _("Active"),
                 "transitions": [],
+                "confirm_transitions": ["recover_samples"],
                 "columns": self.columns.keys(),
-            },
-        ]
+            },]
+
         imgs_path = "++resource++senaite.storage.static/img"
         icon_name = "container_big.png"
         if IStorageFacility.providedBy(self.context):

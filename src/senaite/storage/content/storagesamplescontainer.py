@@ -74,11 +74,26 @@ class StorageSamplesContainer(StorageLayoutContainer):
         wf.doActionFor(sample, "recover")
         return removed
 
+    def has_samples(self):
+        """Returns whether this sample container contains samples or not
+        """
+        return len(self.get_samples_uids()) > 0
+
     def get_samples_uids(self):
         """Returns the uids of the samples this container contains
         """
         uids = map(lambda item: item.get("uid", ""), self.getPositionsLayout())
         return filter(api.is_uid, uids)
+
+    def get_samples(self, as_brains=False):
+        samples_uids = self.get_samples_uids()
+        if not samples_uids:
+            return []
+        query = dict(portal_type="AnalysisRequest", UID=samples_uids)
+        brains = api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
+        if as_brains:
+            return brains
+        return map(api.get_object, brains)
 
     # TODO Finish this (index and searches are still missing)
     def get_sample_types_uids(self):
