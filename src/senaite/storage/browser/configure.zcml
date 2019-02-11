@@ -5,59 +5,79 @@
 
   <!-- Listing view of facilities for storage -->
   <browser:page
-      for="senaite.storage.interfaces.IStorageRootFolder"
-      name="folder_view"
-      class=".storagerootfolder.StorageRootFolderContentsView"
-      permission="bika.lims.ManageBika"
-      layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
+    for="senaite.storage.interfaces.IStorageRootFolder"
+    name="folder_view"
+    class=".storagerootfolder.StorageRootFolderContentsView"
+    permission="bika.lims.ManageBika"
+    layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
 
   <!-- Listing view of containers from a storage facility -->
   <browser:page
-      for="senaite.storage.interfaces.IStorageFacility"
-      name="folder_view"
-      class=".containers.ContainersView"
-      permission="bika.lims.ManageBika"
-      layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
+    for="senaite.storage.interfaces.IStorageFacility"
+    name="folder_view"
+    class=".containers.ContainersView"
+    permission="bika.lims.ManageBika"
+    layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
 
   <!-- Listing view of containers from a container -->
   <browser:page
-      for="senaite.storage.interfaces.IStorageContainer"
-      name="folder_view"
-      class=".containers.ContainersView"
-      permission="bika.lims.ManageBika"
-      layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
+    for="senaite.storage.interfaces.IStorageContainer"
+    name="folder_view"
+    class=".containers.ContainersView"
+    permission="bika.lims.ManageBika"
+    layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
 
   <!-- Listing view of samples from a samples container -->
   <browser:page
-      for="senaite.storage.interfaces.IStorageSamplesContainer"
-      name="folder_view"
-      class=".samples.SamplesListing"
-      permission="bika.lims.ManageBika"
-      layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
+    for="senaite.storage.interfaces.IStorageSamplesContainer"
+    name="folder_view"
+    class=".samples.SamplesListing"
+    permission="bika.lims.ManageBika"
+    layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
 
   <!-- Store Samples View -->
   <browser:page
-      for="*"
-      name="storage_store_samples"
-      class=".store_samples.StoreSamplesView"
-      permission="bika.lims.ManageAnalysisRequests"
-      layer="senaite.storage.interfaces.ISenaiteStorageLayer"
-  />
+    for="*"
+    name="storage_store_samples"
+    class=".store_samples.StoreSamplesView"
+    permission="bika.lims.ManageAnalysisRequests"
+    layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
+
+  <!-- Samples view with additional filters and columns -->
+  <subscriber
+    for="bika.lims.browser.analysisrequest.AnalysisRequestsView
+         bika.lims.interfaces.IAnalysisRequestsFolder"
+    provides="senaite.core.listing.interfaces.IListingViewAdapter"
+    factory=".analysisrequests.AnalysisRequestsListingViewAdapter" />
+
+  <!-- Client Samples view with additional filters and columns -->
+  <subscriber
+    for="bika.lims.browser.analysisrequest.AnalysisRequestsView
+         bika.lims.interfaces.IClient"
+    provides="senaite.core.listing.interfaces.IListingViewAdapter"
+    factory=".analysisrequests.AnalysisRequestsListingViewAdapter" />
+
+  <!-- Batch Samples view with additional filters and columns -->
+  <subscriber
+    for="bika.lims.browser.analysisrequest.AnalysisRequestsView
+         bika.lims.interfaces.IBatch"
+    provides="senaite.core.listing.interfaces.IListingViewAdapter"
+    factory=".analysisrequests.AnalysisRequestsListingViewAdapter" />
 
   <!-- Workflow action button clicked inside Analysis Request -->
   <browser:page
-      for="bika.lims.interfaces.IAnalysisRequest"
-      name="workflow_action"
-      class=".workflow.AnalysisRequestWorkflowAction"
-      permission="zope.Public"
-      layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
+    for="bika.lims.interfaces.IAnalysisRequest"
+    name="workflow_action"
+    class=".workflow.AnalysisRequestWorkflowAction"
+    permission="zope.Public"
+    layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
 
   <!-- Workflow action button clicked in Analysis Request listings -->
   <browser:page
-      for="bika.lims.interfaces.IAnalysisRequestsFolder"
-      name="workflow_action"
-      class=".workflow.AnalysisRequestsWorkflowAction"
-      permission="zope.Public"
-      layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
+    for="bika.lims.interfaces.IAnalysisRequestsFolder"
+    name="workflow_action"
+    class=".workflow.AnalysisRequestsWorkflowAction"
+    permission="zope.Public"
+    layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
 
 </configure>

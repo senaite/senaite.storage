@@ -6,6 +6,8 @@
 
 from Products.DCWorkflow.Guard import Guard
 from bika.lims import api
+from bika.lims.catalog.analysisrequest_catalog import \
+    CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog.catalog_utilities import addZCTextIndex
 from bika.lims.permissions import AddAnalysis
 from bika.lims.permissions import AddAttachment
@@ -75,13 +77,20 @@ INDEXES = [
     # Index used in searches to filter sample containers with available slots
     (SENAITE_STORAGE_CATALOG, "is_full", "BooleanIndex"),
     (SENAITE_STORAGE_CATALOG, "review_state", "FieldIndex"),
+    # Index used in ARs view to sort items by date stored by default
+    (CATALOG_ANALYSIS_REQUEST_LISTING, "getDateStored", "DateIndex"),
 ]
 
 COLUMNS = [
     # Tuples of (catalog, column name)
     (SENAITE_STORAGE_CATALOG, "Title"),
     # To get the UID of the selected container in searches (reference widget)
-    (SENAITE_STORAGE_CATALOG, "UID")
+    (SENAITE_STORAGE_CATALOG, "UID"),
+    # To display the column Date Stored in AR listings
+    (CATALOG_ANALYSIS_REQUEST_LISTING, "getDateStored"),
+    # To display the Container where the Sample is located in listings
+    (CATALOG_ANALYSIS_REQUEST_LISTING, "getSamplesContainerURL"),
+    (CATALOG_ANALYSIS_REQUEST_LISTING, "getSamplesContainerID")
 ]
 
 WORKFLOWS_TO_UPDATE = {

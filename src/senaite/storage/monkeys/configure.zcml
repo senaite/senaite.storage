@@ -1,0 +1,27 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:monkey="http://namespaces.plone.org/monkey"
+    i18n_domain="senaite.storage">
+
+  <monkey:patch
+    description="The date the Sample was stored"
+    class="bika.lims.content.analysisrequest.AnalysisRequest"
+    original="getDateStored"
+    ignoreOriginal="True"
+    replacement=".content.analysisrequest.getDateStored" />
+
+  <monkey:patch
+    description="The container ID where the sample is stored"
+    class="bika.lims.content.analysisrequest.AnalysisRequest"
+    original="getSamplesContainerID"
+    ignoreOriginal="True"
+    replacement=".content.analysisrequest.getSamplesContainerID" />
+
+  <monkey:patch
+    description="The container URL where the sample is stored"
+    class="bika.lims.content.analysisrequest.AnalysisRequest"
+    original="getSamplesContainerURL"
+    ignoreOriginal="True"
+    replacement=".content.analysisrequest.getSamplesContainerURL" />
+
+</configure>
