@@ -399,7 +399,7 @@ def update_workflow_transition(workflow, transition_id, settings):
         title=settings.get("title"),
         new_state_id=settings.get("new_state"),
         after_script_name=settings.get("after_script", ""),
-        actbox_name=settings.get("action", "")
+        actbox_name=settings.get("action", settings.get("title"))
     )
     guard = transition.guard or Guard()
     guard_props = {"guard_permissions": "",
