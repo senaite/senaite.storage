@@ -114,5 +114,10 @@ Screenshots
    :width: 760px
    :align: center
 
+.. image:: https://raw.githubusercontent.com/senaite/senaite.storage/master/static/samples_assignment_to_multiple.png
+   :alt: Assignment of samples to multiple containers
+   :width: 760px
+   :align: center
+
 .. _Plone 4: https://docs.plone.org/4/en/manage/installing/index.html
 .. _senaite.lims: https://github.com/senaite/senaite.lims#installation
