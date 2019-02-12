@@ -4,20 +4,17 @@
 #
 # Copyright 2019 by it's authors.
 
-from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from senaite.storage import logger
 from senaite.storage import senaiteMessageFactory as _s
-import collections
 
 from senaite.storage.browser import BaseView
-from senaite.storage.interfaces import IStorageFacility
 
 
 class StoreSamplesView(BaseView):
-    """Store Samples view
+    """Store Samples view. Allows to store preselected samples to containers
     """
     template = ViewPageTemplateFile("templates/store_samples.pt")
 

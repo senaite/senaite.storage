@@ -153,13 +153,19 @@ class StorageLayoutContainer(ATFolder):
         return dict(row=row, column=column, uid="", samples_utilization=0,
                     samples_capacity=self.default_samples_capacity)
 
+    def get_alpha_row(self, row):
+        """Returns the alpha part for the passed in row
+        """
+        alphabet = string.ascii_uppercase
+        num, idx = divmod(row, len(alphabet))
+        if num:
+            return self.get_alpha_column(num - 1) + alphabet[idx]
+        return alphabet[idx]
+
     def position_to_alpha(self, row, column):
         """Returns a position in alphanumeric format (e.g A01)
         """
-        def n2a(n, b=string.ascii_uppercase):
-            d, m = divmod(n, len(b))
-            return n2a(d - 1, b) + b[m] if d else b[m]
-        alpha_part = n2a(row)
+        alpha_part = self.get_alpha_row(row)
         lead_zeros = len(str(self.getColumns())) - 1
         num_part = "%0{}d".format(lead_zeros) % (column + 1)
         return "{}{}".format(alpha_part, num_part)
@@ -167,11 +173,23 @@ class StorageLayoutContainer(ATFolder):
     def alpha_to_position(self, alpha):
         """Converts an alphanumeric value to a position
         """
-        num_columns = self.getColumns()
-        num = alphanumber.to_decimal(alpha, alphabet=string.ascii_uppercase)
-        col = (num - 1) % num_columns
-        row = int(math.floor(float(num - 1) / num_columns))
-        return (row, col)
+        alphabet = string.ascii_uppercase
+        regex = re.compile(r"([A-Z]+)(\d+)", re.IGNORECASE)
+        matches = re.findall(regex, alpha)
+        alpha_part = matches[0][0]
+        column = api.to_int(matches[0][1]) - 1
+        row = 0
+        mapping = map(lambda val: alphabet.index(val), alpha_part)
+        for idx in range(len(mapping)):
+            row += idx * len(alphabet) + mapping[idx]
+        return (row, column)
+
+    def get_absolute_position(self, row, column):
+        """Returns the absolute position for the row and column passed in
+        """
+        if not self.is_valid_position(row, column):
+            return -1
+        return row * self.getColumns() + column + 1
 
     def rebuild_layout(self):
         """Rebuilds the layout with all positions

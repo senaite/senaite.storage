@@ -86,7 +86,7 @@ class SamplesListing(BikaListingView):
             uid = api.get_uid(context)
             self.context_actions = collections.OrderedDict()
             self.context_actions[_("Add Samples")] = {
-                "url": "storage_store_samplescontainer?uid={}".format(uid),
+                "url": "storage_store_container?uids={}".format(uid),
                 "icon": "{}/{}".format(
                     self.portal_url, "/++resource++bika.lims.images/sample.png")
             }

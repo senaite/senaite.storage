@@ -18,11 +18,17 @@ class BaseView(BrowserView):
     def get_objects_from_request(self):
         """Returns a list of objects coming from the "uids" request parameter
         """
+        unique_uids = self.get_uids_from_request()
+        return filter(None, map(self.get_object_by_uid, unique_uids))
+
+    def get_uids_from_request(self):
+        """Return a list of uids from the request
+        """
         uids = self.request.form.get("uids", "")
         if isinstance(uids, basestring):
             uids = uids.split(",")
         unique_uids = collections.OrderedDict().fromkeys(uids).keys()
-        return filter(None, map(self.get_object_by_uid, unique_uids))
+        return unique_uids
 
     def get_object_by_uid(self, uid):
         """Get the object by UID
@@ -32,7 +38,6 @@ class BaseView(BrowserView):
         if obj is None:
             logger.warn("!! No object found for UID #{} !!")
         return obj
-
 
     def redirect(self, redirect_url=None, message=None, level="info"):
         """Redirect with a message

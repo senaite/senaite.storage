@@ -22,11 +22,12 @@
   <!-- doesn't check whether you have the right to view the objects listed. -->
   <permission>List folder contents</permission>
 
-  <!-- This governs whether the user can recover all samples at once -->
+  <!-- This governs whether the user can add all samples at once -->
   <permission>Storage: Recover all samples</permission>
 
   <!-- State: active -->
   <state state_id="active" title="Active" i18n:attributes="title">
+    <exit-transition transition_id="add_samples" />
     <exit-transition transition_id="recover_samples" />
     <!-- Delete objects -->
     <permission-map name="Delete objects" acquired="False">
@@ -67,6 +68,16 @@
     </permission-map>
   </state>
 
+  <!-- Transition: add_samples -->
+  <transition transition_id="add_samples" title="Add samples"
+              new_state="active" trigger="USER" before_script="" after_script=""
+              i18n:attributes="title">
+    <action url="" category="workflow" icon="">Add samples</action>
+    <guard>
+      <guard-expression>python:here.guard_add_samples()</guard-expression>
+    </guard>
+  </transition>
+
   <!-- Transition: recover_samples -->
   <transition transition_id="recover_samples" title="Recover samples"
               new_state="active" trigger="USER" before_script="" after_script=""
@@ -77,6 +88,7 @@
       <guard-expression>python:here.guard_recover_samples()</guard-expression>
     </guard>
   </transition>
+
 
   <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">
     <description>Previous transition</description>

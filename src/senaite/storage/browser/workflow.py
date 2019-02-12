@@ -4,7 +4,6 @@
 #
 # Copyright 2019 by it's authors.
 
-import plone
 from bika.lims import api
 from bika.lims import workflow as wf
 from bika.lims.browser.analysisrequest.workflow import \
@@ -19,6 +18,14 @@ def get_storage_view_url(back_url, uids):
     if isinstance(uids, basestring):
         uids = uids.split(",")
     return "{}/storage_store_samples?uids={}".format(back_url, ",".join(uids))
+
+
+def get_samples_add_url(back_url, uids):
+    """Returns a well formatted url for the Storage samples selector view
+    """
+    if isinstance(uids, basestring):
+        uids = uids.split(",")
+    return "{}/storage_store_container?uids={}".format(back_url, ",".join(uids))
 
 
 class AnalysisRequestWorkflowAction(CoreWorkflowAction):
@@ -80,3 +87,20 @@ class AnalysisRequestsWorkflowAction(CoreWorkflowAction):
 
         message = _("Samples recovered: {}").format(','.join(processed))
         self.redirect(message=message)
+
+
+class StorageContainersWorkflowAction(WorkflowAction):
+    """Actions taken in Storage Container listings
+    """
+
+    def workflow_action_add_samples(self):
+        """Function called when transition "add samples" is fired from Storage
+        Containers listing view, in which 0 or more Samples Containers have
+        been selected. Redirects the user to the samples selector view
+        """
+        uids = self.get_selected_uids()
+        if not uids:
+            self.redirect(message=_("No items selected"), level="error")
+
+        url = get_samples_add_url(self.back_url, uids)
+        self.redirect(redirect_url=url)

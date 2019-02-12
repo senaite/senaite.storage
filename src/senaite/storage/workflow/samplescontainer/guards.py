@@ -16,3 +16,12 @@ def guard_recover_samples(samples_container):
     if not IStorageSamplesContainer.providedBy(samples_container):
         return False
     return samples_container.has_samples()
+
+
+@security.public
+def guard_add_samples(samples_container):
+    """Guard for adding samples to this container
+    """
+    if not IStorageSamplesContainer.providedBy(samples_container):
+        return False
+    return not samples_container.is_full()
