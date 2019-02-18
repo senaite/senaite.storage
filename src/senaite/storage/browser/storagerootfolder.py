@@ -56,7 +56,8 @@ class StorageRootFolderContentsView(StorageListing):
             },
         ]
 
-        self.context_actions[_("Add")] = {
+        # Add Facility button
+        self.context_actions[_("Add Facility")] = {
             "url": "createObject?type_name=StorageFacility",
             "icon": "++resource++bika.lims.images/add.png"
         }

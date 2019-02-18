@@ -28,7 +28,8 @@
     <!-- Description -->
     <metal:description fill-slot="content-description">
       <tal:desc define="container python:view.get_container()">
-        <h3 tal:content="python: container.get_full_title()"></h3>
+        <h3 tal:content="python: container.get_full_title()"
+            tal:condition="python: container != view.context"></h3>
         <h4>
           <span i18n:translate="">Available positions: </span>
           <span tal:define="used python: container.get_samples_utilization();

@@ -29,7 +29,18 @@
           action_id="view"
           category="object"
           condition_expr=""
-          url_expr="string:${object_url}/view"
+          url_expr="string:${object_url}"
+          i18n:attributes="title"
+          i18n:domain="plone"
+          visible="True">
+    <permission value="View"/>
+  </action>
+
+  <action title="Layout view"
+          action_id="view"
+          category="object"
+          condition_expr=""
+          url_expr="string:${object_url}/storage_store_container"
           i18n:attributes="title"
           i18n:domain="plone"
           visible="True">

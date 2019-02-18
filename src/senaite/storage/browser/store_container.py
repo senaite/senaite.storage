@@ -35,7 +35,8 @@ class StoreContainerView(BaseView):
             return self.container
         request_uids = self.get_uids_from_request()
         if not request_uids:
-            self.container = None
+            if IStorageSamplesContainer.providedBy(self.context):
+                self.container = self.context
         else:
             self.container = api.get_object_by_uid(request_uids[0])
         return self.container

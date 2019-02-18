@@ -28,7 +28,7 @@ class BaseView(BrowserView):
         if isinstance(uids, basestring):
             uids = uids.split(",")
         unique_uids = collections.OrderedDict().fromkeys(uids).keys()
-        return unique_uids
+        return filter(api.is_uid, unique_uids)
 
     def get_object_by_uid(self, uid):
         """Get the object by UID

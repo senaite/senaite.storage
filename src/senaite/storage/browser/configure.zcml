@@ -3,6 +3,9 @@
     xmlns:browser="http://namespaces.zope.org/browser"
     i18n_domain="senaite.storage">
 
+  <!-- Include child packages -->
+  <include package=".workflow"/>
+
   <!-- Listing view of facilities for storage -->
   <browser:page
     for="senaite.storage.interfaces.IStorageRootFolder"
@@ -35,7 +38,9 @@
     permission="bika.lims.ManageBika"
     layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
 
-  <!-- Store Samples View: Set containers to preselected samples -->
+  <!--
+  Set containers to preselected samples
+  -->
   <browser:page
     for="*"
     name="storage_store_samples"
@@ -43,7 +48,9 @@
     permission="bika.lims.ManageAnalysisRequests"
     layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
 
-  <!-- Store Containers View: Add samples to a preselected container -->
+  <!--
+  Add samples to a preselected container
+  -->
   <browser:page
     for="*"
     name="storage_store_container"
@@ -51,49 +58,23 @@
     permission="bika.lims.ManageAnalysisRequests"
     layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
 
-  <!-- Samples view with additional filters and columns -->
+  <!--
+  Samples view with additional filters and columns
+  -->
   <subscriber
     for="bika.lims.browser.analysisrequest.AnalysisRequestsView
          bika.lims.interfaces.IAnalysisRequestsFolder"
     provides="senaite.core.listing.interfaces.IListingViewAdapter"
     factory=".analysisrequests.AnalysisRequestsListingViewAdapter" />
-
-  <!-- Client Samples view with additional filters and columns -->
   <subscriber
     for="bika.lims.browser.analysisrequest.AnalysisRequestsView
          bika.lims.interfaces.IClient"
     provides="senaite.core.listing.interfaces.IListingViewAdapter"
     factory=".analysisrequests.AnalysisRequestsListingViewAdapter" />
-
-  <!-- Batch Samples view with additional filters and columns -->
   <subscriber
     for="bika.lims.browser.analysisrequest.AnalysisRequestsView
          bika.lims.interfaces.IBatch"
     provides="senaite.core.listing.interfaces.IListingViewAdapter"
     factory=".analysisrequests.AnalysisRequestsListingViewAdapter" />
-
-  <!-- Workflow action button clicked inside Analysis Request -->
-  <browser:page
-    for="bika.lims.interfaces.IAnalysisRequest"
-    name="workflow_action"
-    class=".workflow.AnalysisRequestWorkflowAction"
-    permission="zope.Public"
-    layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
-
-  <!-- Workflow action button clicked in Analysis Request listings -->
-  <browser:page
-    for="bika.lims.interfaces.IAnalysisRequestsFolder"
-    name="workflow_action"
-    class=".workflow.AnalysisRequestsWorkflowAction"
-    permission="zope.Public"
-    layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
-
-  <!-- Workflow action button clicked in Samples Container listing -->
-  <browser:page
-    for="senaite.storage.interfaces.IStorageContainer"
-    name="workflow_action"
-    class=".workflow.StorageContainersWorkflowAction"
-    permission="zope.Public"
-    layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
 
 </configure>
