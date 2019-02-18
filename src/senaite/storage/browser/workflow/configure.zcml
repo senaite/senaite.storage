@@ -1,0 +1,34 @@
+<configure
+  xmlns="http://namespaces.zope.org/zope"
+  i18n_domain="senaite.storage">
+
+  <!-- Analysis Requests: "store"
+  Note this applies wide, cause at the moment, this action only exists
+  for Analysis Requests and we always want this adapter to be in charge,
+  regardless of the context (Analysis Requests listing, Client folder, etc.) -->
+  <adapter
+    name="workflow_action_store"
+    for="*
+         zope.publisher.interfaces.browser.IBrowserRequest"
+    factory=".analysisrequest.WorkflowActionStoreAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="zope.Public" />
+
+  <!-- Storage container listing: "add_samples" -->
+  <adapter
+    name="workflow_action_add_samples"
+    for="senaite.storage.interfaces.IStorageContainer
+         zope.publisher.interfaces.browser.IBrowserRequest"
+    factory=".storagecontainer.WorkflowActionAddSamplesAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="zope.Public" />
+  <!-- Storage samples container view: "add_samples" -->
+  <adapter
+    name="workflow_action_add_samples"
+    for="senaite.storage.interfaces.IStorageSamplesContainer
+         zope.publisher.interfaces.browser.IBrowserRequest"
+    factory=".storagecontainer.WorkflowActionAddSamplesAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="zope.Public" />
+
+</configure>
