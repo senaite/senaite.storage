@@ -6,17 +6,17 @@
 
 from Products.Archetypes.Schema import Schema
 from Products.Archetypes.atapi import registerType
-from bika.lims import api
+from bika.lims import workflow as wf
 from bika.lims.catalog.analysisrequest_catalog import \
     CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.interfaces import IAnalysisRequest
 from senaite.storage import PRODUCT_NAME
+from senaite.storage import api
 from senaite.storage.content.storagelayoutcontainer import \
     StorageLayoutContainer
 from senaite.storage.content.storagelayoutcontainer import schema
 from senaite.storage.interfaces import IStorageSamplesContainer
 from zope.interface import implements
-from bika.lims import workflow as wf
 
 schema = schema.copy() + Schema((
 ))
@@ -40,11 +40,23 @@ class StorageSamplesContainer(StorageLayoutContainer):
         return IAnalysisRequest.providedBy(obj)
 
     def add_object_at(self, object_brain_uid, row, column):
-        """Adds an object to the specified position. If an object already exists
-        at the given position, return False. Otherwise, return True
+        """Adds an sample to the specified position. If the sample is a primary
+        (contains partitions) or the sample is a partition, it creates a new
+        partition with no analyses and store this partition instead.
+        If an object already exists at the given position, return False.
+        Otherwise, return True
         """
-        stored = super(StorageSamplesContainer, self).add_object_at(
-            object_brain_uid, row, column)
+        if not self.can_add_object(object_brain_uid, row, column):
+            return False
+
+        sample = api.get_object(object_brain_uid)
+        if sample.isPartition() or sample.getDescendants():
+            # If the sample is a partition or contains partitions, we need to
+            # create a specific partition for storage, without analyses
+            sample = api.create_partition_for_storage(sample)
+
+        stored = super(StorageSamplesContainer, self).add_object_at(sample,
+                                                                    row, column)
         if not stored:
             return False
 
@@ -53,7 +65,7 @@ class StorageSamplesContainer(StorageLayoutContainer):
         # If it does not have a container assigned, change the workflow state
         # to the previous one automatically (integrity-check)
         self.reindexObject(idxs=["get_samples_uids", "is_full"])
-        sample = api.get_object(object_brain_uid)
+        sample = api.get_object(sample)
         wf.doActionFor(sample, "store")
         return stored
 

@@ -56,8 +56,11 @@ class StoreSamplesView(BaseView):
                                                              container.getId()))
                 # Store
                 position = container.alpha_to_position(alpha_position)
-                if container.add_object_at(sample_obj, position[0], position[1]):
-                    samples.append(sample_obj)
+                stored = container.add_object_at(sample_obj, position[0],
+                                                 position[1])
+                if stored:
+                    stored = container.get_object_at(position[0], position[1])
+                    samples.append(stored)
 
             message = _s("Stored {} samples: {}".format(
                 len(samples), ", ".join(map(api.get_title, samples))))
