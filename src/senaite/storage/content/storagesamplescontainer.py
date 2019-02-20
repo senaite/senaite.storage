@@ -40,21 +40,13 @@ class StorageSamplesContainer(StorageLayoutContainer):
         return IAnalysisRequest.providedBy(obj)
 
     def add_object_at(self, object_brain_uid, row, column):
-        """Adds an sample to the specified position. If the sample is a primary
-        (contains partitions) or the sample is a partition, it creates a new
-        partition with no analyses and store this partition instead.
-        If an object already exists at the given position, return False.
-        Otherwise, return True
+        """Adds an sample to the specified position. If an object already exists
+        at the given position, return False.
         """
         if not self.can_add_object(object_brain_uid, row, column):
             return False
 
         sample = api.get_object(object_brain_uid)
-        if sample.isPartition() or sample.getDescendants():
-            # If the sample is a partition or contains partitions, we need to
-            # create a specific partition for storage, without analyses
-            sample = api.create_partition_for_storage(sample)
-
         stored = super(StorageSamplesContainer, self).add_object_at(sample,
                                                                     row, column)
         if not stored:
