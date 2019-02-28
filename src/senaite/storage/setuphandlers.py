@@ -4,25 +4,17 @@
 #
 # Copyright 2019 by it's authors.
 
+import random
+
 from Products.DCWorkflow.Guard import Guard
 from bika.lims import api
 from bika.lims.catalog.analysisrequest_catalog import \
     CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog.catalog_utilities import addZCTextIndex
-from bika.lims.permissions import AddAnalysis
-from bika.lims.permissions import AddAttachment
-from bika.lims.permissions import CancelAndReinstate
-from bika.lims.permissions import EditAR
-from bika.lims.permissions import EditFieldResults
-from bika.lims.permissions import EditResults
-from bika.lims.permissions import PreserveSample
-from bika.lims.permissions import Publish
-from bika.lims.permissions import ScheduleSampling
+from bika.lims import permissions
 from senaite.storage import PRODUCT_NAME
 from senaite.storage import PROFILE_ID
 from senaite.storage import logger
-import random
-
 from senaite.storage.catalog import SENAITE_STORAGE_CATALOG
 
 CREATE_TEST_DATA = True
@@ -110,15 +102,15 @@ WORKFLOWS_TO_UPDATE = {
                 "permissions_copy_from": "sample_received",
                 # Override permissions
                 "permissions": {
-                    AddAnalysis: (),
-                    AddAttachment: (),
-                    CancelAndReinstate: (),
-                    EditAR: (),
-                    EditFieldResults: (),
-                    EditResults: (),
-                    PreserveSample: (),
-                    Publish: (),
-                    ScheduleSampling: (),
+                    permissions.AddAnalysis: (),
+                    permissions.AddAttachment: (),
+                    permissions.TransitionCancelAnalysisRequest: (),
+                    permissions.TransitionReinstateAnalysisRequest: (),
+                    permissions.EditFieldResults: (),
+                    permissions.EditResults: (),
+                    permissions.TransitionPreserveSample: (),
+                    permissions.TransitionPublishResults: (),
+                    permissions.TransitionScheduleSampling: (),
                 }
             }
         },
