@@ -2,12 +2,12 @@
 <object name="portal_skins">
 
     <!-- Register folder for through-the-web Zope scripts (python) -->
-    <object name="storage_scripts"
+    <object name="senaite_storage_scripts"
             meta_type="Filesystem Directory View"
             directory="senaite.storage:zope_scripts"/>
 
     <skin-path name="*">
-        <layer name="storage_scripts" insert-after="custom"/>
+        <layer name="senaite_storage_scripts" insert-after="custom"/>
     </skin-path>
 
 </object>

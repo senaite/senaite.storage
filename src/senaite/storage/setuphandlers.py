@@ -4,25 +4,17 @@
 #
 # Copyright 2019 by it's authors.
 
+import random
+
 from Products.DCWorkflow.Guard import Guard
 from bika.lims import api
 from bika.lims.catalog.analysisrequest_catalog import \
     CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog.catalog_utilities import addZCTextIndex
-from bika.lims.permissions import AddAnalysis
-from bika.lims.permissions import AddAttachment
-from bika.lims.permissions import CancelAndReinstate
-from bika.lims.permissions import EditAR
-from bika.lims.permissions import EditFieldResults
-from bika.lims.permissions import EditResults
-from bika.lims.permissions import PreserveSample
-from bika.lims.permissions import Publish
-from bika.lims.permissions import ScheduleSampling
+from bika.lims import permissions
 from senaite.storage import PRODUCT_NAME
 from senaite.storage import PROFILE_ID
 from senaite.storage import logger
-import random
-
 from senaite.storage.catalog import SENAITE_STORAGE_CATALOG
 
 CREATE_TEST_DATA = True
@@ -110,15 +102,17 @@ WORKFLOWS_TO_UPDATE = {
                 "permissions_copy_from": "sample_received",
                 # Override permissions
                 "permissions": {
-                    AddAnalysis: (),
-                    AddAttachment: (),
-                    CancelAndReinstate: (),
-                    EditAR: (),
-                    EditFieldResults: (),
-                    EditResults: (),
-                    PreserveSample: (),
-                    Publish: (),
-                    ScheduleSampling: (),
+                    # Note here we are passing tuples, so these permissions are
+                    # set with acquire=False
+                    permissions.AddAnalysis: (),
+                    permissions.AddAttachment: (),
+                    permissions.TransitionCancelAnalysisRequest: (),
+                    permissions.TransitionReinstateAnalysisRequest: (),
+                    permissions.EditFieldResults: (),
+                    permissions.EditResults: (),
+                    permissions.TransitionPreserveSample: (),
+                    permissions.TransitionPublishResults: (),
+                    permissions.TransitionScheduleSampling: (),
                 }
             }
         },
@@ -379,23 +373,31 @@ def update_workflow_state_permissions(workflow, status, settings):
         if not copy_from_state:
             logger.info("State '{}' not found [SKIP]".format(copy_from_state))
         else:
-            source_permissions = copy_from_state.permission_roles
-            for perm_id, roles in source_permissions.items():
-                logger.info("Setting permission '{}': '{}'"
-                            .format(perm_id, ', '.join(roles)))
-                status.setPermission(perm_id, False, roles)
+            for perm_id in copy_from_state.permissions:
+                perm_info = copy_from_state.getPermissionInfo(perm_id)
+                acquired = perm_info.get("acquired", 1)
+                roles = perm_info.get("roles", acquired and [] or ())
+                logger.info("Setting permission '{}' (acquired={}): '{}'"
+                            .format(perm_id, repr(acquired), ', '.join(roles)))
+                status.setPermission(perm_id, acquired, roles)
 
     # Override permissions
     logger.info("Overriding permissions for '{}' ...".format(status.id))
     state_permissions = settings.get('permissions', {})
     if not state_permissions:
-        logger.info("No permissions set for '{}' [SKIP]".format(status.id))
+        logger.info(
+            "No permissions set for '{}' [SKIP]".format(status.id))
         return
     for permission_id, roles in state_permissions.items():
         state_roles = roles and roles or ()
-        logger.info("Setting permission '{}': '{}'"
-                    .format(permission_id, ', '.join(state_roles)))
-        status.setPermission(permission_id, False, state_roles)
+        if isinstance(state_roles, tuple):
+            acq = 0
+        else:
+            acq = 1
+        logger.info("Setting permission '{}' (acquired={}): '{}'"
+                    .format(permission_id, repr(acq),
+                            ', '.join(state_roles)))
+        status.setPermission(permission_id, acq, state_roles)
 
 
 def update_workflow_transition(workflow, transition_id, settings):
