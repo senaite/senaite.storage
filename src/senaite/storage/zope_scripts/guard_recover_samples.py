@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-#
-# This file is part of SENAITE.STORAGE
-#
-# Copyright 2019 by it's authors.
-
-
 ## Script (Python) "guard_recover_samples"
 ##bind container=container
 ##bind context=context
