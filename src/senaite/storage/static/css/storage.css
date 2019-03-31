@@ -54,7 +54,7 @@ table.container-layout {
       border: 2px solid #449d44; }
 
     table.container-layout .empty-slot a div {
-      background: url("../img/plus-circle.png") no-repeat #efefef;
+      background: url("++resource++senaite.storage.static/img/plus-circle.png") no-repeat #efefef;
       background-position: center;
       background-size: contain; }
 
