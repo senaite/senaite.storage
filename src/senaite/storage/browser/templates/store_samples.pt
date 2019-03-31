@@ -144,13 +144,13 @@
                      type="submit"
                      name="button_store"
                      i18n:attributes="value"
-                     value="Store Samples ⇶"/>
+                     value="Store Samples"/>
               <!-- Cancel -->
               <input class="btn btn-default btn-sm"
                      type="submit"
                      name="button_cancel"
                      i18n:attributes="value"
-                     value="Cancel ⎋"/>
+                     value="Cancel"/>
             </div>
 
           </form>
