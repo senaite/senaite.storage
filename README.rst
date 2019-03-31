@@ -90,6 +90,9 @@ to receive a variety of other contributions.
 Please, read `Contributing to senaite.storage document
 <https://github.com/senaite/senaite.storage/blob/master/CONTRIBUTING.md>`_.
 
+If you wish to contribute with translations, check the project site on
+`Transifex <https://www.transifex.com/senaite/senaite-storage/>`_.
+
 
 Feedback and support
 ====================
