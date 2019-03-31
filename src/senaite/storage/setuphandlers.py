@@ -18,21 +18,16 @@
 # Copyright 2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import random
-
 from Products.DCWorkflow.Guard import Guard
 from bika.lims import api
+from bika.lims import permissions
 from bika.lims.catalog.analysisrequest_catalog import \
     CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog.catalog_utilities import addZCTextIndex
-from bika.lims import permissions
 from senaite.storage import PRODUCT_NAME
 from senaite.storage import PROFILE_ID
 from senaite.storage import logger
 from senaite.storage.catalog import SENAITE_STORAGE_CATALOG
-
-CREATE_TEST_DATA = True
-CREATE_TEST_DATA_RANDOM = False
 
 ACTIONS_TO_HIDE = [
     # Tuples of (id, folder_id)
@@ -156,6 +151,23 @@ WORKFLOWS_TO_UPDATE = {
 }
 
 
+def pre_install(portal_setup):
+    """Runs before the first import step of the *default* profile
+    This handler is registered as a *pre_handler* in the generic setup profile
+    :param portal_setup: SetupTool
+    """
+    logger.info("{} pre-install handler [BEGIN]".format(PRODUCT_NAME.upper()))
+    context = portal_setup._getImportContext(PROFILE_ID)
+    portal = context.getSite()  # noqa
+
+    # Only install senaite.lims once!
+    qi = portal.portal_quickinstaller
+    if not qi.isProductInstalled("senaite.lims"):
+        portal_setup.runAllImportStepsFromProfile("profile-senaite.lims:default")
+
+    logger.info("{} pre-install handler [DONE]".format(PRODUCT_NAME.upper()))
+
+
 def post_install(portal_setup):
     """Runs after the last import step of the *default* profile
     This handler is registered as a *post_handler* in the generic setup profile
@@ -182,9 +194,6 @@ def post_install(portal_setup):
 
     # Injects "store" and "recover" transitions into senaite's workflow
     setup_workflows(portal)
-
-    # Create test data
-    create_test_data(portal)
 
     logger.info("{} install handler [DONE]".format(PRODUCT_NAME.upper()))
 
@@ -257,16 +266,13 @@ def reindex_new_content_types(portal):
     """Setup new content types"""
     logger.info("*** Reindex new content types ***")
 
-    def reindex_content_type(obj_id, folder):
+    # Index objects - Importing through GenericSetup doesn't
+    for obj_id, folder_id in NEW_CONTENT_TYPES:
+        folder = folder_id and portal[folder_id] or portal
         logger.info("Reindexing {}".format(obj_id))
         obj = folder[obj_id]
         obj.unmarkCreationFlag()
         obj.reindexObject()
-
-    # Index objects - Importing through GenericSetup doesn't
-    for obj_id, folder_id in NEW_CONTENT_TYPES:
-        folder = folder_id and portal[folder_id] or portal
-        reindex_content_type(obj_id, folder)
 
 
 def hide_actions(portal):
@@ -468,58 +474,3 @@ def setup_id_formatting(portal, format=None):
         ids.append(record)
     ids.append(format)
     bs.setIDFormatting(ids)
-
-
-# TODO Remove asap
-def create_test_data(portal):
-    """Populates with storage-like test data
-    """
-    if not CREATE_TEST_DATA:
-        return
-    logger.info("Creating test data ...")
-    facilities = portal.senaite_storage
-    if len(facilities.objectValues()) > 0:
-        logger.info("There are facilities created already [SKIP]")
-        return
-
-    def get_random(min, max):
-        if not CREATE_TEST_DATA_RANDOM:
-            return min
-        return int(round(random.uniform(min, max)))
-
-    # Facilities
-    for x in range(get_random(3,8)):
-        facility = api.create(
-            facilities,
-            "StorageFacility",
-            title="Storage facility {:02d}".format(x+1),
-            Phone="123456789",
-            EmailAddress="storage{:02d}@example.com".format(x+1),
-            PhysicalAddress={
-                "address": "Av. Via Augusta 15 - 25",
-                "city": "Sant Cugat del Valles",
-                "zip": "08174",
-                "state": "",
-                "country": "Spain",}
-        )
-
-        # Fridges
-        for i in range(get_random(2,5)):
-            container = api.create(facility, "StorageContainer",
-                                   title="Fridge {:02d}".format(i+1),
-                                   Rows=get_random(4,8),
-                                   Columns=get_random(4,6))
-
-            # Racks
-            for j in range(get_random(4, container.get_capacity())):
-                rack = api.create(container, "StorageContainer",
-                                  title="Rack {:02d}".format(j+1),
-                                  Rows=get_random(3,4),
-                                  Columns=get_random(2,3))
-
-                # Boxes
-                for k in range(get_random(2, rack.get_capacity())):
-                    box = api.create(rack, "StorageSamplesContainer",
-                                     title="Sample box {:02d}".format(k+1),
-                                     Rows=get_random(5,10),
-                                     Columns=get_random(5,10))
