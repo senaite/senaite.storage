@@ -3,7 +3,9 @@
    :width: 500px
    :align: center
 
-— **SENAITE.STORAGE**: *Sample storage add-on for SENAITE*
+
+*Sample storage add-on for SENAITE LIMS*
+========================================
 
 .. image:: https://img.shields.io/pypi/v/senaite.storage.svg?style=flat-square
    :target: https://pypi.python.org/pypi/senaite.storage
@@ -14,110 +16,100 @@
 .. image:: https://img.shields.io/github/issues/senaite/senaite.storage.svg?style=flat-square
    :target: https://github.com/senaite/senaite.storage/issues
 
-.. image:: https://img.shields.io/badge/README-GitHub-blue.svg?style=flat-square
-   :target: https://github.com/senaite/senaite.storage#readme
+.. image:: https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square
+   :target: https://github.com/senaite/senaite.storage
+
+.. image:: https://img.shields.io/badge/Made%20for%20SENAITE-%E2%AC%A1-lightgrey.svg
+   :target: https://www.senaite.com
 
 
-Introduction
-============
+About
+=====
 
-SENAITE STORAGE adds **Sample storage** capabilities to SENAITE.
-
-
-Installation
-============
-
-Please follow the installations instructions for `Plone 4`_ and
-`senaite.lims`_.
-
-To install SENAITE STORAGE, you have to add `senaite.storage` into the `eggs`
-list inside the `[buildout]` section of your `buildout.cfg`::
-
-   [buildout]
-   parts =
-       instance
-   extends =
-       http://dist.plone.org/release/4.3.18/versions.cfg
-   find-links =
-       http://dist.plone.org/release/4.3.18
-       http://dist.plone.org/thirdparty
-   eggs =
-       Plone
-       Pillow
-       senaite.lims
-       senaite.storage
-   zcml =
-   eggs-directory = ${buildout:directory}/eggs
-
-   [instance]
-   recipe = plone.recipe.zope2instance
-   user = admin:admin
-   http-address = 0.0.0.0:8080
-   eggs =
-       ${buildout:eggs}
-   zcml =
-       ${buildout:zcml}
-
-   [versions]
-   setuptools =
-   zc.buildout =
-
-
-**Note**
-
-The above example works for the buildout created by the unified
-installer. If you however have a custom buildout you might need to add
-the egg to the `eggs` list in the `[instance]` section rather than
-adding it in the `[buildout]` section.
-
-Also see this section of the Plone documentation for further details:
-https://docs.plone.org/4/en/manage/installing/installing_addons.html
-
-**Important**
-
-For the changes to take effect you need to re-run buildout from your
-console::
-
-   bin/buildout
-
-
-Installation Requirements
--------------------------
-
-The following versions are required for SENAITE STORAGE:
-
--  Plone 4.3.18
--  senaite.core >= 1.2.9
--  senaite.lims >= 1.2.0
+SENAITE.STORAGE adds **Sample storage** capabilities to `SENAITE LIMS <https://www.senaite.com>`_.
 
 
 Screenshots
------------
+===========
+
+Storage facilities
+------------------
 
 .. image:: https://raw.githubusercontent.com/senaite/senaite.storage/master/static/storage_facilities.png
    :alt: Storage facilities
    :width: 760px
    :align: center
 
+Containers and sample containers
+--------------------------------
+
 .. image:: https://raw.githubusercontent.com/senaite/senaite.storage/master/static/container_listing.png
    :alt: Containers and sample containers
    :width: 760px
    :align: center
+
+Store transition in samples listings
+------------------------------------
 
 .. image:: https://raw.githubusercontent.com/senaite/senaite.storage/master/static/samples_listing.png
    :alt: Store transition in samples listings
    :width: 760px
    :align: center
 
+Assignment of samples in a container
+------------------------------------
+
 .. image:: https://raw.githubusercontent.com/senaite/senaite.storage/master/static/samples_assignment_to_container.png
    :alt: Assignment of samples in a container
    :width: 760px
    :align: center
+
+Assignment of samples to multiple containers
+--------------------------------------------
 
 .. image:: https://raw.githubusercontent.com/senaite/senaite.storage/master/static/samples_assignment_to_multiple.png
    :alt: Assignment of samples to multiple containers
    :width: 760px
    :align: center
 
-.. _Plone 4: https://docs.plone.org/4/en/manage/installing/index.html
-.. _senaite.lims: https://github.com/senaite/senaite.lims#installation
+
+Contribute
+==========
+
+We want contributing to SENAITE.STORAGE to be fun, enjoyable, and educational
+for anyone, and everyone. This project adheres to the `Contributor Covenant
+<https://github.com/senaite/senaite.storage/blob/master/CODE_OF_CONDUCT.md>`_.
+
+By participating, you are expected to uphold this code. Please report
+unacceptable behavior.
+
+Contributions go far beyond pull requests and commits. Although we love giving
+you the opportunity to put your stamp on SENAITE.STORAGE, we also are thrilled
+to receive a variety of other contributions.
+
+Please, read `Contributing to senaite.storage document
+<https://github.com/senaite/senaite.storage/blob/master/CONTRIBUTING.md>`_.
+
+
+Feedback and support
+====================
+
+* `Community site <https://community.senaite.org/>`_
+* `Gitter channel <https://gitter.im/senaite/Lobby>`_
+* `Users list <https://sourceforge.net/projects/senaite/lists/senaite-users>`_
+
+
+License
+=======
+
+**SENAITE.STORAGE** Copyright (C) 2019 Senaite Foundation
+
+This program is free software; you can redistribute it and/or modify it under
+the terms of the `GNU General Public License version 2
+<https://github.com/senaite/senaite.storage/blob/master/LICENSE>`_ as published
+by the Free Software Foundation.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
