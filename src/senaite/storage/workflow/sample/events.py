@@ -19,15 +19,31 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
+from bika.lims.utils import changeWorkflowState
+from bika.lims.workflow import getReviewHistory
 from senaite.storage import api as _api
 from senaite.storage import logger
 
 
 def after_recover(sample):
-    """Unassigns the sample from its storage container and "recover"
+    """Unassigns the sample from its storage container and "recover". It also
+    transitions the sample to its previous state before it was stored
     """
     container = _api.get_storage_sample(api.get_uid(sample))
-    if not container:
+    if container:
+        container.remove_object(sample)
+    else:
         logger.warn("Container for Sample {} not found".format(sample.getId()))
-        return False
-    return container.remove_object(sample)
+
+    # Transition the sample to the state before it was stored
+    previous_state = get_previous_state(sample, "stored") or "sample_received"
+    changeWorkflowState(sample, "bika_ar_workflow", previous_state)
+
+
+def get_previous_state(instance, state):
+    history = getReviewHistory(instance, reverse=True)
+    history = map(lambda event: event["review_state"], history)
+    for status in history:
+        if status != state:
+            return status
+    return None

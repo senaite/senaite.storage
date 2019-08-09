@@ -138,7 +138,9 @@ WORKFLOWS_TO_UPDATE = {
             },
             "recover": {
                 "title": "Recover",
-                "new_state": "sample_received",
+                # We set same new_state here because system will transition the
+                # sample to the state before when was stored. See events
+                "new_state": "stored",
                 "action": "Recover sample",
                 "guard": {
                     "guard_permissions": "",
