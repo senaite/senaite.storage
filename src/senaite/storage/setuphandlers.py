@@ -106,7 +106,7 @@ WORKFLOWS_TO_UPDATE = {
             "stored": {
                 "title": "Stored",
                 "description": "Sample is stored",
-                "transitions": ("recover",),
+                "transitions": ("recover", "detach"),
                 # Copy permissions from sample_received first
                 "permissions_copy_from": "sample_received",
                 # Override permissions
