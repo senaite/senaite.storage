@@ -20,9 +20,28 @@
 
 from bika.lims import api
 from bika.lims.utils import changeWorkflowState
+from bika.lims.workflow import doActionFor as do_action_for
 from bika.lims.workflow import getReviewHistory
 from senaite.storage import api as _api
 from senaite.storage import logger
+
+
+def after_store(sample):
+    """Event triggered after "store" transition takes place for a given sample
+    """
+    primary = sample.getParentAnalysisRequest()
+    if not primary:
+        return
+
+    # Store primary sample if its partitions have been stored
+    parts = primary.getDescendants()
+
+    # Partitions in some statuses won't be considered
+    skip = ['cancelled', 'stored', 'retracted', 'rejected']
+    parts = filter(lambda part: api.get_review_status(part) not in skip, parts)
+    if not parts:
+        # There are no partitions left, transition the primary
+        do_action_for(primary, "store")
 
 
 def after_recover(sample):
@@ -38,6 +57,21 @@ def after_recover(sample):
     # Transition the sample to the state before it was stored
     previous_state = get_previous_state(sample, "stored") or "sample_received"
     changeWorkflowState(sample, "bika_ar_workflow", previous_state)
+
+    # If the sample is a partition, try to promote to the primary
+    primary = sample.getParentAnalysisRequest()
+    if not primary:
+        return
+
+    # Recover primary sample if all its partitions have been recovered
+    parts = primary.getDescendants()
+
+    # Partitions in some statuses won't be considered.
+    skip = ['stored']
+    parts = filter(lambda part: api.get_review_status(part) in skip, parts)
+    if not parts:
+        # There are no partitions left, transition the primary
+        do_action_for(primary, "recover")
 
 
 def get_previous_state(instance, state):
