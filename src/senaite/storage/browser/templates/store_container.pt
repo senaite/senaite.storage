@@ -64,11 +64,12 @@
                   <input
                     tal:attributes="name string:sample;"
                     type="text"
+                    tal:define="allowed_states view/get_allowed_states"
                     ui_item="getId"
                     autocomplete="false"
                     class="blurrable firstToFocus referencewidget"
                     base_query='{
-                      "review_state": "sample_received",
+                      "review_state": "get_allowed_states",
                       "sort_on": "created"
                     }'
                     search_query='{}'
@@ -79,7 +80,7 @@
                         {"columnName": "getClientSampleID", "align": "left", "label": "CSID", "width": "15"},
                         {"columnName": "getSampleTypeTitle", "align": "left", "label": "Sample Type", "width": "70"},
                         {"columnName": "UID", "hidden": true}],
-                      "search_fields": ["getId"],
+                      "search_fields": ["SearchableText"],
                       "catalog_name": "bika_catalog_analysisrequest_listing",
                       "url": "referencewidget_search",
                       "discard_empty": [],
