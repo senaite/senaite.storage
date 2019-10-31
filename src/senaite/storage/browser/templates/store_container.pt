@@ -75,7 +75,7 @@
                         {"columnName": "getClientSampleID", "align": "left", "label": "CSID", "width": "15"},
                         {"columnName": "getSampleTypeTitle", "align": "left", "label": "Sample Type", "width": "70"},
                         {"columnName": "UID", "hidden": true}],
-                      "search_fields": ["SearchableText"],
+                      "search_fields": ["listing_searchable_text"],
                       "catalog_name": "bika_catalog_analysisrequest_listing",
                       "url": "referencewidget_search",
                       "discard_empty": [],
