@@ -18,6 +18,8 @@
 # Copyright 2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import json
+
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _s
@@ -102,6 +104,29 @@ class StoreContainerView(BaseView):
         if self.get_next_uids():
             return False
         return True
+
+    def get_base_query(self):
+        base_query = {
+            "review_state": self.get_allowed_states(),
+             "sort_on": "created"}
+
+        return json.dumps(base_query)
+
+    def get_allowed_states(self):
+        # Get the Sample (aka AR) workflow definition
+        portal_wf = api.get_tool("portal_workflow")
+        arwf = portal_wf["bika_ar_workflow"]
+        ar_states = arwf.states
+
+        allowed_states = []
+
+        # Get the states for which transition "store" is possible
+        for state in ar_states:
+
+            if "store" in ar_states._mapping.get(state).transitions:
+                allowed_states.append(state)
+
+        return allowed_states
 
     def __call__(self):
         form = self.request.form

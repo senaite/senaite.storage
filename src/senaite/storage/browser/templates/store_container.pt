@@ -62,15 +62,11 @@
                 <div class="form-group field ArchetypesReferenceWidget">
                   <label i18n:translate="" for="sample">Sample</label>
                   <input
-                    tal:attributes="name string:sample;"
+                    tal:attributes="name string:sample; base_query view/get_base_query"
                     type="text"
                     ui_item="getId"
                     autocomplete="false"
                     class="blurrable firstToFocus referencewidget"
-                    base_query='{
-                      "review_state": "sample_received",
-                      "sort_on": "created"
-                    }'
                     search_query='{}'
                     catalog_name="bika_catalog_analysisrequest_listing"
                     combogrid_options='{
@@ -79,7 +75,7 @@
                         {"columnName": "getClientSampleID", "align": "left", "label": "CSID", "width": "15"},
                         {"columnName": "getSampleTypeTitle", "align": "left", "label": "Sample Type", "width": "70"},
                         {"columnName": "UID", "hidden": true}],
-                      "search_fields": ["getId"],
+                      "search_fields": ["listing_searchable_text"],
                       "catalog_name": "bika_catalog_analysisrequest_listing",
                       "url": "referencewidget_search",
                       "discard_empty": [],
