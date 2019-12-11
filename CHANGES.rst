@@ -4,6 +4,7 @@ Changelog
 1.0.1 (unreleased)
 ------------------
 
+- #11 Changed Base Catalog Tool
 - #8 Make primary sample to follow partitions on store/recover
 
 
