@@ -21,6 +21,7 @@
   <!-- Package includes -->
   <include package=".browser"/>
   <include package=".monkeys"/>
+  <include package=".upgrade"/>
   <include package=".subscribers"/>
   <include package=".workflow"/>
 
