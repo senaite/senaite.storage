@@ -18,12 +18,13 @@
 # Copyright 2019-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from senaite.storage import api as _api
+from senaite.storage import logger
+from zope.lifecycleevent import modified
+
 from bika.lims import api
 from bika.lims.utils import changeWorkflowState
 from bika.lims.workflow import doActionFor as do_action_for
-from bika.lims.workflow import getReviewHistory
-from senaite.storage import api as _api
-from senaite.storage import logger
 
 
 def after_store(sample):
@@ -55,8 +56,14 @@ def after_recover(sample):
         logger.warn("Container for Sample {} not found".format(sample.getId()))
 
     # Transition the sample to the state before it was stored
-    previous_state = get_previous_state(sample, "stored") or "sample_received"
+    previous_state = get_previous_state(sample) or "sample_due"
     changeWorkflowState(sample, "bika_ar_workflow", previous_state)
+
+    # Notify the sample has ben modified
+    modified(sample)
+
+    # Reindex the sample
+    sample.reindexObject()
 
     # If the sample is a partition, try to promote to the primary
     primary = sample.getParentAnalysisRequest()
@@ -74,10 +81,12 @@ def after_recover(sample):
         do_action_for(primary, "recover")
 
 
-def get_previous_state(instance, state):
-    history = getReviewHistory(instance, reverse=True)
-    history = map(lambda event: event["review_state"], history)
-    for status in history:
-        if status != state:
-            return status
+def get_previous_state(instance, omit=("stored",)):
+    # Get the review history, most recent actions first
+    history = api.get_review_history(instance)
+    for item in history:
+        status = item.get("review_state")
+        if not status or status in omit:
+            continue
+        return status
     return None
