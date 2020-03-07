@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2019-03-31 21:38+0000\n"
+"POT-Creation-Date: 2020-03-07 00:38+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -36,7 +36,7 @@ msgstr ""
 msgid "Add Facility"
 msgstr ""
 
-#: senaite/storage/browser/templates/store_container.pt:116
+#: senaite/storage/browser/templates/store_container.pt:112
 msgid "Add Sample"
 msgstr ""
 
@@ -68,12 +68,12 @@ msgstr ""
 msgid "Available positions:"
 msgstr ""
 
-#: senaite/storage/browser/templates/store_container.pt:123
+#: senaite/storage/browser/templates/store_container.pt:119
 #: senaite/storage/browser/templates/store_samples.pt:149
 msgid "Cancel"
 msgstr ""
 
-#: senaite/storage/browser/store_container.py:125
+#: senaite/storage/browser/store_container.py:150
 msgid "Cannot store samples. Samples container {} is full"
 msgstr ""
 
@@ -122,7 +122,7 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
-#: senaite/storage/browser/templates/store_container.pt:132
+#: senaite/storage/browser/templates/store_container.pt:128
 msgid "Next container:"
 msgstr ""
 
@@ -130,7 +130,7 @@ msgstr ""
 msgid "No items selected"
 msgstr ""
 
-#: senaite/storage/browser/store_container.py:134
+#: senaite/storage/browser/store_container.py:159
 msgid "No position or not valid sample selected"
 msgstr ""
 
@@ -144,7 +144,7 @@ msgid "Phone"
 msgstr ""
 
 #: senaite/storage/browser/samples.py:53
-#: senaite/storage/browser/templates/store_container.pt:104
+#: senaite/storage/browser/templates/store_container.pt:100
 #: senaite/storage/browser/templates/store_samples.pt:127
 msgid "Position"
 msgstr ""
@@ -161,7 +161,7 @@ msgstr ""
 msgid "Rows"
 msgstr ""
 
-#: senaite/storage/configure.zcml:40
+#: senaite/storage/configure.zcml:41
 msgid "SENAITE STORAGE"
 msgstr ""
 
@@ -169,11 +169,11 @@ msgstr ""
 msgid "Sample"
 msgstr ""
 
-#: senaite/storage/configure.zcml:40
+#: senaite/storage/configure.zcml:41
 msgid "Sample storage module for SENAITE"
 msgstr ""
 
-#: senaite/storage/browser/store_container.py:153
+#: senaite/storage/browser/store_container.py:178
 msgid "Sample storing canceled"
 msgstr ""
 
@@ -226,7 +226,7 @@ msgstr ""
 msgid "Stored"
 msgstr ""
 
-#: senaite/storage/browser/store_container.py:144
+#: senaite/storage/browser/store_container.py:169
 msgid "Stored sample {} at position {}"
 msgstr ""
 

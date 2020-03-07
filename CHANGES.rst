@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.0.1 (unreleased)
+1.0.1 (2020-03-07)
 ------------------
 
 - #11 Changed Base Catalog Tool

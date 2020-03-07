@@ -3,13 +3,14 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # Translators:
 # Jordi Puiggené <jpuiggene@naralabs.com>, 2019
+# Pau Soliva <psoliva@naralabs.com>, 2019
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2019-03-31 21:38+0000\n"
+"POT-Creation-Date: 2020-03-07 00:38+0000\n"
 "PO-Revision-Date: 2019-03-31 21:21+0000\n"
-"Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>, 2019\n"
+"Last-Translator: Pau Soliva <psoliva@naralabs.com>, 2019\n"
 "Language-Team: Spanish (https://www.transifex.com/senaite/teams/97702/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -43,7 +44,7 @@ msgstr "Activo"
 msgid "Add Facility"
 msgstr "Añadir instalación"
 
-#: senaite/storage/browser/templates/store_container.pt:116
+#: senaite/storage/browser/templates/store_container.pt:112
 msgid "Add Sample"
 msgstr "Añadir muestra"
 
@@ -75,12 +76,12 @@ msgstr "Se utilizarán carácteres para la representación de las filas de un co
 msgid "Available positions:"
 msgstr "Posiciones disponibles:"
 
-#: senaite/storage/browser/templates/store_container.pt:123
+#: senaite/storage/browser/templates/store_container.pt:119
 #: senaite/storage/browser/templates/store_samples.pt:149
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: senaite/storage/browser/store_container.py:125
+#: senaite/storage/browser/store_container.py:150
 msgid "Cannot store samples. Samples container {} is full"
 msgstr "Imposible almacenar las muestras. El contenedor de muestras {} está lleno"
 
@@ -129,7 +130,7 @@ msgstr "ID"
 msgid "Name"
 msgstr "Nombre"
 
-#: senaite/storage/browser/templates/store_container.pt:132
+#: senaite/storage/browser/templates/store_container.pt:128
 msgid "Next container:"
 msgstr "Contenedor siguiente:"
 
@@ -137,13 +138,13 @@ msgstr "Contenedor siguiente:"
 msgid "No items selected"
 msgstr "No ha seleccionado ningún elemento"
 
-#: senaite/storage/browser/store_container.py:134
+#: senaite/storage/browser/store_container.py:159
 msgid "No position or not valid sample selected"
 msgstr "La posición o muestra seleccionada no es válida"
 
 #: senaite/storage/content/storagelayoutcontainer.py:61
 msgid "Number of positions per row. Numbers will be used to represent a column within a row"
-msgstr "Número de posiciones por fila. Los números se usarán para representar las columnas"
+msgstr "Número de posiciones por fila. Se usarán números para representar las columnas"
 
 #: senaite/storage/browser/storagerootfolder.py:58
 #: senaite/storage/content/storagefacility.py:38
@@ -151,7 +152,7 @@ msgid "Phone"
 msgstr "Teléfono"
 
 #: senaite/storage/browser/samples.py:53
-#: senaite/storage/browser/templates/store_container.pt:104
+#: senaite/storage/browser/templates/store_container.pt:100
 #: senaite/storage/browser/templates/store_samples.pt:127
 msgid "Position"
 msgstr "Posición"
@@ -168,7 +169,7 @@ msgstr "Recuperar muestras"
 msgid "Rows"
 msgstr "Filas"
 
-#: senaite/storage/configure.zcml:40
+#: senaite/storage/configure.zcml:41
 msgid "SENAITE STORAGE"
 msgstr "SENAITE STORAGE"
 
@@ -176,11 +177,11 @@ msgstr "SENAITE STORAGE"
 msgid "Sample"
 msgstr "Muestra"
 
-#: senaite/storage/configure.zcml:40
+#: senaite/storage/configure.zcml:41
 msgid "Sample storage module for SENAITE"
 msgstr "Módulo de almacenaje de muestras para SENAITE"
 
-#: senaite/storage/browser/store_container.py:153
+#: senaite/storage/browser/store_container.py:178
 msgid "Sample storing canceled"
 msgstr "Se ha cancelado el almacenaje de la muestra"
 
@@ -215,7 +216,7 @@ msgstr "Almacén"
 
 #: senaite/storage/profiles/default/types/StorageFacility.xml
 msgid "Storage Facility"
-msgstr "Instalación del almacén"
+msgstr "Puesto de almacenamiento"
 
 #: senaite/storage/profiles/default/types/StorageContainer.xml
 msgid "Storage container"
@@ -233,7 +234,7 @@ msgstr "Almacenar muestras"
 msgid "Stored"
 msgstr "Almacenadas"
 
-#: senaite/storage/browser/store_container.py:144
+#: senaite/storage/browser/store_container.py:169
 msgid "Stored sample {} at position {}"
 msgstr "Muestra {} almacenada a la posición {}"
 
