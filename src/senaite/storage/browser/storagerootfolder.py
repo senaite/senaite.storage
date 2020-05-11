@@ -81,6 +81,7 @@ class StorageRootFolderContentsView(StorageListing):
         """Applies new properties to item (StorageFacility) that is currently
         being rendered as a row in the list
         """
+        obj = api.get_object(obj)
         item = super(StorageRootFolderContentsView,
                      self).folderitem(obj, item, index)
 

@@ -96,6 +96,7 @@ class ContainersView(StorageListing):
         """Applies new properties to item (StorageContainer) that is currently
         being rendered as a row in the list
         """
+        obj = api.get_object(obj)
         item = super(ContainersView, self).folderitem(obj, item, index)
 
         # Containers/Positions usage
