@@ -105,10 +105,10 @@ class SamplesListing(BikaListingView):
                     self.portal_url, "/++resource++bika.lims.images/sample.png")
             }
 
-    def folderitems(self, full_objects=False, classic=False):
+    def folderitems(self):
         """We add this function to tell baselisting to use brains instead of
         full objects"""
-        items = BikaListingView.folderitems(self, full_objects, classic)
+        items = BikaListingView.folderitems(self)
         return sorted(items, key=lambda item: item["position"])
 
     def folderitem(self, obj, item, index):

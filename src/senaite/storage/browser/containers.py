@@ -98,6 +98,9 @@ class ContainersView(StorageListing):
         """
         item = super(ContainersView, self).folderitem(obj, item, index)
 
+        # Get the object (the passed-in "obj" is a brain)
+        obj = api.get_object(obj)
+
         # Containers/Positions usage
         # Samples containers cannot have containers inside!
         if not IStorageSamplesContainer.providedBy(obj):

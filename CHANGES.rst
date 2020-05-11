@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.0.2 (unreleased)
+------------------
+- #14 Refactor folderitem for storage listings to get full object from brain param obj
+
+
 1.0.1 (2020-03-07)
 ------------------
 
