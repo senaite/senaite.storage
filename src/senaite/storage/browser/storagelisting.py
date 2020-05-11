@@ -79,6 +79,7 @@ class StorageListing(BikaListingView):
         """Applies new properties to item that is currently being rendered as a
         row in the list
         """
+        obj = api.get_object(obj)
         item["replace"]["Title"] = get_link(item["url"], item["Title"])
         item["replace"]["Id"] = get_link(item["url"], api.get_id(obj))
 

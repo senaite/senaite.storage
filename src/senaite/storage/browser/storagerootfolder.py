@@ -81,10 +81,10 @@ class StorageRootFolderContentsView(StorageListing):
         """Applies new properties to item (StorageFacility) that is currently
         being rendered as a row in the list
         """
-        obj = api.get_object(obj)
         item = super(StorageRootFolderContentsView,
                      self).folderitem(obj, item, index)
 
+        obj = api.get_object(obj)
         item["replace"]["EmailAddress"] = get_email_link(item["EmailAddress"])
         phone = obj.getPhone()
         if phone:
