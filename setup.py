@@ -6,7 +6,7 @@
 
 from setuptools import setup, find_packages
 
-version = "1.0.1.1"
+version = "2.0.0"
 
 setup(
     name="senaite.storage",
@@ -34,8 +34,7 @@ setup(
     zip_safe=False,
     install_requires=[
         "setuptools",
-        "senaite.lims>=1.3.3",
-        "senaite.lims<1.4.0",
+        "senaite.lims",
         "archetypes.schemaextender",
     ],
     extras_require={
