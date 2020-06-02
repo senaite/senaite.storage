@@ -19,16 +19,17 @@
 # Some rights reserved, see README and LICENSE.
 
 from senaite.core.listing import utils
-from senaite.core.listing.interfaces import IListingView, IListingViewAdapter
+from senaite.core.listing.interfaces import IListingView
+from senaite.core.listing.interfaces import IListingViewAdapter
 from senaite.storage import api
 from senaite.storage import senaiteMessageFactory as _
 from zope.component import adapts
-from zope.interface import implements
+from zope.interface import implementer
 
 
+@implementer(IListingViewAdapter)
 class AnalysisRequestsListingViewAdapter(object):
     adapts(IListingView)
-    implements(IListingViewAdapter)
 
     # Order of priority of this subscriber adapter over others
     priority_order = 10
