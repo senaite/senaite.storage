@@ -18,52 +18,54 @@
 # Copyright 2019-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import string
-import math
 import re
-from Products.ATExtensions.ateapi import RecordsField
-from Products.ATExtensions.widget import RecordsWidget
-from Products.Archetypes.Field import IntegerField, ComputedField, LinesField
-from Products.Archetypes.Schema import Schema
-from Products.Archetypes.Widget import IntegerWidget, ComputedWidget, \
-    LinesWidget
-from Products.validation.validators.ExpressionValidator import \
-    ExpressionValidator
+import string
+
 from bika.lims import api
-from bika.lims import alphanumber
 from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims.idserver import renameAfterCreation
 from plone.app.folder.folder import ATFolder
+from Products.Archetypes.Field import IntegerField
+from Products.Archetypes.Field import LinesField
+from Products.Archetypes.Schema import Schema
+from Products.Archetypes.Widget import IntegerWidget
+from Products.Archetypes.Widget import LinesWidget
+from Products.validation.validators.ExpressionValidator import \
+    ExpressionValidator
+from senaite.core.browser.fields.records import RecordsField
+from senaite.core.browser.widgets.recordswidget import RecordsWidget
 from senaite.storage import logger
 from senaite.storage import senaiteMessageFactory as _
-from senaite.storage.interfaces import IStorageLayoutContainer, IStorageFacility
+from senaite.storage.interfaces import IStorageFacility
+from senaite.storage.interfaces import IStorageLayoutContainer
 from zope.interface import implements
 
 Rows = IntegerField(
-    name = "Rows",
-    default = 1,
-    widget = IntegerWidget(
-        label = _("Rows"),
-        description = _("Alphabet letters will be used to represent a row "
-                        "within the container")
+    name="Rows",
+    default=1,
+    widget=IntegerWidget(
+        label=_("Rows"),
+        description=_("Alphabet letters will be used to represent a row "
+                      "within the container")
     ),
-    validators = (
-        ExpressionValidator('python: int(value) > 0'),
-        ExpressionValidator('python: here.get_minimum_size()[0] <= int(value)')
+    validators=(
+        ExpressionValidator("python: int(value) > 0"),
+        ExpressionValidator("python: here.get_minimum_size()[0] <= int(value)")
     )
 )
 
+
 Columns = IntegerField(
-    name = "Columns",
-    default = 1,
-    widget = IntegerWidget(
-        label = _("Columns"),
-        description = _("Number of positions per row. Numbers will be used to "
-                        "represent a column within a row")
+    name="Columns",
+    default=1,
+    widget=IntegerWidget(
+        label=_("Columns"),
+        description=_("Number of positions per row. Numbers will be used to "
+                      "represent a column within a row")
     ),
-    validators = (
-        ExpressionValidator('python: int(value) > 0'),
-        ExpressionValidator('python: here.get_minimum_size()[1] <= int(value)')
+    validators=(
+        ExpressionValidator("python: int(value) > 0"),
+        ExpressionValidator("python: here.get_minimum_size()[1] <= int(value)")
     )
 )
 
@@ -78,29 +80,29 @@ Columns = IntegerField(
 # The total capacity and utilization of this container is the sum of values of
 # the capacity and utilization of the objects this container stores.
 PositionsLayout = RecordsField(
-    name = "PositionsLayout",
-    subfields = (
+    name="PositionsLayout",
+    subfields=(
         "row",
         "column",
         "uid",
         "samples_capacity",
         "samples_utilization"),
-    subfield_types = {
+    subfield_types={
         "row": "int",
         "column": "int",
         "samples_capacity": "int",
         "samples_utilization": "int"},
     widget=RecordsWidget(
-        visible = False
+        visible=False
     )
 )
 
 AvailablePositions = LinesField(
-    name = "AvailablePositions",
-    required = 0,
-    subfields = ("row", "column"),
+    name="AvailablePositions",
+    required=0,
+    subfields=("row", "column"),
     widget=LinesWidget(
-        visible = False
+        visible=False
     )
 )
 
@@ -110,6 +112,7 @@ schema = BikaFolderSchema.copy() + Schema((
     PositionsLayout,
     AvailablePositions,
 ))
+
 
 class StorageLayoutContainer(ATFolder):
     """Base class for storage containers
