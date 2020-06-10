@@ -5,6 +5,7 @@
 
   <!-- Include child packages -->
   <include package=".workflow"/>
+  <include package=".viewlets"/>
 
   <!-- Listing view of facilities for storage -->
   <browser:page

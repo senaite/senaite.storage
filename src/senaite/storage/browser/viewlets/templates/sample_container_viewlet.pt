@@ -1,0 +1,26 @@
+<div tal:omit-tag=""
+     tal:condition="python: view.is_stored()"
+     i18n:domain="senaite.storage">
+
+  <div id="portal-alert">
+    <div class="portlet-alert-item alert alert-info alert-dismissible"
+         tal:define="info python:view.get_sample_container_info()">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <p class="title">
+        <strong i18n:translate="">
+          Stored sample
+        </strong>
+        (<span tal:replace="python: view.view.ulocalized_time(info['when'], long_format=0)"/>)
+      </p>
+      <p class="description">
+        <span i18n:translate="">Location:</span>
+        <a tal:define="info python:view.get_sample_container_info()"
+           tal:attributes="href info/url"
+           tal:content="python: '{} ({})'.format(info['full_title'], info['position'])" />
+      </p>
+    </div>
+  </div>
+
+</div>

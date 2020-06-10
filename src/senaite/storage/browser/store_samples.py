@@ -38,7 +38,6 @@ class StoreSamplesView(BaseView):
         self.request = request
         self.back_url = self.context.absolute_url()
 
-
     def __call__(self):
         form = self.request.form
 
