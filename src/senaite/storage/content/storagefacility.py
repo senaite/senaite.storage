@@ -52,6 +52,7 @@ Address = AddressField(
     widget = AddressWidget(
        label=_("Address"),
        render_own_label=True,
+       showCopyFrom=False,
     ),
     subfield_validators = {
         'country': 'inline_field_validator',
