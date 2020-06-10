@@ -16,21 +16,23 @@
 
     <!-- Title -->
     <metal:title fill-slot="content-title">
-      <h1 tal:define="container python:view.get_container()"
-          tal:content="python: container.getId()"></h1>
+      <h1 tal:define="container       python:view.get_container();
+                      container_id    python: container.getId();
+                      container_title python: container.Title();"
+          tal:content="python: '{} ({})'.format(container_title, container_id)"></h1>
     </metal:title>
 
     <!-- Description -->
     <metal:description fill-slot="content-description">
       <tal:desc define="container python:view.get_container()">
-        <h3 tal:content="python: container.get_full_title()"
-            tal:condition="python: container != view.context"></h3>
-        <h4>
+        <p tal:content="python: container.get_full_title()"
+           tal:condition="python: container != view.context"></p>
+        <p>
           <span i18n:translate="">Available positions: </span>
           <span tal:define="used python: container.get_samples_utilization();
                             total python: container.get_samples_capacity();"
                 tal:content="python: '{}/{}'.format(used, total)"></span>
-        </h4>
+        </p>
         <hr/>
       </tal:desc>
     </metal:description>
@@ -39,9 +41,8 @@
     <metal:core fill-slot="content-core">
       <div id="store-samples-view"
            class="row"
-           tal:define="portal context/@@plone_portal_state/portal;">
-
-        <div class="col-sm-12" tal:define="container python:view.get_container()">
+           tal:define="portal context/@@plone_portal_state/portal;
+                       container python:view.get_container()">
           <form class="form"
                 id="store_container_form"
                 name="store_container_form"
@@ -51,82 +52,87 @@
             <input type="hidden" name="submitted" value="1"/>
             <input tal:replace="structure context/@@authenticator/authenticator"/>
 
-            <!-- Sample selection area -->
-            <div class="col-sm-12">
-              <div class="col-sm-4">
-                <div class="form-group field ArchetypesReferenceWidget">
-                  <label i18n:translate="" for="sample">Sample</label>
-                  <input
-                    tal:attributes="name string:sample; base_query view/get_base_query"
-                    type="text"
-                    ui_item="getId"
-                    autocomplete="false"
-                    class="blurrable firstToFocus referencewidget"
-                    search_query='{}'
-                    catalog_name="bika_catalog_analysisrequest_listing"
-                    combogrid_options='{
-                      "colModel": [
-                        {"columnName": "getId", "align": "left", "label": "Id", "width": "15"},
-                        {"columnName": "getClientSampleID", "align": "left", "label": "CSID", "width": "15"},
-                        {"columnName": "getSampleTypeTitle", "align": "left", "label": "Sample Type", "width": "70"},
-                        {"columnName": "UID", "hidden": true}],
-                      "search_fields": ["listing_searchable_text"],
-                      "catalog_name": "bika_catalog_analysisrequest_listing",
-                      "url": "referencewidget_search",
-                      "discard_empty": [],
-                      "showOn": true,
-                      "searchIcon": true,
-                      "minLength": "0",
-                      "resetButton": true,
-                      "sord": "asc",
-                      "sidx": "getId",
-                      "width": "700px",
-                      "force_all": true,
-                      "portal_types": {}}'
-                  />
-                  <input type="hidden"
-                         tal:attributes="id string:sample_uid"
-                         name="sample_uid"
-                         value="" />
+            <div class="row">
+              <!-- Sample selection area -->
+              <div class="col-sm-12">
+                <div class="col-sm-4">
+                  <div class="form-group field ArchetypesReferenceWidget">
+                    <label i18n:translate="" for="sample">Sample</label>
+                    <input
+                      tal:attributes="name string:sample; base_query view/get_base_query"
+                      type="text"
+                      ui_item="getId"
+                      autocomplete="false"
+                      class="blurrable firstToFocus referencewidget"
+                      search_query='{}'
+                      catalog_name="bika_catalog_analysisrequest_listing"
+                      combogrid_options='{
+                        "colModel": [
+                          {"columnName": "getId", "align": "left", "label": "Id", "width": "15"},
+                          {"columnName": "getClientSampleID", "align": "left", "label": "CSID", "width": "15"},
+                          {"columnName": "getSampleTypeTitle", "align": "left", "label": "Sample Type", "width": "70"},
+                          {"columnName": "UID", "hidden": true}],
+                        "search_fields": ["listing_searchable_text"],
+                        "catalog_name": "bika_catalog_analysisrequest_listing",
+                        "url": "referencewidget_search",
+                        "discard_empty": [],
+                        "showOn": true,
+                        "searchIcon": true,
+                        "minLength": "0",
+                        "resetButton": true,
+                        "sord": "asc",
+                        "sidx": "getId",
+                        "width": "700px",
+                        "force_all": true,
+                        "portal_types": {}}'
+                    />
+                    <input type="hidden"
+                           tal:attributes="id string:sample_uid"
+                           name="sample_uid"
+                           value="" />
+                  </div>
                 </div>
-              </div>
-              <div class="col-sm-2">
-                <div class="form-group">
-                  <label i18n:translate="" for="position">Position</label>
-                  <select name="position" id="position">
-                    <tal:options repeat="position python: container.get_available_positions()">
-                      <option tal:define="alpha_value python: container.position_to_alpha(position[0], position[1]);"
-                              tal:content="alpha_value"
-                              tal:attributes="value python: alpha_value"></option>
-                    </tal:options>
-                  </select>
+                <div class="col-sm-2">
+                  <div class="form-group">
+                    <label i18n:translate="" for="position">Position</label>
+                    <select name="position" id="position">
+                      <tal:options repeat="position python: container.get_available_positions()">
+                        <option tal:define="alpha_value python: container.position_to_alpha(position[0], position[1]);"
+                                tal:content="alpha_value"
+                                tal:attributes="value python: alpha_value"></option>
+                      </tal:options>
+                    </select>
+                  </div>
                 </div>
-              </div>
-              <div class="col-sm-4">
-                <!-- Store samples -->
-                <input class="btn btn-success btn-sm"
-                       type="submit"
-                       id="button_store"
-                       name="button_store"
-                       i18n:attributes="value"
-                       value="Add Sample"/>
-                <!-- Cancel -->
-                <input class="btn btn-default btn-sm"
-                       type="submit"
-                       name="button_cancel"
-                       i18n:attributes="value"
-                       value="Cancel"/>
-              </div>
-              <div class="col-sm-2">
-                <a tal:condition="python: not view.is_last_container()"
-                   tal:attributes="href python: view.get_next_url()">
-                  <span i18n:translate="">Next container:</span>&nbsp;
-                  <span tal:content="python: view.get_next_container().getId()"></span>&nbsp;
-                  <span> ⇶</span>
-                </a>
+                <div class="col-sm-4">
+                  <!-- Store samples -->
+                  <input class="btn btn-success btn-sm"
+                         type="submit"
+                         id="button_store"
+                         name="button_store"
+                         i18n:attributes="value"
+                         value="Add Sample"/>
+                  <!-- Cancel -->
+                  <input class="btn btn-default btn-sm"
+                         type="submit"
+                         name="button_cancel"
+                         i18n:attributes="value"
+                         value="Cancel"/>
+                </div>
+                <div class="col-sm-2">
+                  <a tal:condition="python: not view.is_last_container()"
+                     tal:attributes="href python: view.get_next_url()">
+                    <span i18n:translate="">Next container:</span>&nbsp;
+                    <span tal:content="python: view.get_next_container().getId()"></span>&nbsp;
+                    <span> ⇶</span>
+                  </a>
+                </div>
               </div>
             </div>
 
+            <p>&nbsp;</p>
+
+            <div class="row">
             <!-- Samples container layout view -->
             <div class="col-sm-12">
               <table class="table table-bordered container-layout"
@@ -179,9 +185,8 @@
                 </tr>
               </table>
             </div>
+            </div>
           </form>
-        </div>
-
       </div>
     </metal:core>
   </body>
