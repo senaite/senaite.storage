@@ -1,0 +1,15 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:browser="http://namespaces.zope.org/browser"
+           i18n_domain="senaite.storage">
+
+  <!-- Invalid Analysis Request viewlet -->
+  <browser:viewlet
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="senaite.storage.sample_container_viewlet"
+      class=".sample_container.SampleContainerViewlet"
+      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+      template="templates/sample_container_viewlet.pt"
+      permission="zope2.View"
+      layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
+
+</configure>

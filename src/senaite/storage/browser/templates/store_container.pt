@@ -135,7 +135,7 @@
             <div class="row">
             <!-- Samples container layout view -->
             <div class="col-sm-12">
-              <table class="table table-bordered container-layout"
+              <table class="table table-bordered container-layout small"
                 tal:define="rows python: container.getRows();
                             columns python: container.getColumns();">
 
