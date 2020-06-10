@@ -37,7 +37,6 @@ class StorageListing(BikaListingView):
         self.show_select_row = False
         self.show_select_all_checkboxes = False
         self.show_select_column = False
-        request.set("disable_border", 1)
 
         self.columns = collections.OrderedDict((
             ("Title", {
