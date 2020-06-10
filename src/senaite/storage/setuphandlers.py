@@ -18,21 +18,29 @@
 # Copyright 2019-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from Products.DCWorkflow.Guard import Guard
 from bika.lims import api
 from bika.lims import permissions
 from bika.lims.catalog.analysisrequest_catalog import \
     CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog.catalog_utilities import addZCTextIndex
+from plone import api as ploneapi
+from Products.CMFPlone.utils import _createObjectByType
+from Products.DCWorkflow.Guard import Guard
+from senaite.storage import logger
 from senaite.storage import PRODUCT_NAME
 from senaite.storage import PROFILE_ID
-from senaite.storage import logger
 from senaite.storage.catalog import SENAITE_STORAGE_CATALOG
 
 ACTIONS_TO_HIDE = [
     # Tuples of (id, folder_id)
     # If folder_id is None, assume folder_id is portal
     ("bika_storagelocations", "bika_setup")
+]
+
+SITE_STRUCTURE = [
+    # Tuples of (portal_type, obj_id, obj_title, parent_path, display_type)
+    # If parent_path is None, assume folder_id is portal
+    ("StorageRootFolder", "senaite_storage", "Samples Storage", None, True)
 ]
 
 NEW_CONTENT_TYPES = [
@@ -181,6 +189,9 @@ def post_install(portal_setup):
 
     # Setup catalogs
     setup_catalogs(portal)
+
+    # Setup site structure
+    setup_site_structure(portal)
 
     # Reindex new content types
     reindex_new_content_types(portal)
@@ -476,3 +487,50 @@ def setup_id_formatting(portal, format=None):
         ids.append(record)
     ids.append(format)
     bs.setIDFormatting(ids)
+
+
+def setup_site_structure(portal):
+    """Setup contents structure for senaite.storage
+    """
+    logger.info("Setup site structure ...")
+
+    def resolve_parent(parent_path):
+        if not parent_path:
+            return portal
+        return api.get_object_by_path(parent_path, default=None)
+
+    for portal_type, obj_id, obj_title, parent_path, display in SITE_STRUCTURE:
+        parent = resolve_parent(parent_path)
+        if not parent:
+            logger.warn("Parent path {} does not exist".format(parent_path))
+            continue
+
+        if obj_id in parent:
+            logger.info("Object {}/{} already exists"
+                        .format(api.get_path(parent), obj_id))
+            obj = parent._getOb(obj_id)
+        else:
+            obj = _createObjectByType(portal_type, parent, obj_id)
+            obj.edit(title=obj_title)
+            obj.unmarkCreationFlag()
+
+        if display:
+            # Display the object in the nav bar
+            display_in_nav(obj)
+
+    logger.info("Setup site structure [DONE]")
+
+
+def display_in_nav(obj):
+    """Makes an object to be displayed in the navigation bar
+    """
+    # Display in navigation
+    registry_id = "plone.displayed_types"
+    portal_type = api.get_portal_type(obj)
+    to_display = ploneapi.portal.get_registry_record(registry_id, default=())
+    if portal_type not in to_display:
+        to_display = to_display + (portal_type, )
+        ploneapi.portal.set_registry_record(registry_id, to_display)
+
+    obj.setExcludeFromNav(False)
+    obj.reindexObject()
