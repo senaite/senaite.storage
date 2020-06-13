@@ -21,6 +21,7 @@
 from bika.lims.content.bikaschema import BikaFolderSchema
 from plone.app.folder.folder import ATFolder
 from Products.Archetypes.atapi import registerType
+from senaite.core.interfaces import IHideActionsMenu
 from senaite.storage import PRODUCT_NAME
 from senaite.storage.interfaces import IStorageRootFolder
 from zope.interface import implements
@@ -30,7 +31,7 @@ schema = BikaFolderSchema.copy()
 class StorageRootFolder(ATFolder):
     """Storage module root object
     """
-    implements(IStorageRootFolder)
+    implements(IStorageRootFolder, IHideActionsMenu)
     displayContentsTab = False
     schema = schema
 
