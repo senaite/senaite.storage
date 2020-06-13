@@ -93,7 +93,7 @@ PositionsLayout = RecordsField(
         "samples_capacity": "int",
         "samples_utilization": "int"},
     widget=RecordsWidget(
-        visible=False
+        visible=-1,
     )
 )
 
