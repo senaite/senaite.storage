@@ -37,6 +37,7 @@ class StorageListing(BikaListingView):
         self.show_select_row = False
         self.show_select_all_checkboxes = False
         self.show_select_column = False
+        self.context_actions = collections.OrderedDict()
 
         self.columns = collections.OrderedDict((
             ("Title", {
