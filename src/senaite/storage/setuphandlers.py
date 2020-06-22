@@ -40,13 +40,7 @@ ACTIONS_TO_HIDE = [
 SITE_STRUCTURE = [
     # Tuples of (portal_type, obj_id, obj_title, parent_path, display_type)
     # If parent_path is None, assume folder_id is portal
-    ("StorageRootFolder", "senaite_storage", "Samples Storage", None, True)
-]
-
-NEW_CONTENT_TYPES = [
-    # Tuples of (id, folder_id)
-    # If folder_id is None, assume folder_id is portal
-    ("senaite_storage", None),
+    ("StorageRootFolder", "senaite_storage", "Samples storage", None, True)
 ]
 
 ID_FORMATTING = [
@@ -82,7 +76,7 @@ INDEXES = [
     # Keeps the sample uids stored in each sample container
     (SENAITE_STORAGE_CATALOG, "get_samples_uids", "KeywordIndex"),
     # For searches, made of get_all_ids + Title
-    (SENAITE_STORAGE_CATALOG, "get_searchable_text", "ZCTextIndex"),
+    (SENAITE_STORAGE_CATALOG, "searchable_text", "TextIndexNG3"),
     # Index used in searches to filter sample containers with available slots
     (SENAITE_STORAGE_CATALOG, "is_full", "BooleanIndex"),
     (SENAITE_STORAGE_CATALOG, "review_state", "FieldIndex"),
@@ -193,9 +187,6 @@ def post_install(portal_setup):
     # Setup site structure
     setup_site_structure(portal)
 
-    # Reindex new content types
-    reindex_new_content_types(portal)
-
     # Setup ID Formatting for Storage content types
     setup_id_formatting(portal)
 
@@ -249,6 +240,13 @@ def setup_catalogs(portal):
                     % (meta_type, name, catalog))
         if meta_type == "ZCTextIndex":
             addZCTextIndex(c, name)
+        elif meta_type == "TextIndexNG3":
+            c.addIndex(name, meta_type)
+            index = c._catalog.getIndex(name)
+            index.index.default_encoding = "utf-8"
+            index.index.query_parser = "txng.parsers.en"
+            index.index.autoexpand = "always"
+            index.index.autoexpand_limit = 3
         else:
             c.addIndex(name, meta_type)
         to_index.append((c, name))
@@ -273,19 +271,6 @@ def setup_catalogs(portal):
             logger.info("Column '%s' already in catalog '%s'  [SKIP]"
                         % (name, catalog))
             continue
-
-
-def reindex_new_content_types(portal):
-    """Setup new content types"""
-    logger.info("*** Reindex new content types ***")
-
-    # Index objects - Importing through GenericSetup doesn't
-    for obj_id, folder_id in NEW_CONTENT_TYPES:
-        folder = folder_id and portal[folder_id] or portal
-        logger.info("Reindexing {}".format(obj_id))
-        obj = folder[obj_id]
-        obj.unmarkCreationFlag()
-        obj.reindexObject()
 
 
 def hide_actions(portal):

@@ -89,7 +89,10 @@
                             class="blurrable firstToFocus referencewidget"
                             base_query='{
                               "is_full": false,
-                              "review_state": "active"
+                              "review_state": "active",
+                              "sort_on": "getId",
+                              "sort_order": "ascending",
+                              "limit": "30"
                             }'
                             search_query='{}'
                             catalog_name="senaite_storage_catalog"
@@ -98,7 +101,7 @@
                                 {"columnName": "id", "align": "left", "label": "Id", "width": "10"},
                                 {"columnName": "get_full_title", "align": "left", "label": "Container full path", "width": "90"},
                                 {"columnName": "UID", "hidden": true}],
-                              "search_fields": ["get_searchable_text"],
+                              "search_fields": ["searchable_text"],
                               "catalog_name": "senaite_storage_catalog",
                               "url": "referencewidget_search",
                               "discard_empty": [],

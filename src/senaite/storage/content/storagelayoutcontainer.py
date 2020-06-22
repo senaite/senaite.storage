@@ -54,7 +54,6 @@ Rows = IntegerField(
     )
 )
 
-
 Columns = IntegerField(
     name="Columns",
     default=1,
@@ -114,6 +113,10 @@ schema = BikaFolderSchema.copy() + Schema((
 ))
 
 
+# Do not display these items in the navbar by default
+schema['excludeFromNav'].default = True
+
+
 class StorageLayoutContainer(ATFolder):
     """Base class for storage containers
     """
@@ -148,7 +151,7 @@ class StorageLayoutContainer(ATFolder):
             return feed_parent_ids(container.aq_parent, ids)
         return feed_parent_ids(self, [])
 
-    def get_searchable_text(self):
+    def searchable_text(self):
         """Returns a string containing terms for searches. Used as an index for
         wide-range catalog searches
         """

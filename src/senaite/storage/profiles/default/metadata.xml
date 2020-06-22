@@ -6,7 +6,7 @@
   dependencies before installing this add-on own profile.
 -->
 <metadata>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
 
   <!-- Be sure to install the following dependencies if not yet installed -->
   <dependencies>
