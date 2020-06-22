@@ -145,7 +145,7 @@ class StorageLayoutContainer(ATFolder):
             return feed_parent_ids(container.aq_parent, ids)
         return feed_parent_ids(self, [])
 
-    def get_searchable_text(self):
+    def searchable_text(self):
         """Returns a string containing terms for searches. Used as an index for
         wide-range catalog searches
         """

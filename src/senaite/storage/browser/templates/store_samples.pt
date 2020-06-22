@@ -106,7 +106,7 @@
                                 {"columnName": "id", "align": "left", "label": "Id", "width": "10"},
                                 {"columnName": "get_full_title", "align": "left", "label": "Container full path", "width": "90"},
                                 {"columnName": "UID", "hidden": true}],
-                              "search_fields": ["get_searchable_text"],
+                              "search_fields": ["searchable_text"],
                               "catalog_name": "senaite_storage_catalog",
                               "url": "referencewidget_search",
                               "discard_empty": [],

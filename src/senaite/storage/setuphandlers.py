@@ -74,7 +74,7 @@ INDEXES = [
     # Keeps the sample uids stored in each sample container
     (SENAITE_STORAGE_CATALOG, "get_samples_uids", "KeywordIndex"),
     # For searches, made of get_all_ids + Title
-    (SENAITE_STORAGE_CATALOG, "get_searchable_text", "ZCTextIndex"),
+    (SENAITE_STORAGE_CATALOG, "searchable_text", "TextIndexNG3"),
     # Index used in searches to filter sample containers with available slots
     (SENAITE_STORAGE_CATALOG, "is_full", "BooleanIndex"),
     (SENAITE_STORAGE_CATALOG, "review_state", "FieldIndex"),
@@ -238,6 +238,13 @@ def setup_catalogs(portal):
                     % (meta_type, name, catalog))
         if meta_type == "ZCTextIndex":
             addZCTextIndex(c, name)
+        elif meta_type == "TextIndexNG3":
+            c.addIndex(name, meta_type)
+            index = c._catalog.getIndex(name)
+            index.index.default_encoding = "utf-8"
+            index.index.query_parser = "txng.parsers.en"
+            index.index.autoexpand = "always"
+            index.index.autoexpand_limit = 3
         else:
             c.addIndex(name, meta_type)
         to_index.append((c, name))

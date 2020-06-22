@@ -20,13 +20,20 @@
 
 from senaite.storage import logger
 from senaite.storage import PRODUCT_NAME
+from senaite.storage.catalog import SENAITE_STORAGE_CATALOG
 from senaite.storage.setuphandlers import post_install
 
+from bika.lims import api
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 
 version = '1.0.2'
 
+
+INDEXES_TO_REMOVE = [
+    # This was a ZCTextIndex. Replaced by `searchable_text` (TextIndexNG3)
+    (SENAITE_STORAGE_CATALOG, "get_searchable_text"),
+]
 
 @upgradestep(PRODUCT_NAME, version)
 def upgrade(tool):
@@ -44,8 +51,29 @@ def upgrade(tool):
                                                    version))
 
     # -------- ADD YOUR STUFF BELOW --------
+    # Remove stale indexes
+    remove_stale_indexes(portal)
+
     # Reinstall
     post_install(setup)
 
     logger.info("{0} upgraded to version {1}".format(PRODUCT_NAME, version))
     return True
+
+
+def remove_stale_indexes(portal):
+    logger.info("Removing stale indexes ...")
+    for catalog, index in INDEXES_TO_REMOVE:
+        del_index(portal, catalog, index)
+
+
+def del_index(portal, catalog_id, index_name):
+    logger.info("Removing '{}' index from '{}' ..."
+                .format(index_name, catalog_id))
+    catalog = api.get_tool(catalog_id)
+    if index_name not in catalog.indexes():
+        logger.info("Index '{}' not in catalog '{}' [SKIP]"
+                    .format(index_name, catalog_id))
+        return
+    catalog.delIndex(index_name)
+    logger.info("Removing old index '{}' ...".format(index_name))
