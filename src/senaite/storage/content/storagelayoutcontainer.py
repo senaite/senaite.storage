@@ -111,6 +111,11 @@ schema = BikaFolderSchema.copy() + Schema((
     AvailablePositions,
 ))
 
+
+# Do not display these items in the navbar by default
+schema['excludeFromNav'].default = True
+
+
 class StorageLayoutContainer(ATFolder):
     """Base class for storage containers
     """
