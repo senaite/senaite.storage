@@ -17,7 +17,7 @@
 #
 # Copyright 2019-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
-
+from Products.CMFPlone.utils import _createObjectByType
 from Products.DCWorkflow.Guard import Guard
 from bika.lims import api
 from bika.lims import permissions
@@ -36,9 +36,9 @@ ACTIONS_TO_HIDE = [
 ]
 
 NEW_CONTENT_TYPES = [
-    # Tuples of (id, folder_id)
+    # Tuples of (id, portal_type, title, folder_id)
     # If folder_id is None, assume folder_id is portal
-    ("senaite_storage", None),
+    ("senaite_storage", "StorageRootFolder", "Samples storage", None),
 ]
 
 ID_FORMATTING = [
@@ -182,8 +182,8 @@ def post_install(portal_setup):
     # Setup catalogs
     setup_catalogs(portal)
 
-    # Reindex new content types
-    reindex_new_content_types(portal)
+    # Setup new content types
+    setup_new_content_types(portal)
 
     # Setup ID Formatting for Storage content types
     setup_id_formatting(portal)
@@ -271,13 +271,17 @@ def setup_catalogs(portal):
             continue
 
 
-def reindex_new_content_types(portal):
+def setup_new_content_types(portal):
     """Setup new content types"""
     logger.info("*** Reindex new content types ***")
 
     # Index objects - Importing through GenericSetup doesn't
-    for obj_id, folder_id in NEW_CONTENT_TYPES:
+    for obj_id, portal_type, title, folder_id in NEW_CONTENT_TYPES:
         folder = folder_id and portal[folder_id] or portal
+        if obj_id not in folder.objectIds():
+            obj = _createObjectByType(portal_type, folder, obj_id)
+            obj.edit(title=title)
+
         logger.info("Reindexing {}".format(obj_id))
         obj = folder[obj_id]
         obj.unmarkCreationFlag()
