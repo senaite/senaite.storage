@@ -17,17 +17,19 @@
 #
 # Copyright 2019-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
-from Products.CMFPlone.utils import _createObjectByType
-from Products.DCWorkflow.Guard import Guard
+
 from bika.lims import api
 from bika.lims import permissions
 from bika.lims.catalog.analysisrequest_catalog import \
     CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog.catalog_utilities import addZCTextIndex
+from Products.CMFPlone.utils import _createObjectByType
+from Products.DCWorkflow.Guard import Guard
+from senaite.storage import logger
 from senaite.storage import PRODUCT_NAME
 from senaite.storage import PROFILE_ID
-from senaite.storage import logger
 from senaite.storage.catalog import SENAITE_STORAGE_CATALOG
+
 
 ACTIONS_TO_HIDE = [
     # Tuples of (id, folder_id)
@@ -35,10 +37,10 @@ ACTIONS_TO_HIDE = [
     ("bika_storagelocations", "bika_setup")
 ]
 
-NEW_CONTENT_TYPES = [
-    # Tuples of (id, portal_type, title, folder_id)
-    # If folder_id is None, assume folder_id is portal
-    ("senaite_storage", "StorageRootFolder", "Samples storage", None),
+SITE_STRUCTURE = [
+    # Tuples of (portal_type, obj_id, obj_title, parent_path, display_type)
+    # If parent_path is None, assume folder_id is portal
+    ("StorageRootFolder", "senaite_storage", "Samples storage", None, True)
 ]
 
 ID_FORMATTING = [
@@ -182,8 +184,8 @@ def post_install(portal_setup):
     # Setup catalogs
     setup_catalogs(portal)
 
-    # Setup new content types
-    setup_new_content_types(portal)
+    # Setup site structure
+    setup_site_structure(portal)
 
     # Setup ID Formatting for Storage content types
     setup_id_formatting(portal)
@@ -269,23 +271,6 @@ def setup_catalogs(portal):
             logger.info("Column '%s' already in catalog '%s'  [SKIP]"
                         % (name, catalog))
             continue
-
-
-def setup_new_content_types(portal):
-    """Setup new content types"""
-    logger.info("*** Reindex new content types ***")
-
-    # Index objects - Importing through GenericSetup doesn't
-    for obj_id, portal_type, title, folder_id in NEW_CONTENT_TYPES:
-        folder = folder_id and portal[folder_id] or portal
-        if obj_id not in folder.objectIds():
-            obj = _createObjectByType(portal_type, folder, obj_id)
-            obj.edit(title=title)
-
-        logger.info("Reindexing {}".format(obj_id))
-        obj = folder[obj_id]
-        obj.unmarkCreationFlag()
-        obj.reindexObject()
 
 
 def hide_actions(portal):
@@ -487,3 +472,34 @@ def setup_id_formatting(portal, format=None):
         ids.append(record)
     ids.append(format)
     bs.setIDFormatting(ids)
+
+
+def setup_site_structure(portal):
+    """Setup contents structure for senaite.storage
+    """
+    logger.info("Setup site structure ...")
+
+    def resolve_parent(parent_path):
+        if not parent_path:
+            return portal
+        return api.get_object_by_path(parent_path, default=None)
+
+    for portal_type, obj_id, obj_title, parent_path, display in SITE_STRUCTURE:
+        parent = resolve_parent(parent_path)
+        if not parent:
+            logger.warn("Parent path {} does not exist".format(parent_path))
+            continue
+
+        if obj_id in parent:
+            logger.info("Object {}/{} already exists"
+                        .format(api.get_path(parent), obj_id))
+            obj = parent._getOb(obj_id)
+        else:
+            obj = _createObjectByType(portal_type, parent, obj_id)
+            obj.edit(title=obj_title)
+            obj.unmarkCreationFlag()
+
+        obj.setExcludeFromNav(not display)
+        obj.reindexObject()
+
+    logger.info("Setup site structure [DONE]")
