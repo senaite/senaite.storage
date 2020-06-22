@@ -67,6 +67,11 @@
                     ui_item="getId"
                     autocomplete="false"
                     class="blurrable firstToFocus referencewidget"
+                    base_query='{
+                      "sort_on": "getId",
+                      "sort_order": "ascending",
+                      "limit": "30"
+                    }'
                     search_query='{}'
                     catalog_name="bika_catalog_analysisrequest_listing"
                     combogrid_options='{

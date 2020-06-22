@@ -94,7 +94,10 @@
                             class="blurrable firstToFocus referencewidget"
                             base_query='{
                               "is_full": false,
-                              "review_state": "active"
+                              "review_state": "active",
+                              "sort_on": "getId",
+                              "sort_order": "ascending",
+                              "limit": "30"
                             }'
                             search_query='{}'
                             catalog_name="senaite_storage_catalog"
