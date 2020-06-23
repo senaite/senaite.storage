@@ -22,9 +22,9 @@ from senaite.storage import PRODUCT_NAME
 from senaite.storage import logger
 from senaite.storage.setuphandlers import setup_workflows
 
-from bika.lims.upgrade import upgradestep
-from bika.lims.upgrade.utils import UpgradeUtils
-from bika.lims.upgrade.v01_03_003 import update_wf_received_samples
+from senaite.core.upgrade import upgradestep
+from senaite.core.upgrade.utils import UpgradeUtils
+from senaite.core.upgrade.v01_03_003 import update_wf_received_samples
 
 version = '1.0.1'
 

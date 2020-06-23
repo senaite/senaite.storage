@@ -24,8 +24,8 @@ from senaite.storage.catalog import SENAITE_STORAGE_CATALOG
 from senaite.storage.setuphandlers import post_install
 
 from bika.lims import api
-from bika.lims.upgrade import upgradestep
-from bika.lims.upgrade.utils import UpgradeUtils
+from senaite.core.upgrade import upgradestep
+from senaite.core.upgrade.utils import UpgradeUtils
 
 version = '1.0.2'
 
