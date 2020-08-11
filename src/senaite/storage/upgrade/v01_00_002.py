@@ -35,6 +35,7 @@ INDEXES_TO_REMOVE = [
     (SENAITE_STORAGE_CATALOG, "get_searchable_text"),
 ]
 
+
 @upgradestep(PRODUCT_NAME, version)
 def upgrade(tool):
     portal = tool.aq_inner.aq_parent
