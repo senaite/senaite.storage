@@ -19,9 +19,9 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
-from senaite.core.listing import utils
-from senaite.core.listing.interfaces import IListingView
-from senaite.core.listing.interfaces import IListingViewAdapter
+from senaite.app.listing import utils
+from senaite.app.listing.interfaces import IListingView
+from senaite.app.listing.interfaces import IListingViewAdapter
 from senaite.storage import senaiteMessageFactory as _
 from zope.component import adapts
 from zope.interface import implementer
