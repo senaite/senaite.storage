@@ -22,7 +22,7 @@ setup(
         "Programming Language :: Python",
         "License :: OSI Approved :: GNU General Public License v2 (GPLv2)",
     ],
-    keywords=['senaite', 'lims', 'opensource'],
+    keywords=["senaite", "lims", "opensource"],
     author="RIDING BYTES & NARALABS",
     author_email="senaite@senaite.com",
     url="https://github.com/senaite/senaite.storage",
@@ -34,7 +34,7 @@ setup(
     zip_safe=False,
     install_requires=[
         "setuptools",
-        "senaite.lims",
+        "senaite.lims>=2.0.0rc1",
         "archetypes.schemaextender",
     ],
     extras_require={

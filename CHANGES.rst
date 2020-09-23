@@ -1,11 +1,16 @@
 Changelog
 =========
 
-1.0.2 (unreleased)
+2.0.0 (unreleased)
 ------------------
 
 - #15 Fixed imports to senaite.app.listing
-- #14 Refactor folderitem for storage listings to get full object from brain param obj
+
+
+1.0.2 (2020-08-11)
+------------------
+
+- #14 Refactor folderitem for storage listings to get full object from brain
 
 
 1.0.1 (2020-03-07)

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2020-03-07 00:38+0000\n"
+"POT-Creation-Date: 2020-08-11 10:04+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -36,7 +36,7 @@ msgstr ""
 msgid "Add Facility"
 msgstr ""
 
-#: senaite/storage/browser/templates/store_container.pt:112
+#: senaite/storage/browser/templates/store_container.pt:117
 msgid "Add Sample"
 msgstr ""
 
@@ -68,8 +68,8 @@ msgstr ""
 msgid "Available positions:"
 msgstr ""
 
-#: senaite/storage/browser/templates/store_container.pt:119
-#: senaite/storage/browser/templates/store_samples.pt:149
+#: senaite/storage/browser/templates/store_container.pt:124
+#: senaite/storage/browser/templates/store_samples.pt:152
 msgid "Cancel"
 msgstr ""
 
@@ -116,17 +116,21 @@ msgstr ""
 msgid "ID"
 msgstr ""
 
+#: senaite/storage/browser/viewlets/templates/sample_container_viewlet.pt:18
+msgid "Location:"
+msgstr ""
+
 #: senaite/storage/browser/containers.py:51
 #: senaite/storage/browser/storagelisting.py:44
 #: senaite/storage/browser/storagerootfolder.py:49
 msgid "Name"
 msgstr ""
 
-#: senaite/storage/browser/templates/store_container.pt:128
+#: senaite/storage/browser/templates/store_container.pt:133
 msgid "Next container:"
 msgstr ""
 
-#: senaite/storage/browser/store_samples.py:54
+#: senaite/storage/browser/store_samples.py:53
 msgid "No items selected"
 msgstr ""
 
@@ -144,8 +148,8 @@ msgid "Phone"
 msgstr ""
 
 #: senaite/storage/browser/samples.py:53
-#: senaite/storage/browser/templates/store_container.pt:100
-#: senaite/storage/browser/templates/store_samples.pt:127
+#: senaite/storage/browser/templates/store_container.pt:105
+#: senaite/storage/browser/templates/store_samples.pt:130
 msgid "Position"
 msgstr ""
 
@@ -214,7 +218,7 @@ msgstr ""
 msgid "Storage container"
 msgstr ""
 
-#: senaite/storage/browser/templates/store_samples.pt:143
+#: senaite/storage/browser/templates/store_samples.pt:146
 msgid "Store Samples"
 msgstr ""
 
@@ -224,6 +228,10 @@ msgstr ""
 
 #: senaite/storage/browser/analysisrequests.py:74
 msgid "Stored"
+msgstr ""
+
+#: senaite/storage/browser/viewlets/templates/sample_container_viewlet.pt:12
+msgid "Stored sample"
 msgstr ""
 
 #: senaite/storage/browser/store_container.py:169
