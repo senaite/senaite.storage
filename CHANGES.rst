@@ -3,6 +3,8 @@ Changelog
 
 1.0.2 (unreleased)
 ------------------
+
+- #15 Fixed imports to senaite.app.listing
 - #14 Refactor folderitem for storage listings to get full object from brain param obj
 
 
