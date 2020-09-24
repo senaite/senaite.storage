@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2020-03-07 00:38+0000\n"
+"POT-Creation-Date: 2020-08-11 10:04+0000\n"
 "PO-Revision-Date: 2019-03-31 21:21+0000\n"
 "Last-Translator: A. Migulo, 2019\n"
 "Language-Team: German (https://www.transifex.com/senaite/teams/97702/de/)\n"
@@ -43,7 +43,7 @@ msgstr "Aktiv"
 msgid "Add Facility"
 msgstr "Lagerort hinzufügen"
 
-#: senaite/storage/browser/templates/store_container.pt:112
+#: senaite/storage/browser/templates/store_container.pt:117
 msgid "Add Sample"
 msgstr "Probe hinzufügen"
 
@@ -75,8 +75,8 @@ msgstr "Buchstaben werden verwendet, um Zeilen innerhalb eines Behälters zu ken
 msgid "Available positions:"
 msgstr "Verfügbare Positionen"
 
-#: senaite/storage/browser/templates/store_container.pt:119
-#: senaite/storage/browser/templates/store_samples.pt:149
+#: senaite/storage/browser/templates/store_container.pt:124
+#: senaite/storage/browser/templates/store_samples.pt:152
 msgid "Cancel"
 msgstr "Abbruch"
 
@@ -123,17 +123,21 @@ msgstr "Erwartete Temperatur dieses Behälters"
 msgid "ID"
 msgstr "ID"
 
+#: senaite/storage/browser/viewlets/templates/sample_container_viewlet.pt:18
+msgid "Location:"
+msgstr ""
+
 #: senaite/storage/browser/containers.py:51
 #: senaite/storage/browser/storagelisting.py:44
 #: senaite/storage/browser/storagerootfolder.py:49
 msgid "Name"
 msgstr "Name"
 
-#: senaite/storage/browser/templates/store_container.pt:128
+#: senaite/storage/browser/templates/store_container.pt:133
 msgid "Next container:"
 msgstr "Nächster Behälter"
 
-#: senaite/storage/browser/store_samples.py:54
+#: senaite/storage/browser/store_samples.py:53
 msgid "No items selected"
 msgstr "Nichts ausgewählt"
 
@@ -151,8 +155,8 @@ msgid "Phone"
 msgstr "Telefon"
 
 #: senaite/storage/browser/samples.py:53
-#: senaite/storage/browser/templates/store_container.pt:100
-#: senaite/storage/browser/templates/store_samples.pt:127
+#: senaite/storage/browser/templates/store_container.pt:105
+#: senaite/storage/browser/templates/store_samples.pt:130
 msgid "Position"
 msgstr "Position"
 
@@ -221,7 +225,7 @@ msgstr "Lagerort"
 msgid "Storage container"
 msgstr "Lagerbehälter"
 
-#: senaite/storage/browser/templates/store_samples.pt:143
+#: senaite/storage/browser/templates/store_samples.pt:146
 msgid "Store Samples"
 msgstr "Proben einlagern"
 
@@ -232,6 +236,10 @@ msgstr "Proben einlagern"
 #: senaite/storage/browser/analysisrequests.py:74
 msgid "Stored"
 msgstr "Eingelagert"
+
+#: senaite/storage/browser/viewlets/templates/sample_container_viewlet.pt:12
+msgid "Stored sample"
+msgstr ""
 
 #: senaite/storage/browser/store_container.py:169
 msgid "Stored sample {} at position {}"

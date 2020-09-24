@@ -65,17 +65,17 @@
   <subscriber
     for="bika.lims.browser.analysisrequest.AnalysisRequestsView
          bika.lims.interfaces.IAnalysisRequestsFolder"
-    provides="senaite.core.listing.interfaces.IListingViewAdapter"
+    provides="senaite.app.listing.interfaces.IListingViewAdapter"
     factory=".analysisrequests.AnalysisRequestsListingViewAdapter" />
   <subscriber
     for="bika.lims.browser.analysisrequest.AnalysisRequestsView
          bika.lims.interfaces.IClient"
-    provides="senaite.core.listing.interfaces.IListingViewAdapter"
+    provides="senaite.app.listing.interfaces.IListingViewAdapter"
     factory=".analysisrequests.AnalysisRequestsListingViewAdapter" />
   <subscriber
     for="bika.lims.browser.analysisrequest.AnalysisRequestsView
          bika.lims.interfaces.IBatch"
-    provides="senaite.core.listing.interfaces.IListingViewAdapter"
+    provides="senaite.app.listing.interfaces.IListingViewAdapter"
     factory=".analysisrequests.AnalysisRequestsListingViewAdapter" />
 
 </configure>
