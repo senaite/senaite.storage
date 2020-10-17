@@ -40,9 +40,6 @@ class StorageRootFolderContentsView(StorageListing):
             sort_on = "sortable_title",
             sort_order = "ascending"
         )
-        self.icon = "{}/{}".format(
-            self.portal_url,
-            "++resource++senaite.storage.static/img/storage_big.png")
 
         self.columns = collections.OrderedDict((
             ("Title", {

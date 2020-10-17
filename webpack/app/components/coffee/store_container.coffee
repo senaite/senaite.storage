@@ -2,17 +2,13 @@
     coffee --no-header -w -o ../ -c store_container.coffee
 ###
 
-# DOCUMENT READY ENTRY POINT
-document.addEventListener "DOMContentLoaded", ->
-  console.debug "[senaite.storage] DOMContentLoaded: --> Loading Store Container Controller"
-  window.store_container_controller = new StoreContainerController
-
-class window.StoreContainerController
+class StoreContainerController
   ###
    * Store Samples in a Container view controller
   ###
 
   constructor: ->
+    console.debug "StoreContainerController::init"
     # bind the event handler to the elements
     @bind_eventhandler()
     $("#position").change()
@@ -28,6 +24,7 @@ class window.StoreContainerController
      * The selected value from the position selected list has changed. Make the
      * counterpart position selector from the layout more visible
     ###
+    @debug "StoreContainerController::on_position_change"
     select = $(event.currentTarget)
     $("td.empty-slot").removeClass("selected")
     $("#"+select.val()).parent("td.empty-slot").addClass("selected")
@@ -37,6 +34,7 @@ class window.StoreContainerController
      * The user has clicked to a position slot from the layout. Update the
      * value for position selection list and submit
     ###
+    @debug "StoreContainerController::on_position_slot_click"
     event.preventDefault()
     anchor = $(event.currentTarget)
     select = $("#position").val(anchor.attr("id"))
@@ -47,3 +45,5 @@ class window.StoreContainerController
 
   debug: (message) =>
     console.debug "[senaite.storage] "+message
+
+export default StoreContainerController

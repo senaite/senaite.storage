@@ -5,6 +5,8 @@ Changelog
 ------------------
 
 - #15 Fixed imports to senaite.app.listing
+- Do not display Containers and SampleContainers in navbar by default
+- Compatibility with senaite.lims 2.x
 
 
 1.0.2 (2020-08-11)

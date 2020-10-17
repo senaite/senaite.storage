@@ -2,17 +2,13 @@
     coffee --no-header -w -o ../ -c store_samples.coffee
 ###
 
-# DOCUMENT READY ENTRY POINT
-document.addEventListener "DOMContentLoaded", ->
-  console.debug "[senaite.storage] DOMContentLoaded: --> Loading Store Samples Controller"
-  window.store_samples_controller = new StoreSamplesController
-
-class window.StoreSamplesController
+class StoreSamplesController
   ###
    * Store Samples view controller
   ###
 
   constructor: ->
+    console.debug "StoreSamplesController::init"
     # bind the event handler to the elements
     @bind_eventhandler()
     return @
@@ -27,6 +23,7 @@ class window.StoreSamplesController
      * Fills the select element next to the container input with the positions
      * that are available for storage
     ###
+    @debug "StoreSamplesController::on_container_change"
     $container = $(event.currentTarget)
     container_uid = $container.attr "uid"
     sample_uid = $container.attr "sample_uid"
@@ -40,6 +37,7 @@ class window.StoreSamplesController
      * same container. This ensures that a given position within a container can
      * only be selected once
     ###
+    @debug "StoreSamplesController::on_container_position_change"
     select = $(event.currentTarget)
     container_uid = select.attr "container_uid"
     if not container_uid
@@ -58,6 +56,7 @@ class window.StoreSamplesController
      * are bound to the container passed in that do not contain this position
      * already
     ###
+    @debug "StoreSamplesController::add_container_position:container_uid=#{container_uid}, position=#{position}"
     selects = @get_container_position_selects(container_uid)
     $.each selects, (index, select) ->
       options = $(select).find("option")
@@ -81,6 +80,7 @@ class window.StoreSamplesController
      * that are bound to the container passed in. It only affects to those
      * elements that have a position selected other than the one passed in.
     ###
+    @debug "StoreSamplesController::purge_container_position:container_uid=#{container_uid}, position=#{position}"
     selects = @get_container_position_selects(container_uid)
     $.each selects, (index, select) ->
       if $(select).val() != position
@@ -92,6 +92,7 @@ class window.StoreSamplesController
      * Returns all DOM select elements for layout position selection that are
      * bound to the container passed in
     ###
+    @debug "StoreSamplesController::get_container_position_selects:container_uid=#{container_uid}"
     selects_name = "samples\\.container_position:records"
     $("select[name='"+selects_name+"'][container_uid='"+container_uid+"']")
 
@@ -103,6 +104,7 @@ class window.StoreSamplesController
      * same container are updated accordingly to prevent same position to be
      * assigned twice
     ###
+    @debug "StoreSamplesController::fill_container_positions:container_uid=#{container_uid}"
     $(select).find("option").remove()
     $(select).attr "original_value", ""
     $(select).attr "container_uid", container_uid
@@ -179,3 +181,5 @@ class window.StoreSamplesController
 
   debug: (message) =>
     console.debug "[senaite.storage] "+message
+
+export default StoreSamplesController

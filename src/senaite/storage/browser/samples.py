@@ -94,15 +94,14 @@ class SamplesListing(BikaListingView):
             },
         ]
 
-        imgs_path = "++resource++senaite.storage.static/img"
-        self.icon = "{}/{}/{}".format(self.portal_url, imgs_path, "box_big.png")
+        ico_path = "{}/senaite_theme/icon/".format(self.portal_url)
+
         self.context_actions = collections.OrderedDict()
         if not context.is_full():
             uid = api.get_uid(context)
             self.context_actions[_("Add Samples")] = {
                 "url": "storage_store_container?uids={}".format(uid),
-                "icon": "{}/{}".format(
-                    self.portal_url, "/++resource++bika.lims.images/sample.png")
+                "icon": "{}/{}".format(ico_path, "sample")
             }
 
     def folderitems(self):

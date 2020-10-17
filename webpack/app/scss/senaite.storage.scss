@@ -1,3 +1,4 @@
+// SENAITE STORAGE Styles
 .bg-success {
     background-color: #00c851 !important
 }
@@ -53,8 +54,7 @@ table.container-layout {
     table.container-layout td.empty-slot.selected:hover {
       border: 2px solid #449d44; }
 
-    table.container-layout .empty-slot a div {
-      background: url("++resource++senaite.storage.static/img/plus-circle.png") no-repeat #efefef;
+    table.container-layout td.empty-slot a div {
+      background: url("data:image/svg+xml,%3Csvg width='24' height='24' stroke='%23dcdcdc' xmlns='http://www.w3.org/2000/svg' fill-rule='evenodd' clip-rule='evenodd'%3E%3Cpath d='M11.5 0c6.347 0 11.5 5.153 11.5 11.5s-5.153 11.5-11.5 11.5-11.5-5.153-11.5-11.5 5.153-11.5 11.5-11.5zm0 1c5.795 0 10.5 4.705 10.5 10.5s-4.705 10.5-10.5 10.5-10.5-4.705-10.5-10.5 4.705-10.5 10.5-10.5zm.5 10h6v1h-6v6h-1v-6h-6v-1h6v-6h1v6z'/%3E%3C/svg%3E") no-repeat #efefef;
       background-position: center;
       background-size: contain; }
-

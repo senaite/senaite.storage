@@ -71,26 +71,23 @@ class ContainersView(StorageListing):
                 "transitions": [],
                 "confirm_transitions": ["recover_samples"],
                 "columns": self.columns.keys(),
-            },]
+            }
+        ]
 
-        imgs_path = "++resource++senaite.storage.static/img"
-        icon_name = "container_big.png"
-        if IStorageFacility.providedBy(self.context):
-            icon_name = "facility_big.png"
-        self.icon = "{}/{}/{}".format(self.portal_url, imgs_path, icon_name)
+        ico_path = "{}/senaite_theme/icon/".format(self.portal_url)
 
         self.context_actions = collections.OrderedDict()
         if not IStorageSamplesContainer.providedBy(self.context):
             self.context_actions[_("Add container")] = {
                 "url": "createObject?type_name=StorageContainer",
-                "icon": "{}/{}".format(imgs_path, "container.png")
+                "icon": "{}/{}".format(ico_path, "storage-container")
             }
+
         if IStorageContainer.providedBy(self.context):
             self.context_actions[_("Add samples container")] = {
                 "url": "createObject?type_name=StorageSamplesContainer",
-                "icon": "{}/{}".format(imgs_path, "box.png")
+                "icon": "{}/{}".format(ico_path, "storage-sample-container")
             }
-
 
     def folderitem(self, obj, item, index):
         """Applies new properties to item (StorageContainer) that is currently

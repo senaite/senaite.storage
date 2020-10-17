@@ -8,8 +8,6 @@
                  tal:define="portal context/@@plone_portal_state/portal;">
       <script type="text/javascript"
               tal:attributes="src string:${portal/absolute_url}/senaite_widgets/referencewidget.js"></script>
-      <script type="text/javascript"
-              tal:attributes="src string:${portal/absolute_url}/++resource++senaite.storage.static/js/store_samples.js"></script>
     </metal:block>
   </head>
   <body>
@@ -34,6 +32,7 @@
 
     <!-- Content -->
     <metal:core fill-slot="content-core">
+      <div id="viewlet-senaite-storage-js" tal:content="structure provider:senaite.storage.js" />
       <div id="store-samples-view"
            class="row"
            tal:define="portal context/@@plone_portal_state/portal;">

@@ -7,7 +7,7 @@
 
   <!-- Basic metadata -->
   <property name="title" i18n:translate="">Storage Facility</property>
-  <property name="content_icon">++resource++senaite.storage.static/img/facility.png</property>
+  <property name="icon_expr">senaite_theme/icon/storage-facility</property>
   <property name="content_meta_type">StorageFacility</property>
   <property name="product">senaite.storage</property>
   <property name="factory">addStorageFacility</property>

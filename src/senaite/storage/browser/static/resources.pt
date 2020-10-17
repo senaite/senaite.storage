@@ -1,0 +1,1 @@
+<script tal:attributes="src string:${view/site_url}//++plone++senaite.storage.static/bundles/senaite.storage.js"></script><link href="#" rel="stylesheet" tal:attributes="href string:${view/site_url}//++plone++senaite.storage.static/bundles/senaite.storage.css"/>

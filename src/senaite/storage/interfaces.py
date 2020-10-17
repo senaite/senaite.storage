@@ -21,6 +21,7 @@
 from bika.lims.interfaces import IBikaLIMS
 from senaite.lims.interfaces import ISenaiteLIMS
 from zope.interface import Interface
+from zope.viewlet.interfaces import IViewletManager
 
 
 class ISenaiteStorageLayer(IBikaLIMS, ISenaiteLIMS):
@@ -65,4 +66,9 @@ class IStorageContainer(Interface):
 class IStorageSamplesContainer(IStorageContainer):
     """Marker interface for objects that represent a type of storage container
     designed for the storage of multiple samples (storage box, tube rack, etc.)
+    """
+
+
+class IStorageJS(IViewletManager):
+    """A viewlet manager that provides the JavaScripts for DataBox
     """

@@ -1,11 +1,19 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:plone="http://namespaces.plone.org/plone"
     i18n_domain="senaite.storage">
 
   <!-- Include child packages -->
+  <include package=".theme"/>
   <include package=".workflow"/>
   <include package=".viewlets"/>
+
+  <!-- Static directory for js, css and image resources -->
+  <plone:static
+      directory="static"
+      type="plone"
+      name="senaite.storage.static" />
 
   <!-- Listing view of facilities for storage -->
   <browser:page

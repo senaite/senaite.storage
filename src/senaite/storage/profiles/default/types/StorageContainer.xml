@@ -7,7 +7,7 @@
 
   <!-- Basic metadata -->
   <property name="title" i18n:translate="">Storage container</property>
-  <property name="content_icon">++resource++senaite.storage.static/img/container.png</property>
+  <property name="icon_expr">senaite_theme/icon/storage-container</property>
   <property name="content_meta_type">StorageContainer</property>
   <property name="product">senaite.storage</property>
   <property name="factory">addStorageContainer</property>

@@ -108,8 +108,8 @@ class StoreContainerView(BaseView):
     def get_base_query(self):
         base_query = {
             "review_state": self.get_allowed_states(),
-             "sort_on": "created"}
-
+            "sort_on": "created"
+        }
         return json.dumps(base_query)
 
     def get_allowed_states(self):

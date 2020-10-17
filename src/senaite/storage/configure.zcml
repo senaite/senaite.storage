@@ -1,6 +1,5 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
-    xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:five="http://namespaces.zope.org/five"
     xmlns:cmf="http://namespaces.zope.org/cmf"
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
@@ -24,11 +23,6 @@
   <include package=".upgrade"/>
   <include package=".subscribers"/>
   <include package=".workflow"/>
-
-  <!-- Static resource directory -->
-  <browser:resourceDirectory
-      name="senaite.storage.static"
-      directory="static" />
 
   <!-- Installation profile -->
   <genericsetup:registerProfile
