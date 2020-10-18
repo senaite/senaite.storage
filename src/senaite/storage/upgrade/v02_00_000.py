@@ -22,6 +22,7 @@ from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.storage import logger
 from senaite.storage import PRODUCT_NAME
+from senaite.storage.setuphandlers import post_install
 
 version = '2.0.0'
 
@@ -42,6 +43,9 @@ def upgrade(tool):
                                                    version))
 
     # -------- ADD YOUR STUFF BELOW --------
+
+    # Reinstall
+    post_install(setup)
 
     logger.info("{0} upgraded to version {1}".format(PRODUCT_NAME, version))
     return True

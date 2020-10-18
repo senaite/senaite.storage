@@ -24,8 +24,8 @@ from bika.lims import api
 from bika.lims.utils import get_progress_bar_html
 from senaite.storage import senaiteMessageFactory as _
 from senaite.storage.browser.storagelisting import StorageListing
-from senaite.storage.interfaces import IStorageFacility, \
-    IStorageSamplesContainer, IStorageContainer
+from senaite.storage.interfaces import IStorageContainer
+from senaite.storage.interfaces import IStorageSamplesContainer
 
 
 class ContainersView(StorageListing):
@@ -67,7 +67,20 @@ class ContainersView(StorageListing):
         self.review_states = [{
                 "id": "default",
                 "contentFilter": {"review_state": "active"},
-                "title": _("Active"),
+                "title": _("Top-level"),
+                "transitions": [],
+                "confirm_transitions": ["recover_samples"],
+                "columns": self.columns.keys(),
+            }, {
+                "id": "full",
+                "contentFilter": {
+                    "sort_on": "path",
+                    "review_state": "active",
+                    "path": {
+                        "query": "{}/".format("/".join(context.getPhysicalPath())),
+                    },
+                },
+                "title": _("Full hierarchy"),
                 "transitions": [],
                 "confirm_transitions": ["recover_samples"],
                 "columns": self.columns.keys(),
@@ -108,10 +121,21 @@ class ContainersView(StorageListing):
             item["replace"]["Containers"] = "{:01d} / {:01d} ({:01d}%)"\
                 .format(taken, capacity, percentage)
 
-        # append the UID of the primary AR as parent
-        parent = api.get_uid(api.get_parent(obj))
-        item["parent"] = parent != api.get_uid(self.context) and parent or ""
-        # append partition UIDs of this AR as children
-        containers = obj.get_layout_containers()
-        item["children"] = map(lambda cont: api.get_uid(cont), containers)
+        if self.review_state.get("id") == "full":
+            # Display full hierarchy
+            parent = api.get_path(obj)
+            curr_path = api.get_path(self.context)
+            path = parent.replace(curr_path, "")
+            parts = filter(None, path.split("/"))
+            if len(parts) > 1:
+                prefix = "&emsp;"*(len(parts)-1)
+                text = "".join([prefix, item["before"]["Title"]])
+                item["before"]["Title"] = text
+
         return item
+
+    def isItemAllowed(self, obj):
+        if self.review_state.get("id") == "full":
+            # Do not display current context in the listing
+            return api.get_id(obj) != api.get_id(self.context)
+        return True
