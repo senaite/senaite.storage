@@ -26,6 +26,7 @@ from bika.lims.catalog.catalog_utilities import addZCTextIndex
 from plone import api as ploneapi
 from Products.CMFPlone.utils import _createObjectByType
 from Products.DCWorkflow.Guard import Guard
+from senaite.core.workflow import SAMPLE_WORKFLOW
 from senaite.storage import logger
 from senaite.storage import PRODUCT_NAME
 from senaite.storage import PROFILE_ID
@@ -97,7 +98,7 @@ COLUMNS = [
 ]
 
 WORKFLOWS_TO_UPDATE = {
-    "bika_ar_workflow": {
+    SAMPLE_WORKFLOW: {
         "permissions": (),
         "states": {
             "sample_received": {
