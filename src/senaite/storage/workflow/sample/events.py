@@ -18,6 +18,7 @@
 # Copyright 2019-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from senaite.core.workflow import SAMPLE_WORKFLOW
 from senaite.storage import api as _api
 from senaite.storage import logger
 from zope.lifecycleevent import modified
@@ -57,7 +58,7 @@ def after_recover(sample):
 
     # Transition the sample to the state before it was stored
     previous_state = get_previous_state(sample) or "sample_due"
-    changeWorkflowState(sample, "bika_ar_workflow", previous_state)
+    changeWorkflowState(sample, SAMPLE_WORKFLOW, previous_state)
 
     # Notify the sample has ben modified
     modified(sample)

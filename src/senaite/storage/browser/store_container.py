@@ -23,6 +23,7 @@ import json
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _s
+from senaite.core.workflow import SAMPLE_WORKFLOW
 from senaite.storage import logger
 from senaite.storage import senaiteMessageFactory as _
 
@@ -115,7 +116,7 @@ class StoreContainerView(BaseView):
     def get_allowed_states(self):
         # Get the Sample (aka AR) workflow definition
         portal_wf = api.get_tool("portal_workflow")
-        arwf = portal_wf["bika_ar_workflow"]
+        arwf = portal_wf[SAMPLE_WORKFLOW]
         ar_states = arwf.states
 
         allowed_states = []
