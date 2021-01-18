@@ -69,6 +69,7 @@ class FacilityListingView(ListingView):
                 "id": "default",
                 "title": _("Collapsed"),
                 "contentFilter": {"is_active": True},
+                # workaround for double listing entries
                 "listing_config": {
                     "selected_uids": [],
                     "expanded_rows": [],
@@ -84,6 +85,7 @@ class FacilityListingView(ListingView):
                         "query": api.get_path(self.context),
                     },
                 },
+                # workaround for double listing entries
                 "listing_config": {
                     "selected_uids": [],
                     "expanded_rows": [],
