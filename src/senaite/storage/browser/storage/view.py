@@ -21,24 +21,24 @@
 import collections
 
 from bika.lims import api
-from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.utils import get_link, get_email_link, get_progress_bar_html
+from bika.lims.utils import get_email_link
+from bika.lims.utils import get_link
 from senaite.storage import senaiteMessageFactory as _
-from senaite.storage.browser.storagelisting import StorageListing
+from senaite.storage.browser.storage.listing import StorageListing
 
 
-class StorageRootFolderContentsView(StorageListing):
+class StorageListingView(StorageListing):
     """Listing view of all StorageFacilities
     """
 
     def __init__(self, context, request):
-        super(StorageRootFolderContentsView, self).__init__(context, request)
+        super(StorageListingView, self).__init__(context, request)
         self.title = self.context.translate(_("Samples storage"))
         self.form_id = "list_storagerootfolder"
         self.contentFilter = dict(
-            portal_type = "StorageFacility",
-            sort_on = "sortable_title",
-            sort_order = "ascending"
+            portal_type="StorageFacility",
+            sort_on="sortable_title",
+            sort_order="ascending"
         )
 
         self.columns = collections.OrderedDict((
@@ -46,15 +46,15 @@ class StorageRootFolderContentsView(StorageListing):
                 "title": _("Name"),
                 "index": "sortable_index"}),
             ("SamplesUsage", {
-                "title": _("Samples"),}),
+                "title": _("Samples")}),
             ("Samples", {
-                "title": _("Samples usage"),}),
+                "title": _("Samples usage")}),
             ("Containers", {
-                "title": _("Containers"),}),
+                "title": _("Containers")}),
             ("Phone", {
-                "title": _("Phone"),}),
+                "title": _("Phone")}),
             ("EmailAddress", {
-                "title": _("Email"),}),
+                "title": _("Email")}),
         ))
 
         self.review_states = [
@@ -73,13 +73,11 @@ class StorageRootFolderContentsView(StorageListing):
             "icon": "++resource++bika.lims.images/add.png"
         }
 
-
     def folderitem(self, obj, item, index):
         """Applies new properties to item (StorageFacility) that is currently
         being rendered as a row in the list
         """
-        item = super(StorageRootFolderContentsView,
-                     self).folderitem(obj, item, index)
+        item = super(StorageListingView, self).folderitem(obj, item, index)
 
         obj = api.get_object(obj)
         item["replace"]["EmailAddress"] = get_email_link(item["EmailAddress"])

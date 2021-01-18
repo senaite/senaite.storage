@@ -22,12 +22,13 @@ import collections
 
 from bika.lims import api
 from bika.lims.api import get_icon
-from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.utils import get_link, get_progress_bar_html
+from bika.lims.utils import get_link
+from bika.lims.utils import get_progress_bar_html
+from senaite.app.listing import ListingView
 from senaite.storage import senaiteMessageFactory as _
 
 
-class StorageListing(BikaListingView):
+class StorageListing(ListingView):
     """Listing view of storage-like objects
     """
 
@@ -46,11 +47,11 @@ class StorageListing(BikaListingView):
             ("Id", {
                 "title": _("ID")}),
             ("SamplesUsage", {
-                "title": _("% Samples"),}),
+                "title": _("% Samples")}),
             ("Samples", {
-                "title": _("Samples"),}),
+                "title": _("Samples")}),
             ("Containers", {
-                "title": _("Containers"),}),
+                "title": _("Containers")}),
         ))
 
         self.review_states = [

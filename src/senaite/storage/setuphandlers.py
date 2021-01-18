@@ -47,6 +47,20 @@ SITE_STRUCTURE = [
 ID_FORMATTING = [
     # An array of dicts. Each dict represents an ID formatting configuration
     {
+        "portal_type": "StorageFacility",
+        "form": "SF-{seq:05d}",
+        "prefix": "sstoragefacility",
+        "sequence_type": "generated",
+        "counter_type": "",
+        "split_length": 1,
+    }, {
+        "portal_type": "StoragePosition",
+        "form": "SP-{seq:05d}",
+        "prefix": "sstorageposition",
+        "sequence_type": "generated",
+        "counter_type": "",
+        "split_length": 1,
+    }, {
         "portal_type": "StorageContainer",
         "form": "SC-{seq:05d}",
         "prefix": "sstoragecontainer",

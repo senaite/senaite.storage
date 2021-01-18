@@ -22,18 +22,18 @@ import collections
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _s
-from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.catalog.analysisrequest_catalog import \
     CATALOG_ANALYSIS_REQUEST_LISTING
+from senaite.app.listing.view import ListingView
 from senaite.storage import senaiteMessageFactory as _
 
 
-class SamplesListing(BikaListingView):
+class SampleListingView(ListingView):
     """Listing view of sample objects from inside storage
     """
 
     def __init__(self, context, request):
-        super(SamplesListing, self).__init__(context, request)
+        super(SampleListingView, self).__init__(context, request)
         request.set("disable_sorder", 1)
         self.title = context.Title()
         self.form_id = "list_storage_samples"
@@ -107,7 +107,7 @@ class SamplesListing(BikaListingView):
     def folderitems(self):
         """We add this function to tell baselisting to use brains instead of
         full objects"""
-        items = BikaListingView.folderitems(self)
+        items = super(SampleListingView, self).folderitems()
         return sorted(items, key=lambda item: item["position"])
 
     def folderitem(self, obj, item, index):
@@ -119,5 +119,6 @@ class SamplesListing(BikaListingView):
         item["getDateReceived"] = self.ulocalized_time(received, long_format=1)
         item["getDateSampled"] = self.ulocalized_time(sampled, long_format=1)
         position = self.context.get_object_position(api.get_uid(obj))
-        item["position"] = self.context.position_to_alpha(position[0], position[1])
+        item["position"] = self.context.position_to_alpha(
+            position[0], position[1])
         return item

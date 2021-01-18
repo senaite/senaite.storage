@@ -48,6 +48,11 @@ class IStorageFacility(Interface):
     """
 
 
+class IStoragePosition(Interface):
+    """Marker interface for objects that describe the position inside a facility
+    """
+
+
 class IStorageLayoutContainer(Interface):
     """Marker interface for objects that act as containers, either of other
     containers or other type of objects such as samples. All these objects have

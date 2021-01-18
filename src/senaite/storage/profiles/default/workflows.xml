@@ -11,6 +11,9 @@
     <type type_id="StorageFacility">
       <bound-workflow workflow_id="senaite_storage_default_workflow"/>
     </type>
+    <type type_id="StoragePosition">
+      <bound-workflow workflow_id="senaite_storage_default_workflow"/>
+    </type>
     <type type_id="StorageRootFolder">
       <bound-workflow workflow_id="senaite_storage_default_workflow"/>
     </type>

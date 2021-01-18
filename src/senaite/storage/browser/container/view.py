@@ -23,21 +23,22 @@ import collections
 from bika.lims import api
 from bika.lims.utils import get_progress_bar_html
 from senaite.storage import senaiteMessageFactory as _
-from senaite.storage.browser.storagelisting import StorageListing
+from senaite.storage.browser.storage.listing import StorageListing
 from senaite.storage.interfaces import IStorageContainer
 from senaite.storage.interfaces import IStorageSamplesContainer
 
 
-class ContainersView(StorageListing):
-    """Listing view of all StorageContainers
+class ContainerListingView(StorageListing):
+    """Listing view of all Storage- and Sample Containers
     """
 
     def __init__(self, context, request):
-        super(ContainersView, self).__init__(context, request)
+        super(ContainerListingView, self).__init__(context, request)
         self.title = context.Title()
         self.form_id = "list_storage_containers"
         self.show_select_column = True
         self.contentFilter = {
+            "portal_type": ["StorageContainer", "StorageSamplesContainer"],
             "sort_on": "sortable_title",
             "sort_order": "ascending",
             "path": {
@@ -53,15 +54,15 @@ class ContainersView(StorageListing):
             ("Id", {
                 "title": _("ID")}),
             ("Temperature", {
-                "title": _("Temperature"),}),
+                "title": _("Temperature")}),
             ("SamplesUsage", {
-                "title": _("Samples"),}),
+                "title": _("Samples")}),
             ("Samples", {
-                "title": _("Samples usage"),}),
+                "title": _("Samples usage")}),
             ("ContainersUsage", {
-                "title": _("Containers"),}),
+                "title": _("Containers")}),
             ("Containers", {
-                "title": _("Containers usage"),}),
+                "title": _("Containers usage")}),
         ))
 
         self.review_states = [{
@@ -77,7 +78,7 @@ class ContainersView(StorageListing):
                     "sort_on": "path",
                     "review_state": "active",
                     "path": {
-                        "query": "{}/".format("/".join(context.getPhysicalPath())),
+                        "query": api.get_path(self.context),
                     },
                 },
                 "title": _("Full hierarchy"),
@@ -106,7 +107,7 @@ class ContainersView(StorageListing):
         """Applies new properties to item (StorageContainer) that is currently
         being rendered as a row in the list
         """
-        item = super(ContainersView, self).folderitem(obj, item, index)
+        item = super(ContainerListingView, self).folderitem(obj, item, index)
 
         # Get the object (the passed-in "obj" is a brain)
         obj = api.get_object(obj)
@@ -117,9 +118,10 @@ class ContainersView(StorageListing):
             capacity = obj.get_capacity()
             taken = len(obj.get_non_available_positions())
             percentage = capacity and taken*100/capacity or 0
-            item["replace"]["ContainersUsage"] = get_progress_bar_html(percentage)
-            item["replace"]["Containers"] = "{:01d} / {:01d} ({:01d}%)"\
-                .format(taken, capacity, percentage)
+            item["replace"]["ContainersUsage"] = get_progress_bar_html(
+                percentage)
+            item["replace"]["Containers"] = "{:01d} / {:01d} ({:01d}%)".format(
+                taken, capacity, percentage)
 
         if self.review_state.get("id") == "full":
             # Display full hierarchy
