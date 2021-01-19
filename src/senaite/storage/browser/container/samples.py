@@ -90,6 +90,7 @@ class SampleListingView(ListingView):
                 "contentFilter": {},
                 "title": _s("All"),
                 "transitions": [],
+                "confirm_transitions": ["recover"],
                 "columns": self.columns.keys(),
             },
         ]
