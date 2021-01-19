@@ -31,6 +31,6 @@ class WorkflowActionAddSamplesAdapter(RequestContextAware):
     def __call__(self, action, uids):
         """Redirects the user to the Samples selector view
         """
-        url = "{}/storage_store_container?uids={}".format(self.back_url,
-                                                          ",".join(uids))
+        url = "{}/storage_store_container?uids={}".format(
+            self.back_url, ",".join(uids))
         return self.redirect(redirect_url=url)
