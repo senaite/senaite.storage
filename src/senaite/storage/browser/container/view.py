@@ -21,7 +21,9 @@
 import collections
 
 from bika.lims import api
+from bika.lims.utils import get_link_for
 from bika.lims.utils import get_progress_bar_html
+from plone.memoize import view
 from senaite.storage import senaiteMessageFactory as _
 from senaite.storage.browser.storage.listing import StorageListing
 from senaite.storage.interfaces import IStorageContainer
@@ -65,15 +67,16 @@ class ContainerListingView(StorageListing):
                 "title": _("Containers usage")}),
         ))
 
-        self.review_states = [{
+        self.review_states = [
+            {
                 "id": "default",
+                "title": _("Collapsed"),
                 "contentFilter": {"review_state": "active"},
-                "title": _("Top-level"),
-                "transitions": [],
                 "confirm_transitions": ["recover_samples"],
                 "columns": self.columns.keys(),
             }, {
-                "id": "full",
+                "id": "expand",
+                "title": _("Expanded"),
                 "contentFilter": {
                     "sort_on": "path",
                     "review_state": "active",
@@ -81,8 +84,6 @@ class ContainerListingView(StorageListing):
                         "query": api.get_path(self.context),
                     },
                 },
-                "title": _("Full hierarchy"),
-                "transitions": [],
                 "confirm_transitions": ["recover_samples"],
                 "columns": self.columns.keys(),
             }
@@ -103,6 +104,10 @@ class ContainerListingView(StorageListing):
                 "icon": "{}/{}".format(ico_path, "storage-sample-container")
             }
 
+    @view.memoize
+    def is_expanded(self):
+        return self.review_state.get("id") == "expand"
+
     def folderitem(self, obj, item, index):
         """Applies new properties to item (StorageContainer) that is currently
         being rendered as a row in the list
@@ -111,6 +116,14 @@ class ContainerListingView(StorageListing):
 
         # Get the object (the passed-in "obj" is a brain)
         obj = api.get_object(obj)
+        icon = api.get_icon(obj)
+        level = self.get_child_level(obj)
+        link = get_link_for(obj)
+
+        link = get_link_for(obj)
+
+        item["replace"]["Title"] = "{} {}".format(icon, link)
+        item["node_level"] = level
 
         # Containers/Positions usage
         # Samples containers cannot have containers inside!
@@ -123,17 +136,6 @@ class ContainerListingView(StorageListing):
             item["replace"]["Containers"] = "{:01d} / {:01d} ({:01d}%)".format(
                 taken, capacity, percentage)
 
-        if self.review_state.get("id") == "full":
-            # Display full hierarchy
-            parent = api.get_path(obj)
-            curr_path = api.get_path(self.context)
-            path = parent.replace(curr_path, "")
-            parts = filter(None, path.split("/"))
-            if len(parts) > 1:
-                prefix = "&emsp;"*(len(parts)-1)
-                text = "".join([prefix, item["before"]["Title"]])
-                item["before"]["Title"] = text
-
         return item
 
     def isItemAllowed(self, obj):
@@ -141,3 +143,11 @@ class ContainerListingView(StorageListing):
             # Do not display current context in the listing
             return api.get_id(obj) != api.get_id(self.context)
         return True
+
+    def get_child_level(self, obj):
+        level = 0
+        parent = api.get_parent(obj)
+        while parent != self.context:
+            level += 1
+            parent = api.get_parent(parent)
+        return level

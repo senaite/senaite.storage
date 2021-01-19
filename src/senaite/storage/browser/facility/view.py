@@ -6,10 +6,11 @@ from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.utils import get_link
 from bika.lims.utils import get_link_for
+from bika.lims.utils import get_progress_bar_html
+from plone.memoize import view
 from senaite.app.listing.view import ListingView
 from senaite.storage.interfaces import IStoragePosition
-from senaite.storage.interfaces import IStorageContainer
-from plone.memoize import view
+from senaite.storage.interfaces import IStorageSamplesContainer
 
 
 class FacilityListingView(ListingView):
@@ -41,6 +42,7 @@ class FacilityListingView(ListingView):
         self.show_select_column = True
         self.icon_path = "{}/senaite_theme/icon/".format(self.portal_url)
         self.icon = "{}/storage-facility".format(self.icon_path)
+        self.expanded_rows = []
 
         self.context_actions = collections.OrderedDict((
             (_("Add storage position"), {
@@ -68,12 +70,8 @@ class FacilityListingView(ListingView):
             {
                 "id": "default",
                 "title": _("Collapsed"),
-                "contentFilter": {"is_active": True},
-                # workaround for double listing entries
-                "listing_config": {
-                    "selected_uids": [],
-                    "expanded_rows": [],
-                },
+                "contentFilter": {"review_state": "active"},
+                "confirm_transitions": ["recover_samples"],
                 "columns": self.columns.keys(),
             }, {
                 "id": "expand",
@@ -85,11 +83,7 @@ class FacilityListingView(ListingView):
                         "query": api.get_path(self.context),
                     },
                 },
-                # workaround for double listing entries
-                "listing_config": {
-                    "selected_uids": [],
-                    "expanded_rows": [],
-                },
+                "confirm_transitions": ["recover_samples"],
                 "columns": self.columns.keys(),
             }
         ]
@@ -100,8 +94,6 @@ class FacilityListingView(ListingView):
 
     def folderitems(self):
         items = super(FacilityListingView, self).folderitems()
-        if self.is_expanded():
-            self.expand_all_children = True
         return items
 
     def folderitem(self, obj, item, index):
@@ -114,46 +106,12 @@ class FacilityListingView(ListingView):
         icon = api.get_icon(obj)
         level = self.get_child_level(obj)
         link = get_link_for(obj)
-        child_uids = []
 
         item["replace"]["Title"] = "{} {}".format(icon, link)
+        item["replace"]["Id"] = get_link(url, api.get_id(obj))
         item["node_level"] = level
 
-        # Storage position items
-        if IStoragePosition.providedBy(obj):
-            pid = obj.get_position_id()
-            item["Id"] = pid
-            item["replace"]["Id"] = get_link(url, pid)
-            # append child UIDs for this object
-            child_uids = self.get_child_uids_for(
-                obj, types=["StorageContainer", "StoragePosition"])
-            item["children"] = child_uids
-
-        # Storage container items
-        elif IStorageContainer.providedBy(obj):
-            # append child UIDs
-            child_uids = self.get_child_uids_for(
-                obj, types=["StorageContainer", "StorageSamplesContainer"])
-            item["children"] = child_uids
-
         return item
-
-    def get_child_uids_for(self, obj, types=None):
-        """get the child UIDs for the given object
-        """
-        if self.is_expanded():
-            return []
-        query = {
-            "sort_on": "getObjPositionInParent",
-            "path": {
-                "query": api.get_path(obj),
-                "depth": 1,
-            }
-        }
-        if types:
-            query["portal_types"] = types
-        catalog = api.get_tool("portal_catalog")
-        return map(api.get_uid, catalog(query))
 
     def get_child_level(self, obj):
         level = 0
