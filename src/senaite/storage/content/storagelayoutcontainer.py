@@ -36,6 +36,7 @@ from senaite.core.browser.fields.records import RecordsField
 from senaite.core.browser.widgets.recordswidget import RecordsWidget
 from senaite.storage import logger
 from senaite.storage import senaiteMessageFactory as _
+from senaite.storage.interfaces import IStorageBreadcrumbs
 from senaite.storage.interfaces import IStorageFacility
 from senaite.storage.interfaces import IStorageLayoutContainer
 from zope.interface import implements
@@ -129,16 +130,11 @@ class StorageLayoutContainer(ATFolder):
     def _renameAfterCreation(self, check_auto_id=False):
         renameAfterCreation(self)
 
-    def get_full_title(self, breadcrumbs=None):
+    def get_full_title(self):
         """Returns the full title of this container in breadcrumbs format
         """
-        if not breadcrumbs:
-            breadcrumbs = "{} - {}".format(self.Title(), self.getId())
-        parent = self.aq_parent
-        breadcrumbs = "{} > {}".format(api.get_title(parent), breadcrumbs)
-        if IStorageFacility.providedBy(parent):
-            return breadcrumbs
-        return parent.get_full_title(breadcrumbs)
+        adapter = IStorageBreadcrumbs(self)
+        return adapter.get_storage_breadcrumbs()
 
     def get_all_ids(self):
         """Returns the list of ids this container is contained in, the id of the

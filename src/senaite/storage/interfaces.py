@@ -77,3 +77,12 @@ class IStorageSamplesContainer(IStorageContainer):
 class IStorageJS(IViewletManager):
     """A viewlet manager that provides the JavaScripts for DataBox
     """
+
+
+class IStorageBreadcrumbs(Interface):
+    """Adapter to provide the storage breadcrumbs
+    """
+
+    def get_storage_breadcrumbs(breadcrumbs=None):
+        """Generate a breadcrumbs like title
+        """

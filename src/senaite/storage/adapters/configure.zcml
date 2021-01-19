@@ -4,6 +4,17 @@
     xmlns:plone="http://namespaces.plone.org/plone"
     i18n_domain="senaite.storage">
 
+  <!-- Storage Breadcrumbs Adapter -->
+  <adapter
+      for="senaite.storage.interfaces.IStoragePosition"
+      factory=".breadcrumbs.StorageBreadcrumbs" />
+  <adapter
+      for="senaite.storage.interfaces.IStorageContainer"
+      factory=".breadcrumbs.StorageBreadcrumbs" />
+  <adapter
+      for="senaite.storage.interfaces.IStorageSamplesContainer"
+      factory=".breadcrumbs.StorageBreadcrumbs" />
+
   <!--
       Samples view with additional filters and columns
   -->
