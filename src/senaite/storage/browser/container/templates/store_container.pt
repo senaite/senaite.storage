@@ -8,6 +8,9 @@
                  tal:define="portal context/@@plone_portal_state/portal;">
       <script type="text/javascript"
               tal:attributes="src string:${portal/absolute_url}/senaite_widgets/referencewidget.js"></script>
+      <style type="text/css" media="screen">
+       .cg-resetButton span { margin-left: -35px; }
+      </style>
     </metal:block>
   </head>
   <body>
@@ -39,108 +42,106 @@
     <metal:core fill-slot="content-core">
       <div id="viewlet-senaite-storage-js" tal:content="structure provider:senaite.storage.js" />
       <div id="store-samples-view"
-           class="row"
            tal:define="portal context/@@plone_portal_state/portal;
-                       container python:view.get_container()">
-          <form class="form"
-                id="store_container_form"
-                name="store_container_form"
-                method="POST">
+               container python:view.get_container()">
 
-            <!-- Hidden Fields -->
-            <input type="hidden" name="submitted" value="1"/>
-            <input tal:replace="structure context/@@authenticator/authenticator"/>
+        <form class="form"
+              id="store_container_form"
+              name="store_container_form"
+              method="POST">
 
-            <div class="row">
-              <!-- Sample selection area -->
-              <div class="col-sm-12">
-                <div class="col-sm-4">
-                  <div class="form-group field ArchetypesReferenceWidget">
-                    <label i18n:translate="" for="sample">Sample</label>
-                    <input
-                      tal:attributes="name string:sample; base_query view/get_base_query"
-                      type="text"
-                      ui_item="getId"
-                      autocomplete="false"
-                      class="blurrable firstToFocus referencewidget"
-                      base_query='{
-                        "sort_on": "getId",
-                        "sort_order": "ascending",
-                        "limit": "30"
-                      }'
-                      search_query='{}'
-                      catalog_name="bika_catalog_analysisrequest_listing"
-                      combogrid_options='{
-                        "colModel": [
-                          {"columnName": "getId", "align": "left", "label": "Id", "width": "15"},
-                          {"columnName": "getClientSampleID", "align": "left", "label": "CSID", "width": "15"},
-                          {"columnName": "getSampleTypeTitle", "align": "left", "label": "Sample Type", "width": "70"},
-                          {"columnName": "UID", "hidden": true}],
-                        "search_fields": ["listing_searchable_text"],
-                        "catalog_name": "bika_catalog_analysisrequest_listing",
-                        "url": "referencewidget_search",
-                        "discard_empty": [],
-                        "showOn": true,
-                        "searchIcon": true,
-                        "minLength": "0",
-                        "resetButton": true,
-                        "sord": "asc",
-                        "sidx": "getId",
-                        "width": "700px",
-                        "force_all": true,
-                        "portal_types": {}}'
-                    />
-                    <input type="hidden"
-                           tal:attributes="id string:sample_uid"
-                           name="sample_uid"
-                           value="" />
-                  </div>
+          <!-- Hidden Fields -->
+          <input type="hidden" name="submitted" value="1"/>
+          <input tal:replace="structure context/@@authenticator/authenticator"/>
+
+          <div class="form-row">
+            <!-- Sample selection area -->
+            <div class="col-sm-4">
+              <div class="input-group field ArchetypesReferenceWidget">
+                <div class="input-group-prepend">
+                  <div i18n:translate="" class="input-group-text">Sample</div>
                 </div>
-                <div class="col-sm-2">
-                  <div class="form-group">
-                    <label i18n:translate="" for="position">Position</label>
-                    <select name="position" id="position">
-                      <tal:options repeat="position python: container.get_available_positions()">
-                        <option tal:define="alpha_value python: container.position_to_alpha(position[0], position[1]);"
-                                tal:content="alpha_value"
-                                tal:attributes="value python: alpha_value"></option>
-                      </tal:options>
-                    </select>
-                  </div>
-                </div>
-                <div class="col-sm-4">
-                  <!-- Store samples -->
-                  <input class="btn btn-success btn-sm"
-                         type="submit"
-                         id="button_store"
-                         name="button_store"
-                         i18n:attributes="value"
-                         value="Add Sample"/>
-                  <!-- Cancel -->
-                  <input class="btn btn-default btn-sm"
-                         type="submit"
-                         name="button_cancel"
-                         i18n:attributes="value"
-                         value="Cancel"/>
-                </div>
-                <div class="col-sm-2">
-                  <a tal:condition="python: not view.is_last_container()"
-                     tal:attributes="href python: view.get_next_url()">
-                    <span i18n:translate="">Next container:</span>&nbsp;
-                    <span tal:content="python: view.get_next_container().getId()"></span>&nbsp;
-                    <span> ⇶</span>
-                  </a>
-                </div>
+                <input tal:attributes="name string:sample; base_query view/get_base_query"
+                       type="text"
+                       ui_item="getId"
+                       autocomplete="false"
+                       class="custom-select blurrable firstToFocus referencewidget"
+                       base_query='{"sort_on": "getId", "sort_order": "ascending", "limit": "30"}'
+                       search_query='{}'
+                       catalog_name="bika_catalog_analysisrequest_listing"
+                       combogrid_options='{"colModel": [
+                                              {"columnName": "getId", "align": "left", "label": "Id", "width": "15"},
+                                              {"columnName": "getClientSampleID", "align": "left", "label": "CSID", "width": "15"},
+                                              {"columnName": "getSampleTypeTitle", "align": "left", "label": "Sample Type", "width": "70"},
+                                              {"columnName": "UID", "hidden": true}
+                                          ],
+                                          "search_fields": ["listing_searchable_text"],
+                                          "catalog_name": "bika_catalog_analysisrequest_listing",
+                                          "url": "referencewidget_search",
+                                          "discard_empty": [],
+                                          "showOn": true,
+                                          "searchIcon": true,
+                                          "minLength": "0",
+                                          "resetButton": true,
+                                          "sord": "asc",
+                                          "sidx": "getId",
+                                          "width": "700px",
+                                          "force_all": true,
+                                          "portal_types": {}}'/>
+                <input type="hidden"
+                       tal:attributes="id string:sample_uid"
+                       name="sample_uid"
+                       value="" />
               </div>
             </div>
 
-            <p>&nbsp;</p>
+            <!-- Sample Position -->
+            <div class="col-sm-2">
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <div i18n:translate="" class="input-group-text">Position</div>
+                </div>
+                <select name="position" id="position" class="custom-select">
+                  <tal:options repeat="position python: container.get_available_positions()">
+                    <option tal:define="alpha_value python: container.position_to_alpha(position[0], position[1]);"
+                            tal:content="alpha_value"
+                            tal:attributes="value python: alpha_value"></option>
+                  </tal:options>
+                </select>
+              </div>
+            </div>
+            <div class="col-sm-4">
+              <!-- Store samples -->
+              <input class="btn btn-success"
+                     type="submit"
+                     id="button_store"
+                     name="button_store"
+                     i18n:attributes="value"
+                     value="Add Sample"/>
+              <!-- Cancel -->
+              <input class="btn btn-secondary"
+                     type="submit"
+                     name="button_cancel"
+                     i18n:attributes="value"
+                     value="Cancel"/>
+            </div>
+            <div class="col-sm-2">
+              <a tal:condition="python: not view.is_last_container()"
+                 tal:attributes="href python: view.get_next_url()">
+                <span i18n:translate="">Next container:</span>&nbsp;
+                <span tal:content="python: view.get_next_container().getId()"></span>&nbsp;
+                <span> ⇶</span>
+              </a>
+            </div>
+          </div>
 
-            <div class="row">
+          <p>&nbsp;</p>
+
+          <div class="row">
             <!-- Samples container layout view -->
             <div class="col-sm-12">
-              <table class="table table-bordered container-layout small"
-                tal:define="rows python: container.getRows();
+              <table class="table table-bordered container-layout table-responsive"
+                     tal:define="rows python: container.getRows();
                             columns python: container.getColumns();">
 
                 <!-- Columns header -->
@@ -171,8 +172,8 @@
                           </div>
                         </a>
                         <div class="slot-bottom">
-                          <div class="col-sm-6 small text-left" tal:content="python:alpha"></div>
-                          <div class="col-sm-6 small text-right" tal:content="python:pos"></div>
+                          <span class="float-left badge badge-light" tal:content="python:alpha"></span>
+                          <span class="float-right badge badge-light" tal:content="python:pos"></span>
                         </div>
                       </td>
                       <td tal:condition="python: item and True or False"
@@ -180,8 +181,8 @@
                         <div class="sample-id font-weight-bold text-center" tal:content="python: item.getId()"></div>
                         <div class="sample-type small text-center" tal:content="python: item.getSampleTypeTitle()"></div>
                         <div class="slot-bottom">
-                          <div class="col-sm-6 small text-left" tal:content="python:alpha"></div>
-                          <div class="col-sm-6 small text-right" tal:content="python:pos"></div>
+                          <span class="float-left badge badge-light" tal:content="python:alpha"></span>
+                          <span class="float-right badge badge-light" tal:content="python:pos"></span>
                         </div>
                       </td>
                     </tal:slot>
@@ -189,8 +190,8 @@
                 </tr>
               </table>
             </div>
-            </div>
-          </form>
+          </div>
+        </form>
       </div>
     </metal:core>
   </body>
