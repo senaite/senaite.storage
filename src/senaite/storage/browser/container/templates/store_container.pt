@@ -142,7 +142,7 @@
             <div class="col-sm-12">
               <table class="table table-bordered container-layout table-responsive"
                      tal:define="rows python: container.getRows();
-                            columns python: container.getColumns();">
+                                 columns python: container.getColumns();">
 
                 <!-- Columns header -->
                 <tr>
