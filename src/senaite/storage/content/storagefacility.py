@@ -18,46 +18,49 @@
 # Copyright 2019-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from Products.Archetypes.Field import StringField
-from Products.Archetypes.Schema import Schema
-from Products.Archetypes.Widget import StringWidget
-from Products.Archetypes.atapi import registerType
+from bika.lims import api
 from bika.lims.browser.fields.addressfield import AddressField
 from bika.lims.browser.widgets.addresswidget import AddressWidget
 from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims.idserver import renameAfterCreation
 from plone.app.folder.folder import ATFolder
+from Products.Archetypes.atapi import registerType
+from Products.Archetypes.Field import StringField
+from Products.Archetypes.Schema import Schema
+from Products.Archetypes.Widget import StringWidget
 from senaite.storage import PRODUCT_NAME
 from senaite.storage import senaiteMessageFactory as _
-from senaite.storage.interfaces import IStorageFacility, IStorageLayoutContainer
+from senaite.storage.interfaces import IStorageFacility
+from senaite.storage.interfaces import IStorageLayoutContainer
 from zope.interface import implements
 
+
 Phone = StringField(
-    name = 'Phone',
-    widget = StringWidget(
-        label = _("Phone")
+    name="Phone",
+    widget=StringWidget(
+        label=_("Phone")
     )
 )
 
 EmailAddress = StringField(
-    name = 'EmailAddress',
-    widget = StringWidget(
+    name="EmailAddress",
+    widget=StringWidget(
         label=_("Email Address"),
     ),
-    validators = ('isEmail',)
+    validators=("isEmail",)
 )
 
 Address = AddressField(
-    name = 'Address',
-    widget = AddressWidget(
+    name="Address",
+    widget=AddressWidget(
        label=_("Address"),
        render_own_label=True,
        showCopyFrom=False,
     ),
-    subfield_validators = {
-        'country': 'inline_field_validator',
-        'state': 'inline_field_validator',
-        'district': 'inline_field_validator',
+    subfield_validators={
+        "country": "inline_field_validator",
+        "state": "inline_field_validator",
+        "district": "inline_field_validator",
     },
 )
 
@@ -66,6 +69,7 @@ schema = BikaFolderSchema.copy() + Schema((
     EmailAddress,
     Address,
 ))
+
 
 class StorageFacility(ATFolder):
     """Physical location or place where storage containers are located
@@ -95,8 +99,10 @@ class StorageFacility(ATFolder):
         """Returns the containers that belong to this facility and implement
         IStorageLayoutContainer
         """
-        return filter(lambda obj: IStorageLayoutContainer.providedBy(obj),
-                            self.objectValues())
+        query = {"path": {"query": api.get_path(self)}}
+        brains = api.search(query)
+        objs = map(api.get_object, brains)
+        return filter(lambda o: IStorageLayoutContainer.providedBy(o), objs)
 
     def get_samples_capacity(self):
         """Returns the total number of samples this facility can store
