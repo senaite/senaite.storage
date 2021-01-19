@@ -22,6 +22,7 @@
     factory=".storagecontainer.WorkflowActionAddSamplesAdapter"
     provides="bika.lims.interfaces.IWorkflowActionAdapter"
     permission="zope.Public" />
+
   <!-- Storage samples container view: "add_samples" -->
   <adapter
     name="workflow_action_add_samples"
