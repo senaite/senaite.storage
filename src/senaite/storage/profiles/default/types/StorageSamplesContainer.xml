@@ -51,7 +51,7 @@
   <action title="Layout"
           action_id="storage_store_container"
           category="object"
-          condition_expr=""
+          condition_expr="python:not object.is_full()"
           url_expr="string:${object_url}/storage_store_container"
           i18n:attributes="title"
           i18n:domain="plone"
