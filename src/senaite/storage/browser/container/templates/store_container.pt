@@ -127,6 +127,7 @@
             </div>
             <div class="col-sm-2">
               <a tal:condition="python: not view.is_last_container()"
+                 class="btn btn-primary"
                  tal:attributes="href python: view.get_next_url()">
                 <span i18n:translate="">Next container:</span>&nbsp;
                 <span tal:content="python: view.get_next_container().getId()"></span>&nbsp;
