@@ -71,9 +71,6 @@ class ContainerListingView(FacilityListingView):
                 "id": "expand",
                 "title": _("Expanded"),
                 "contentFilter": {
-                    "portal_type": [
-                        "StorageContainer",
-                    ],
                     "sort_on": "path",
                     "review_state": "active",
                     "path": {

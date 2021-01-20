@@ -119,6 +119,8 @@ class StorageListing(ListingView):
         return item
 
     def get_child_level(self, obj):
+        if obj == self.context:
+            return 0
         level = 0
         parent = api.get_parent(obj)
         while parent != self.context:

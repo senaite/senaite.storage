@@ -39,11 +39,6 @@ class PositionListingView(FacilityListingView):
                 "id": "expand",
                 "title": _("Expanded"),
                 "contentFilter": {
-                    "portal_type": [
-                        "StoragePosition",
-                        "StorageContainer",
-                        "StorageSamplesContainer",
-                    ],
                     "sort_on": "path",
                     "review_state": "active",
                     "path": {
@@ -54,3 +49,8 @@ class PositionListingView(FacilityListingView):
                 "columns": self.columns.keys(),
             }
         ]
+
+    def isItemAllowed(self, obj):
+        """Skip own container
+        """
+        return api.get_uid(obj) != api.get_uid(self.context)
