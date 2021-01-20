@@ -27,9 +27,9 @@ from plone import api as ploneapi
 from Products.CMFPlone.utils import _createObjectByType
 from Products.DCWorkflow.Guard import Guard
 from senaite.core.workflow import SAMPLE_WORKFLOW
-from senaite.storage import logger
 from senaite.storage import PRODUCT_NAME
 from senaite.storage import PROFILE_ID
+from senaite.storage import logger
 from senaite.storage.catalog import SENAITE_STORAGE_CATALOG
 
 ACTIONS_TO_HIDE = [
@@ -79,6 +79,9 @@ ID_FORMATTING = [
 
 CATALOGS_BY_TYPE = [
     # Tuples of (type, [catalog])
+    ("StorageFacility", ["portal_catalog", SENAITE_STORAGE_CATALOG]),
+    ("StoragePosition", ["portal_catalog", SENAITE_STORAGE_CATALOG]),
+    ("StorageContainer", ["portal_catalog", SENAITE_STORAGE_CATALOG]),
     ("StorageSamplesContainer", ["portal_catalog", SENAITE_STORAGE_CATALOG]),
 ]
 
@@ -93,8 +96,15 @@ INDEXES = [
     # For searches, made of get_all_ids + Title
     (SENAITE_STORAGE_CATALOG, "searchable_text", "TextIndexNG3"),
     # Index used in searches to filter sample containers with available slots
+    (SENAITE_STORAGE_CATALOG, "Title", "FieldIndex"),
+    (SENAITE_STORAGE_CATALOG, "UID", "UUIDIndex"),
+    (SENAITE_STORAGE_CATALOG, "id", "FieldIndex"),
     (SENAITE_STORAGE_CATALOG, "is_full", "BooleanIndex"),
+    (SENAITE_STORAGE_CATALOG, "object_provides", "KeywordIndex"),
+    (SENAITE_STORAGE_CATALOG, "path", "ExtendedPathIndex"),
+    (SENAITE_STORAGE_CATALOG, "portal_type", "FieldIndex"),
     (SENAITE_STORAGE_CATALOG, "review_state", "FieldIndex"),
+    (SENAITE_STORAGE_CATALOG, "sortable_title", "FieldIndex"),
     # Index used in ARs view to sort items by date stored by default
     (CATALOG_ANALYSIS_REQUEST_LISTING, "getDateStored", "DateIndex"),
 ]

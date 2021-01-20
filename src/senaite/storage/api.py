@@ -20,7 +20,6 @@
 
 from bika.lims import api
 from senaite.storage.catalog import SENAITE_STORAGE_CATALOG
-from senaite.storage.config import STORAGE_CATALOG
 
 
 def get_storage_sample(sample_obj_brain_or_uid, as_brain=False):
@@ -41,7 +40,7 @@ def get_storage_catalog():
 
     Currently `portal_catalog`
     """
-    return api.get_tool(STORAGE_CATALOG)
+    return api.get_tool(SENAITE_STORAGE_CATALOG)
 
 
 def get_parents(obj, parents=None, predicate=None):
