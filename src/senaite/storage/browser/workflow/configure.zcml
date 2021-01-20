@@ -14,46 +14,10 @@
     provides="bika.lims.interfaces.IWorkflowActionAdapter"
     permission="zope.Public" />
 
-  <!-- storage root listing: "add_samples" -->
+  <!-- Workflow action "add_samples" -->
   <adapter
     name="workflow_action_add_samples"
-    for="senaite.storage.interfaces.IStorageRootFolder
-         zope.publisher.interfaces.browser.IBrowserRequest"
-    factory=".storagecontainer.WorkflowActionAddSamplesAdapter"
-    provides="bika.lims.interfaces.IWorkflowActionAdapter"
-    permission="zope.Public" />
-
-  <!-- facility listing: "add_samples" -->
-  <adapter
-    name="workflow_action_add_samples"
-    for="senaite.storage.interfaces.IStorageFacility
-         zope.publisher.interfaces.browser.IBrowserRequest"
-    factory=".storagecontainer.WorkflowActionAddSamplesAdapter"
-    provides="bika.lims.interfaces.IWorkflowActionAdapter"
-    permission="zope.Public" />
-
-  <!-- position listing: "add_samples" -->
-  <adapter
-    name="workflow_action_add_samples"
-    for="senaite.storage.interfaces.IStoragePosition
-         zope.publisher.interfaces.browser.IBrowserRequest"
-    factory=".storagecontainer.WorkflowActionAddSamplesAdapter"
-    provides="bika.lims.interfaces.IWorkflowActionAdapter"
-    permission="zope.Public" />
-
-  <!-- container listing: "add_samples" -->
-  <adapter
-    name="workflow_action_add_samples"
-    for="senaite.storage.interfaces.IStorageContainer
-         zope.publisher.interfaces.browser.IBrowserRequest"
-    factory=".storagecontainer.WorkflowActionAddSamplesAdapter"
-    provides="bika.lims.interfaces.IWorkflowActionAdapter"
-    permission="zope.Public" />
-
-  <!-- samples container listing: "add_samples" -->
-  <adapter
-    name="workflow_action_add_samples"
-    for="senaite.storage.interfaces.IStorageSamplesContainer
+    for="senaite.storage.interfaces.IStorageContent
          zope.publisher.interfaces.browser.IBrowserRequest"
     factory=".storagecontainer.WorkflowActionAddSamplesAdapter"
     provides="bika.lims.interfaces.IWorkflowActionAdapter"

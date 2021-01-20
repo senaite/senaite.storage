@@ -37,8 +37,6 @@ def get_storage_sample(sample_obj_brain_or_uid, as_brain=False):
 
 def get_storage_catalog():
     """Returns the storage catalog
-
-    Currently `portal_catalog`
     """
     return api.get_tool(SENAITE_STORAGE_CATALOG)
 

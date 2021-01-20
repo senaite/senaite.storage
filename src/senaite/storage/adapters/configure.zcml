@@ -6,24 +6,12 @@
 
   <!-- Storage Utilization Adapter -->
   <adapter
-      for="senaite.storage.interfaces.IStorageFacility"
-      factory=".utilization.StorageUtilization" />
-  <adapter
-      for="senaite.storage.interfaces.IStoragePosition"
-      factory=".utilization.StorageUtilization" />
-  <adapter
-      for="senaite.storage.interfaces.IStorageContainer"
+      for="senaite.storage.interfaces.IStorageContent"
       factory=".utilization.StorageUtilization" />
 
   <!-- Storage Breadcrumbs Adapter -->
   <adapter
-      for="senaite.storage.interfaces.IStoragePosition"
-      factory=".breadcrumbs.StorageBreadcrumbs" />
-  <adapter
-      for="senaite.storage.interfaces.IStorageContainer"
-      factory=".breadcrumbs.StorageBreadcrumbs" />
-  <adapter
-      for="senaite.storage.interfaces.IStorageSamplesContainer"
+      for="senaite.storage.interfaces.IStorageContent"
       factory=".breadcrumbs.StorageBreadcrumbs" />
 
   <!--
