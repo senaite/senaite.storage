@@ -94,11 +94,11 @@ INDEXES = [
     # Keeps the sample uids stored in each sample container
     (SENAITE_STORAGE_CATALOG, "get_samples_uids", "KeywordIndex"),
     # For searches, made of get_all_ids + Title
-    (SENAITE_STORAGE_CATALOG, "searchable_text", "TextIndexNG3"),
+    (SENAITE_STORAGE_CATALOG, "listing_searchable_text", "TextIndexNG3"),
     # Index used in searches to filter sample containers with available slots
     (SENAITE_STORAGE_CATALOG, "Title", "FieldIndex"),
     (SENAITE_STORAGE_CATALOG, "UID", "UUIDIndex"),
-    (SENAITE_STORAGE_CATALOG, "id", "FieldIndex"),
+    (SENAITE_STORAGE_CATALOG, "getId", "FieldIndex"),
     (SENAITE_STORAGE_CATALOG, "is_full", "BooleanIndex"),
     (SENAITE_STORAGE_CATALOG, "object_provides", "KeywordIndex"),
     (SENAITE_STORAGE_CATALOG, "path", "ExtendedPathIndex"),
@@ -112,6 +112,8 @@ INDEXES = [
 COLUMNS = [
     # Tuples of (catalog, column name)
     (SENAITE_STORAGE_CATALOG, "Title"),
+    (SENAITE_STORAGE_CATALOG, "Description"),
+    (SENAITE_STORAGE_CATALOG, "id"),
     # To get the UID of the selected container in searches (reference widget)
     (SENAITE_STORAGE_CATALOG, "UID"),
     # To display the column Date Stored in AR listings

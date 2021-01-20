@@ -123,7 +123,6 @@ class StorageLayoutContainer(ATFolder):
     """
     implements(IStorageLayoutContainer)
     _at_rename_after_creation = True
-    displayContentsTab = False
     schema = schema
     default_samples_capacity = 0
 
@@ -151,14 +150,6 @@ class StorageLayoutContainer(ATFolder):
                 return ids
             return feed_parent_ids(container.aq_parent, ids)
         return feed_parent_ids(self, [])
-
-    def searchable_text(self):
-        """Returns a string containing terms for searches. Used as an index for
-        wide-range catalog searches
-        """
-        terms = self.get_all_ids()
-        terms.append(self.Title())
-        return ' '.join(terms)
 
     def setRows(self, value):
         self.getField('Rows').set(self, value)

@@ -87,9 +87,10 @@
                             autocomplete="false"
                             class="blurrable firstToFocus referencewidget"
                             base_query='{
+                              "portal_type": ["StorageSamplesContainer"],
                               "is_full": false,
                               "review_state": "active",
-                              "sort_on": "id",
+                              "sort_on": "getId",
                               "sort_order": "ascending",
                               "limit": "30"
                             }'
@@ -100,7 +101,7 @@
                                 {"columnName": "id", "align": "left", "label": "Id", "width": "10"},
                                 {"columnName": "get_full_title", "align": "left", "label": "Container full path", "width": "90"},
                                 {"columnName": "UID", "hidden": true}],
-                              "search_fields": ["searchable_text"],
+                              "search_fields": ["listing_searchable_text"],
                               "catalog_name": "senaite_storage_catalog",
                               "url": "referencewidget_search",
                               "discard_empty": [],
@@ -143,7 +144,7 @@
                      i18n:attributes="value"
                      value="Store Samples"/>
               <!-- Cancel -->
-              <input class="btn btn-default btn-sm"
+              <input class="btn btn-secondary btn-sm"
                      type="submit"
                      name="button_cancel"
                      i18n:attributes="value"
