@@ -21,7 +21,7 @@
 import collections
 
 from bika.lims import api
-from bika.lims.api import get_icon
+from bika.lims.utils import get_link_for
 from bika.lims.utils import get_link
 from bika.lims.utils import get_progress_bar_html
 from senaite.app.listing import ListingView
@@ -81,8 +81,13 @@ class StorageListing(ListingView):
         row in the list
         """
         obj = api.get_object(obj)
-        item["replace"]["Title"] = get_link(item["url"], item["Title"])
+        icon = api.get_icon(obj)
+        level = self.get_child_level(obj)
+        link = get_link_for(obj)
+
+        item["replace"]["Title"] = "{} {}".format(icon, link)
         item["replace"]["Id"] = get_link(item["url"], api.get_id(obj))
+        item["node_level"] = level
 
         # Samples usage
         capacity = obj.get_samples_capacity()
@@ -92,7 +97,12 @@ class StorageListing(ListingView):
         item["replace"]["Samples"] = "{:01d} / {:01d} ({:01d}%)"\
             .format(samples, capacity, percentage)
 
-        # Container types icons
-        item["before"]["Title"] = get_icon(obj)
-
         return item
+
+    def get_child_level(self, obj):
+        level = 0
+        parent = api.get_parent(obj)
+        while parent != self.context:
+            level += 1
+            parent = api.get_parent(parent)
+        return level

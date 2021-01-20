@@ -117,13 +117,9 @@ class ContainerListingView(StorageListing):
         # Get the object (the passed-in "obj" is a brain)
         obj = api.get_object(obj)
         icon = api.get_icon(obj)
-        level = self.get_child_level(obj)
-        link = get_link_for(obj)
-
         link = get_link_for(obj)
 
         item["replace"]["Title"] = "{} {}".format(icon, link)
-        item["node_level"] = level
 
         # Containers/Positions usage
         # Samples containers cannot have containers inside!
@@ -143,11 +139,3 @@ class ContainerListingView(StorageListing):
             # Do not display current context in the listing
             return api.get_id(obj) != api.get_id(self.context)
         return True
-
-    def get_child_level(self, obj):
-        level = 0
-        parent = api.get_parent(obj)
-        while parent != self.context:
-            level += 1
-            parent = api.get_parent(parent)
-        return level
