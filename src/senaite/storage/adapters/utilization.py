@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from bika.lims import api
-from senaite.storage.interfaces import IStorageLayoutContainer
+from senaite.storage.catalog import SENAITE_STORAGE_CATALOG
+from senaite.storage.interfaces import IStorageSamplesContainer
 from senaite.storage.interfaces import IStorageUtilization
 from zope.interface import implementer
 
@@ -25,10 +26,16 @@ class StorageUtilization(object):
     def get_layout_containers(self):
         """Returns the contained containers
         """
-        query = {"path": {"query": api.get_path(self.context)}}
-        brains = api.search(query)
+        # return immediately if the container is a
+        if IStorageSamplesContainer.providedBy(self.context):
+            return [self.context]
+        query = {
+            "path": {
+                "query": api.get_path(self.context),
+            }}
+        brains = api.search(query, SENAITE_STORAGE_CATALOG)
         objs = map(api.get_object, brains)
-        return filter(lambda ob: IStorageLayoutContainer.providedBy(ob), objs)
+        return filter(lambda o: IStorageSamplesContainer.providedBy(o), objs)
 
     def get_samples_capacity(self):
         """Returns the total sample capacity
