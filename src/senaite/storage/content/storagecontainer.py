@@ -44,6 +44,11 @@ schema = schema.copy() + Schema((
     Temperature,
 ))
 
+# Hide Rows/Columns for storage container
+#  -> makes sense only in sample storage containers
+schema["Rows"].widget.visible = False
+schema["Columns"].widget.visible = False
+
 
 class StorageContainer(StorageLayoutContainer):
     """Container for the storage of other storage containers
