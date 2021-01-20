@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from bika.lims import api
+from senaite.storage import senaiteMessageFactory as _
 from senaite.storage.browser.facility.view import FacilityListingView
 
 
@@ -13,6 +14,7 @@ class PositionListingView(FacilityListingView):
 
         self.contentFilter = {
             "portal_type": [
+                "StoragePosition",
                 "StorageContainer",
                 "StorageSamplesContainer",
             ],
@@ -24,5 +26,31 @@ class PositionListingView(FacilityListingView):
             }
         }
 
-        self.icon = "{}/{}".format(
-            self.portal_url, "senaite_theme/icon/storage-position")
+        self.form_id = "position_listing"
+
+        self.review_states = [
+            {
+                "id": "default",
+                "title": _("Collapsed"),
+                "contentFilter": {"review_state": "active"},
+                "confirm_transitions": ["recover_samples"],
+                "columns": self.columns.keys(),
+            }, {
+                "id": "expand",
+                "title": _("Expanded"),
+                "contentFilter": {
+                    "portal_type": [
+                        "StoragePosition",
+                        "StorageContainer",
+                        "StorageSamplesContainer",
+                    ],
+                    "sort_on": "path",
+                    "review_state": "active",
+                    "path": {
+                        "query": api.get_path(context),
+                    },
+                },
+                "confirm_transitions": ["recover_samples"],
+                "columns": self.columns.keys(),
+            }
+        ]

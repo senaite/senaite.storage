@@ -33,45 +33,70 @@ class StorageListingView(StorageListing):
 
     def __init__(self, context, request):
         super(StorageListingView, self).__init__(context, request)
+
         self.title = self.context.translate(_("Samples storage"))
         self.form_id = "list_storagerootfolder"
-        self.contentFilter = dict(
-            portal_type="StorageFacility",
-            sort_on="sortable_title",
-            sort_order="ascending"
-        )
+
+        self.contentFilter = {
+            "portal_type": ["StorageFacility"],
+            "sort_on": "path",
+            "sort_order": "ascending"
+        }
+
+        # Add Facility action
+        self.context_actions[_("Add Facility")] = {
+            "url": "createObject?type_name=StorageFacility",
+            "icon": "{}/{}".format(self.icon_path, "storage-facility")
+        }
 
         self.columns = collections.OrderedDict((
             ("Title", {
                 "title": _("Name"),
                 "index": "sortable_index"}),
             ("SamplesUsage", {
-                "title": _("Samples")}),
+                "title": _("Samples"),
+            }),
             ("Samples", {
-                "title": _("Samples usage")}),
+                "title": _("Samples usage"),
+            }),
             ("Containers", {
-                "title": _("Containers")}),
+                "title": _("Containers"),
+            }),
             ("Phone", {
-                "title": _("Phone")}),
+                "title": _("Phone"),
+            }),
             ("EmailAddress", {
-                "title": _("Email")}),
+                "title": _("Email"),
+            }),
         ))
 
         self.review_states = [
             {
                 "id": "default",
+                "title": _("Collapsed"),
                 "contentFilter": {"review_state": "active"},
-                "title": _("Active"),
-                "transitions": [],
+                "confirm_transitions": ["recover_samples"],
                 "columns": self.columns.keys(),
-            },
+            }, {
+                "id": "expand",
+                "title": _("Expanded"),
+                "contentFilter": {
+                    "portal_type": [
+                        "StorageFacility",
+                        "StoragePosition",
+                        "StorageContainer",
+                        "StorageSamplesContainer",
+                    ],
+                    "sort_on": "path",
+                    "review_state": "active",
+                    "path": {
+                        "query": api.get_path(context),
+                    },
+                },
+                "confirm_transitions": ["recover_samples"],
+                "columns": self.columns.keys(),
+            }
         ]
-
-        # Add Facility button
-        self.context_actions[_("Add Facility")] = {
-            "url": "createObject?type_name=StorageFacility",
-            "icon": "++resource++bika.lims.images/add.png"
-        }
 
     def folderitem(self, obj, item, index):
         """Applies new properties to item (StorageFacility) that is currently
@@ -80,7 +105,11 @@ class StorageListingView(StorageListing):
         item = super(StorageListingView, self).folderitem(obj, item, index)
 
         obj = api.get_object(obj)
-        item["replace"]["EmailAddress"] = get_email_link(item["EmailAddress"])
+
+        email = obj.getEmailAddress()
+        if email:
+            item["replace"]["EmailAddress"] = get_email_link(email)
+
         phone = obj.getPhone()
         if phone:
             item["replace"]["Phone"] = get_link("tel:{}".format(phone), phone)
@@ -88,4 +117,5 @@ class StorageListingView(StorageListing):
         # Containers
         containers = obj.get_layout_containers()
         item["replace"]["Containers"] = "{:01d}".format(len(containers))
+
         return item

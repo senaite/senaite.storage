@@ -21,12 +21,9 @@
 import collections
 
 from bika.lims import api
-from bika.lims.utils import get_link_for
 from bika.lims.utils import get_progress_bar_html
-from plone.memoize import view
 from senaite.storage import senaiteMessageFactory as _
 from senaite.storage.browser.storage.listing import StorageListing
-from senaite.storage.interfaces import IStorageContainer
 from senaite.storage.interfaces import IStorageSamplesContainer
 
 
@@ -39,12 +36,26 @@ class ContainerListingView(StorageListing):
         self.title = context.Title()
         self.form_id = "list_storage_containers"
         self.show_select_column = True
+        if not IStorageSamplesContainer.providedBy(self.context):
+            self.context_actions[_("Add container")] = {
+                "url": "createObject?type_name=StorageContainer",
+                "icon": "{}/{}".format(
+                    self.icon_path, "storage-container")
+            }
+
+        if IStorageContainer.providedBy(self.context):
+            self.context_actions[_("Add samples container")] = {
+                "url": "createObject?type_name=StorageSamplesContainer",
+                "icon": "{}/{}".format(
+                    self.icon_path, "storage-sample-container")
+            }
+
         self.contentFilter = {
             "portal_type": ["StorageContainer", "StorageSamplesContainer"],
             "sort_on": "sortable_title",
             "sort_order": "ascending",
             "path": {
-                "query": "/".join(context.getPhysicalPath()),
+                "query": api.get_path(context),
                 "depth": 1,
             }
         }
@@ -67,59 +78,11 @@ class ContainerListingView(StorageListing):
                 "title": _("Containers usage")}),
         ))
 
-        self.review_states = [
-            {
-                "id": "default",
-                "title": _("Collapsed"),
-                "contentFilter": {"review_state": "active"},
-                "confirm_transitions": ["recover_samples"],
-                "columns": self.columns.keys(),
-            }, {
-                "id": "expand",
-                "title": _("Expanded"),
-                "contentFilter": {
-                    "sort_on": "path",
-                    "review_state": "active",
-                    "path": {
-                        "query": api.get_path(self.context),
-                    },
-                },
-                "confirm_transitions": ["recover_samples"],
-                "columns": self.columns.keys(),
-            }
-        ]
-
-        ico_path = "{}/senaite_theme/icon/".format(self.portal_url)
-
-        self.context_actions = collections.OrderedDict()
-        if not IStorageSamplesContainer.providedBy(self.context):
-            self.context_actions[_("Add container")] = {
-                "url": "createObject?type_name=StorageContainer",
-                "icon": "{}/{}".format(ico_path, "storage-container")
-            }
-
-        if IStorageContainer.providedBy(self.context):
-            self.context_actions[_("Add samples container")] = {
-                "url": "createObject?type_name=StorageSamplesContainer",
-                "icon": "{}/{}".format(ico_path, "storage-sample-container")
-            }
-
-    @view.memoize
-    def is_expanded(self):
-        return self.review_state.get("id") == "expand"
-
     def folderitem(self, obj, item, index):
         """Applies new properties to item (StorageContainer) that is currently
         being rendered as a row in the list
         """
         item = super(ContainerListingView, self).folderitem(obj, item, index)
-
-        # Get the object (the passed-in "obj" is a brain)
-        obj = api.get_object(obj)
-        icon = api.get_icon(obj)
-        link = get_link_for(obj)
-
-        item["replace"]["Title"] = "{} {}".format(icon, link)
 
         # Containers/Positions usage
         # Samples containers cannot have containers inside!
@@ -133,9 +96,3 @@ class ContainerListingView(StorageListing):
                 taken, capacity, percentage)
 
         return item
-
-    def isItemAllowed(self, obj):
-        if self.review_state.get("id") == "full":
-            # Do not display current context in the listing
-            return api.get_id(obj) != api.get_id(self.context)
-        return True
