@@ -5,6 +5,9 @@ import collections
 from bika.lims import api
 from senaite.storage import senaiteMessageFactory as _
 from senaite.storage.browser.storage.listing import StorageListing
+from senaite.storage.api import get_parents
+from bika.lims.utils import get_link_for
+from senaite.storage.interfaces import IStorageFacility
 
 
 class FacilityListingView(StorageListing):
@@ -54,6 +57,8 @@ class FacilityListingView(StorageListing):
                 "title": _("Samples")}),
             ("Description", {
                 "title": _("Description")}),
+            ("Position", {
+                "title": _("Position")}),
             ))
 
         self.review_states = [
@@ -88,4 +93,9 @@ class FacilityListingView(StorageListing):
         being rendered as a row in the list
         """
         item = super(FacilityListingView, self).folderitem(obj, item, index)
+        obj = api.get_object(obj)
+        parents = get_parents(
+            obj, predicate=lambda o: IStorageFacility.providedBy(o))
+        item["replace"]["Position"] = " » ".join(
+            map(get_link_for, reversed(parents)))
         return item

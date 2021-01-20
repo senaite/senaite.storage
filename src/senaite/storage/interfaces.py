@@ -86,3 +86,8 @@ class IStorageBreadcrumbs(Interface):
     def get_storage_breadcrumbs(breadcrumbs=None):
         """Generate a breadcrumbs like title
         """
+
+
+class IStorageUtilization(Interface):
+    """Adapter to provide storage utilization details
+    """

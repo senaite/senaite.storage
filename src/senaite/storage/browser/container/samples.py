@@ -21,7 +21,7 @@
 import collections
 
 from bika.lims import api
-from bika.lims import bikaMessageFactory as _s
+from bika.lims import senaiteMessageFactory as _s
 from bika.lims.catalog.analysisrequest_catalog import \
     CATALOG_ANALYSIS_REQUEST_LISTING
 from senaite.app.listing.view import ListingView
@@ -34,19 +34,29 @@ class SampleListingView(ListingView):
 
     def __init__(self, context, request):
         super(SampleListingView, self).__init__(context, request)
-        request.set("disable_sorder", 1)
-        self.title = context.Title()
-        self.form_id = "list_storage_samples"
-        self.sort_on = "sortable_title"
-        self.show_select_row = False
-        self.show_select_all_checkboxes = False
-        self.show_select_column = True
+
         self.catalog = CATALOG_ANALYSIS_REQUEST_LISTING
+
         self.contentFilter = {
             "UID": context.get_samples_uids(),
             "sort_on": "sortable_title",
             "sort_order": "ascending"
         }
+
+        self.form_id = "list_storage_samples"
+        self.show_select_all_checkbox = True
+        self.show_select_column = True
+        self.sort_on = "sortable_title"
+        self.title = context.Title()
+        self.description = context.Description()
+        self.icon_path = "{}/senaite_theme/icon/".format(self.portal_url)
+
+        if not context.is_full():
+            uid = api.get_uid(context)
+            self.context_actions[_("Add Samples")] = {
+                "url": "storage_store_container?uids={}".format(uid),
+                "icon": "{}/{}".format(self.icon_path, "sample")
+            }
 
         self.columns = collections.OrderedDict((
             ("position", {
@@ -94,16 +104,6 @@ class SampleListingView(ListingView):
                 "columns": self.columns.keys(),
             },
         ]
-
-        ico_path = "{}/senaite_theme/icon/".format(self.portal_url)
-
-        self.context_actions = collections.OrderedDict()
-        if not context.is_full():
-            uid = api.get_uid(context)
-            self.context_actions[_("Add Samples")] = {
-                "url": "storage_store_container?uids={}".format(uid),
-                "icon": "{}/{}".format(ico_path, "sample")
-            }
 
     def folderitems(self):
         """We add this function to tell baselisting to use brains instead of

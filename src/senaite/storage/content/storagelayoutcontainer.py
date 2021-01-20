@@ -130,6 +130,11 @@ class StorageLayoutContainer(ATFolder):
     def _renameAfterCreation(self, check_auto_id=False):
         renameAfterCreation(self)
 
+    def Description(self):
+        rows = self.getRows()
+        cols = self.getColumns()
+        return _("Layout: {} x {}".format(rows, cols))
+
     def get_full_title(self):
         """Returns the full title of this container in breadcrumbs format
         """
@@ -367,7 +372,7 @@ class StorageLayoutContainer(ATFolder):
         uid = api.get_uid(object_brain_uid)
         if not uid:
             return False
-        els = filter(lambda el: el.get("uid","") != uid,
+        els = filter(lambda el: el.get("uid", "") != uid,
                      self.getPositionsLayout())
         self.setPositionsLayout(els)
 

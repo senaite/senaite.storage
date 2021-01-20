@@ -76,7 +76,6 @@ class StorageFacility(ATFolder):
     """
     implements(IStorageFacility)
     _at_rename_after_creation = True
-    displayContentsTab = False
     schema = schema
 
     def _renameAfterCreation(self, check_auto_id=False):
@@ -84,37 +83,6 @@ class StorageFacility(ATFolder):
 
     def getPossibleAddresses(self):
         return [Address.getName()]
-
-    def get_capacity(self):
-        """Returns the total number of containers that belong to this facility
-        """
-        return len(self.get_layout_containers())
-
-    def get_available_positions(self):
-        """Returns the number of available containers
-        """
-        return self.get_capacity()
-
-    def get_layout_containers(self):
-        """Returns the containers that belong to this facility and implement
-        IStorageLayoutContainer
-        """
-        query = {"path": {"query": api.get_path(self)}}
-        brains = api.search(query)
-        objs = map(api.get_object, brains)
-        return filter(lambda o: IStorageLayoutContainer.providedBy(o), objs)
-
-    def get_samples_capacity(self):
-        """Returns the total number of samples this facility can store
-        """
-        return sum(map(lambda con: con.get_samples_capacity(),
-                       self.get_layout_containers()))
-
-    def get_samples_utilization(self):
-        """Returns the total number of samples this facility actually stores
-        """
-        return sum(map(lambda con: con.get_samples_utilization(),
-                       self.get_layout_containers()))
 
 
 registerType(StorageFacility, PRODUCT_NAME)

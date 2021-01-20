@@ -25,6 +25,7 @@ from bika.lims.utils import get_email_link
 from bika.lims.utils import get_link
 from senaite.storage import senaiteMessageFactory as _
 from senaite.storage.browser.storage.listing import StorageListing
+from senaite.storage.interfaces import IStorageUtilization
 
 
 class StorageListingView(StorageListing):
@@ -115,7 +116,8 @@ class StorageListingView(StorageListing):
             item["replace"]["Phone"] = get_link("tel:{}".format(phone), phone)
 
         # Containers
-        containers = obj.get_layout_containers()
+        utilization = IStorageUtilization(obj)
+        containers = utilization.get_layout_containers()
         item["replace"]["Containers"] = "{:01d}".format(len(containers))
 
         return item

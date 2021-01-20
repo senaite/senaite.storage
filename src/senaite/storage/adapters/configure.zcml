@@ -4,6 +4,17 @@
     xmlns:plone="http://namespaces.plone.org/plone"
     i18n_domain="senaite.storage">
 
+  <!-- Storage Utilization Adapter -->
+  <adapter
+      for="senaite.storage.interfaces.IStorageFacility"
+      factory=".utilization.StorageUtilization" />
+  <adapter
+      for="senaite.storage.interfaces.IStoragePosition"
+      factory=".utilization.StorageUtilization" />
+  <adapter
+      for="senaite.storage.interfaces.IStorageContainer"
+      factory=".utilization.StorageUtilization" />
+
   <!-- Storage Breadcrumbs Adapter -->
   <adapter
       for="senaite.storage.interfaces.IStoragePosition"

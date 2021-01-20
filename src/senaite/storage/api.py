@@ -42,3 +42,17 @@ def get_storage_catalog():
     Currently `portal_catalog`
     """
     return api.get_tool(STORAGE_CATALOG)
+
+
+def get_parents(obj, parents=None, predicate=None):
+    """Return all parents of the object
+    """
+    if parents is None:
+        parents = []
+    if predicate is None:
+        predicate = api.is_portal
+    parent = api.get_parent(obj)
+    parents.append(parent)
+    if predicate(parent):
+        return parents
+    return get_parents(parent, parents=parents, predicate=predicate)

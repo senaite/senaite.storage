@@ -26,6 +26,7 @@ from bika.lims.utils import get_link_for
 from bika.lims.utils import get_progress_bar_html
 from senaite.app.listing import ListingView
 from senaite.storage import senaiteMessageFactory as _
+from senaite.storage.interfaces import IStorageUtilization
 
 
 class StorageListing(ListingView):
@@ -97,12 +98,14 @@ class StorageListing(ListingView):
         link = get_link_for(obj)
 
         item["replace"]["Title"] = "{} {}".format(icon, link)
+        item["Description"] = api.get_description(obj)
         item["replace"]["Id"] = get_link(item["url"], api.get_id(obj))
         item["node_level"] = level
 
         # Samples usage
-        capacity = obj.get_samples_capacity()
-        samples = obj.get_samples_utilization()
+        utilization = IStorageUtilization(obj)
+        capacity = utilization.get_samples_capacity()
+        samples = utilization.get_samples_utilization()
         percentage = capacity and samples*100/capacity or 0
         item["replace"]["SamplesUsage"] = self.get_usage_bar_html(percentage)
         item["replace"]["Samples"] = "{:01d} / {:01d} ({:01d}%)"\
