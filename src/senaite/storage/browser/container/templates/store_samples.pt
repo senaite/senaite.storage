@@ -89,7 +89,7 @@
                             base_query='{
                               "is_full": false,
                               "review_state": "active",
-                              "sort_on": "getId",
+                              "sort_on": "id",
                               "sort_order": "ascending",
                               "limit": "30"
                             }'

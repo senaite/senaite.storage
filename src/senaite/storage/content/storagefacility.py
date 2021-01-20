@@ -18,7 +18,6 @@
 # Copyright 2019-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims import api
 from bika.lims.browser.fields.addressfield import AddressField
 from bika.lims.browser.widgets.addresswidget import AddressWidget
 from bika.lims.content.bikaschema import BikaFolderSchema
@@ -31,8 +30,8 @@ from Products.Archetypes.Widget import StringWidget
 from senaite.storage import PRODUCT_NAME
 from senaite.storage import senaiteMessageFactory as _
 from senaite.storage.interfaces import IStorageFacility
-from senaite.storage.interfaces import IStorageLayoutContainer
 from zope.interface import implements
+from bika.lims.utils import get_email_link
 
 
 Phone = StringField(
@@ -83,6 +82,19 @@ class StorageFacility(ATFolder):
 
     def getPossibleAddresses(self):
         return [Address.getName()]
+
+    def Description(self):
+        phone = self.getPhone()
+        if phone:
+            phone = _("Tel: {}".format(phone))
+        email = self.getEmailAddress()
+        if email:
+            email = _("Mail: {}".format(get_email_link(email)))
+        address = self.getAddress()
+        if address:
+            address = ",".join(filter(None, address.values()))
+        parts = filter(None, [email, phone, address])
+        return ", ".join(parts)
 
 
 registerType(StorageFacility, PRODUCT_NAME)

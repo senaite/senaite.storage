@@ -63,11 +63,8 @@ class StorageListingView(StorageListing):
             ("Containers", {
                 "title": _("Containers"),
             }),
-            ("Phone", {
-                "title": _("Phone"),
-            }),
-            ("EmailAddress", {
-                "title": _("Email"),
+            ("Description", {
+                "title": _("Description"),
             }),
         ))
 
@@ -104,17 +101,7 @@ class StorageListingView(StorageListing):
         being rendered as a row in the list
         """
         item = super(StorageListingView, self).folderitem(obj, item, index)
-
         obj = api.get_object(obj)
-
-        email = obj.getEmailAddress()
-        if email:
-            item["replace"]["EmailAddress"] = get_email_link(email)
-
-        phone = obj.getPhone()
-        if phone:
-            item["replace"]["Phone"] = get_link("tel:{}".format(phone), phone)
-
         # Containers
         utilization = IStorageUtilization(obj)
         containers = utilization.get_layout_containers()
