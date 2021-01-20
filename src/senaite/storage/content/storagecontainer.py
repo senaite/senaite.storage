@@ -57,12 +57,8 @@ class StorageContainer(StorageLayoutContainer):
     schema = schema
 
     def Description(self):
-        description = super(StorageContainer, self).Description()
-        temperature = self.getTemperature()
-        if temperature:
-            return _(u"{}, expected temperature: {} °C".format(
-                description, temperature))
-        return description
+        temperature = self.getTemperature() or "-"
+        return _(u"Expected temperature: {} °C".format(temperature))
 
     def is_object_allowed(self, object_brain_uid):
         """Returns whether the type of object can be stored or not in this
