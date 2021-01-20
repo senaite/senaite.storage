@@ -105,6 +105,25 @@ class SampleListingView(ListingView):
             },
         ]
 
+    def before_render(self):
+        super(SampleListingView, self).before_render()
+        # show message if full
+        if self.context.is_full():
+            message = _("Container is full")
+            self.add_status_message(message, level="warning")
+        else:
+            context = self.context
+            capacity = context.get_samples_capacity()
+            utilization = context.get_samples_utilization()
+            message = _("Container utilization {} / {}".format(
+                utilization, capacity))
+            self.add_status_message(message, level="info")
+
+    def add_status_message(self, message, level="info"):
+        """Set a portal status message
+        """
+        return self.context.plone_utils.addPortalMessage(message, level)
+
     def folderitems(self):
         """We add this function to tell baselisting to use brains instead of
         full objects"""
