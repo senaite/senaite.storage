@@ -92,6 +92,10 @@ class SampleListingView(ListingView):
                 "title": _s("Sample Type"),
                 "sortable": True,
                 "toggle": True}),
+            ("PreviousState", {
+                "title": _s("Previous State"),
+                "sortable": True,
+                "toggle": True}),
         ))
 
         self.review_states = [
@@ -124,6 +128,16 @@ class SampleListingView(ListingView):
         """
         return self.context.plone_utils.addPortalMessage(message, level)
 
+    def get_previous_state(self, obj, omit=("stored",)):
+        # Get the review history, most recent actions first
+        history = api.get_review_history(obj)
+        for item in history:
+            status = item.get("review_state")
+            if not status or status in omit:
+                continue
+            return status
+        return None
+
     def folderitems(self):
         """We add this function to tell baselisting to use brains instead of
         full objects"""
@@ -141,4 +155,8 @@ class SampleListingView(ListingView):
         position = self.context.get_object_position(api.get_uid(obj))
         item["position"] = self.context.position_to_alpha(
             position[0], position[1])
+        prev_state = self.get_previous_state(obj)
+        if prev_state:
+            item["PreviousState"] = self.translate_review_state(
+                prev_state, api.get_portal_type(obj))
         return item

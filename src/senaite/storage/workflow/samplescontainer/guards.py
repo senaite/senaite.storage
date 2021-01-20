@@ -23,9 +23,10 @@ from senaite.storage.interfaces import IStorageSamplesContainer
 
 security = ModuleSecurityInfo(__name__)
 
+
 @security.public
 def guard_recover_samples(samples_container):
-    """ Guard for recover all samples from this container
+    """Guard for recover all samples from this container
     """
     if not IStorageSamplesContainer.providedBy(samples_container):
         return False

@@ -132,6 +132,21 @@ WORKFLOWS_TO_UPDATE = {
                 "preserve_transitions": True,
                 "transitions": ("store",),
             },
+            "to_be_verified": {
+                # Do not remove transitions already there
+                "preserve_transitions": True,
+                "transitions": ("store",),
+            },
+            "verified": {
+                # Do not remove transitions already there
+                "preserve_transitions": True,
+                "transitions": ("store",),
+            },
+            "published": {
+                # Do not remove transitions already there
+                "preserve_transitions": True,
+                "transitions": ("store",),
+            },
             "stored": {
                 "title": "Stored",
                 "description": "Sample is stored",
