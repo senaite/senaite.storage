@@ -18,10 +18,12 @@
 # Copyright 2019-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims import api
 from bika.lims.browser.fields.addressfield import AddressField
 from bika.lims.browser.widgets.addresswidget import AddressWidget
 from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims.idserver import renameAfterCreation
+from bika.lims.utils import get_email_link
 from plone.app.folder.folder import ATFolder
 from Products.Archetypes.atapi import registerType
 from Products.Archetypes.Field import StringField
@@ -31,8 +33,6 @@ from senaite.storage import PRODUCT_NAME
 from senaite.storage import senaiteMessageFactory as _
 from senaite.storage.interfaces import IStorageFacility
 from zope.interface import implements
-from bika.lims.utils import get_email_link
-
 
 Phone = StringField(
     name="Phone",
@@ -94,7 +94,7 @@ class StorageFacility(ATFolder):
         if address:
             address = ",".join(filter(None, address.values()))
         parts = filter(None, [email, phone, address])
-        return ", ".join(parts)
+        return ", ".join(map(api.safe_unicode, parts))
 
 
 registerType(StorageFacility, PRODUCT_NAME)
