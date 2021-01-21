@@ -1,7 +1,13 @@
 Changelog
 =========
 
-2.0.0 (unreleased)
+2.1.0 (unreleased)
+------------------
+
+- #19 Improved storage listing and structuring with positions
+
+
+2.0.0 (2020-10-19)
 ------------------
 
 - Added full hierarchy filter in containers listings

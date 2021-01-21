@@ -37,18 +37,28 @@ class ISenaiteStorageCatalog(Interface):
     """
 
 
-class IStorageRootFolder(Interface):
+class IStorageContent(Interface):
+    """Marker interface for all storage contents
+    """
+
+
+class IStorageRootFolder(IStorageContent):
     """Marker interface for Storage's root folders
     """
 
 
-class IStorageFacility(Interface):
+class IStorageFacility(IStorageContent):
     """Marker interface for objects that represent a physical location or place
     where one or more storage containers are located. (room, department, etc.)
     """
 
 
-class IStorageLayoutContainer(Interface):
+class IStoragePosition(IStorageContent):
+    """Marker interface for objects that describe the position inside a facility
+    """
+
+
+class IStorageLayoutContainer(IStorageContent):
     """Marker interface for objects that act as containers, either of other
     containers or other type of objects such as samples. All these objects have
     layout field in common in which the positions where the stored elements are
@@ -56,14 +66,14 @@ class IStorageLayoutContainer(Interface):
     """
 
 
-class IStorageContainer(Interface):
+class IStorageContainer(IStorageContent):
     """Marker interface for objects that represent an storage container designed
     for the storage of one or more than one elements inside, typically other
     containers. E.g: fridge, rack, shelf, floating rack, tube rack, box, etc.
     """
 
 
-class IStorageSamplesContainer(IStorageContainer):
+class IStorageSamplesContainer(IStorageContent):
     """Marker interface for objects that represent a type of storage container
     designed for the storage of multiple samples (storage box, tube rack, etc.)
     """
@@ -72,3 +82,37 @@ class IStorageSamplesContainer(IStorageContainer):
 class IStorageJS(IViewletManager):
     """A viewlet manager that provides the JavaScripts for DataBox
     """
+
+
+class IStorageBreadcrumbs(Interface):
+    """Adapter to provide the storage breadcrumbs
+    """
+
+    def get_storage_breadcrumbs(breadcrumbs=None):
+        """Generate a breadcrumbs like title
+        """
+
+
+class IStorageUtilization(Interface):
+    """Adapter to provide storage utilization details
+    """
+
+    def get_capacity():
+        """Returns the total number of containers
+        """
+
+    def get_available_positions():
+        """Returns the number of available containers
+        """
+
+    def get_layout_containers():
+        """Returns the contained containers
+        """
+
+    def get_samples_capacity():
+        """Returns the total sample capacity
+        """
+
+    def get_samples_utilization():
+        """Returns the total number of samples
+        """

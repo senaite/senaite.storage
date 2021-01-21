@@ -21,32 +21,42 @@
 import collections
 
 from bika.lims import api
-from bika.lims import bikaMessageFactory as _s
-from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims import senaiteMessageFactory as _s
 from bika.lims.catalog.analysisrequest_catalog import \
     CATALOG_ANALYSIS_REQUEST_LISTING
+from senaite.app.listing.view import ListingView
 from senaite.storage import senaiteMessageFactory as _
 
 
-class SamplesListing(BikaListingView):
+class SampleListingView(ListingView):
     """Listing view of sample objects from inside storage
     """
 
     def __init__(self, context, request):
-        super(SamplesListing, self).__init__(context, request)
-        request.set("disable_sorder", 1)
-        self.title = context.Title()
-        self.form_id = "list_storage_samples"
-        self.sort_on = "sortable_title"
-        self.show_select_row = False
-        self.show_select_all_checkboxes = False
-        self.show_select_column = True
+        super(SampleListingView, self).__init__(context, request)
+
         self.catalog = CATALOG_ANALYSIS_REQUEST_LISTING
+
         self.contentFilter = {
             "UID": context.get_samples_uids(),
             "sort_on": "sortable_title",
             "sort_order": "ascending"
         }
+
+        self.form_id = "list_storage_samples"
+        self.show_select_all_checkbox = True
+        self.show_select_column = True
+        self.sort_on = "sortable_title"
+        self.title = context.Title()
+        self.description = context.Description()
+        self.icon_path = "{}/senaite_theme/icon/".format(self.portal_url)
+
+        if not context.is_full():
+            uid = api.get_uid(context)
+            self.context_actions[_("Add Samples")] = {
+                "url": "storage_store_container?uids={}".format(uid),
+                "icon": "{}/{}".format(self.icon_path, "sample")
+            }
 
         self.columns = collections.OrderedDict((
             ("position", {
@@ -82,6 +92,10 @@ class SamplesListing(BikaListingView):
                 "title": _s("Sample Type"),
                 "sortable": True,
                 "toggle": True}),
+            ("PreviousState", {
+                "title": _s("Previous State"),
+                "sortable": True,
+                "toggle": True}),
         ))
 
         self.review_states = [
@@ -90,24 +104,44 @@ class SamplesListing(BikaListingView):
                 "contentFilter": {},
                 "title": _s("All"),
                 "transitions": [],
+                "confirm_transitions": ["recover"],
                 "columns": self.columns.keys(),
             },
         ]
 
-        ico_path = "{}/senaite_theme/icon/".format(self.portal_url)
+    def before_render(self):
+        super(SampleListingView, self).before_render()
+        # show message if full
+        if self.context.is_full():
+            message = _("Container is full")
+            self.add_status_message(message, level="warning")
+        else:
+            context = self.context
+            capacity = context.get_samples_capacity()
+            utilization = context.get_samples_utilization()
+            message = _("Container utilization {} / {}".format(
+                utilization, capacity))
+            self.add_status_message(message, level="info")
 
-        self.context_actions = collections.OrderedDict()
-        if not context.is_full():
-            uid = api.get_uid(context)
-            self.context_actions[_("Add Samples")] = {
-                "url": "storage_store_container?uids={}".format(uid),
-                "icon": "{}/{}".format(ico_path, "sample")
-            }
+    def add_status_message(self, message, level="info"):
+        """Set a portal status message
+        """
+        return self.context.plone_utils.addPortalMessage(message, level)
+
+    def get_previous_state(self, obj, omit=("stored",)):
+        # Get the review history, most recent actions first
+        history = api.get_review_history(obj)
+        for item in history:
+            status = item.get("review_state")
+            if not status or status in omit:
+                continue
+            return status
+        return None
 
     def folderitems(self):
         """We add this function to tell baselisting to use brains instead of
         full objects"""
-        items = BikaListingView.folderitems(self)
+        items = super(SampleListingView, self).folderitems()
         return sorted(items, key=lambda item: item["position"])
 
     def folderitem(self, obj, item, index):
@@ -119,5 +153,10 @@ class SamplesListing(BikaListingView):
         item["getDateReceived"] = self.ulocalized_time(received, long_format=1)
         item["getDateSampled"] = self.ulocalized_time(sampled, long_format=1)
         position = self.context.get_object_position(api.get_uid(obj))
-        item["position"] = self.context.position_to_alpha(position[0], position[1])
+        item["position"] = self.context.position_to_alpha(
+            position[0], position[1])
+        prev_state = self.get_previous_state(obj)
+        if prev_state:
+            item["PreviousState"] = self.translate_review_state(
+                prev_state, api.get_portal_type(obj))
         return item

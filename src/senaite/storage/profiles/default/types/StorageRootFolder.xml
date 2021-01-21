@@ -21,8 +21,8 @@
   <property name="default_view_fallback">False</property>
 
   <!-- Method aliases -->
-  <alias from="(Default)" to="folder_view"/>
-  <alias from="view" to="folder_view"/>
+  <alias from="(Default)" to="view"/>
+  <alias from="view" to="view"/>
   <alias from="edit" to="base_edit"/>
 
   <!-- Actions -->

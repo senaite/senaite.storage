@@ -14,18 +14,10 @@
     provides="bika.lims.interfaces.IWorkflowActionAdapter"
     permission="zope.Public" />
 
-  <!-- Storage container listing: "add_samples" -->
+  <!-- Workflow action "add_samples" -->
   <adapter
     name="workflow_action_add_samples"
-    for="senaite.storage.interfaces.IStorageContainer
-         zope.publisher.interfaces.browser.IBrowserRequest"
-    factory=".storagecontainer.WorkflowActionAddSamplesAdapter"
-    provides="bika.lims.interfaces.IWorkflowActionAdapter"
-    permission="zope.Public" />
-  <!-- Storage samples container view: "add_samples" -->
-  <adapter
-    name="workflow_action_add_samples"
-    for="senaite.storage.interfaces.IStorageSamplesContainer
+    for="senaite.storage.interfaces.IStorageContent
          zope.publisher.interfaces.browser.IBrowserRequest"
     factory=".storagecontainer.WorkflowActionAddSamplesAdapter"
     provides="bika.lims.interfaces.IWorkflowActionAdapter"

@@ -7,13 +7,13 @@
       for="bika.lims.interfaces.IAnalysisRequest
            Products.DCWorkflow.interfaces.IAfterTransitionEvent"
       handler=".sample.AfterTransitionEventHandler"
-  />
+      />
 
   <!-- Event handler for Container's recover_samples transition -->
   <subscriber
       for="senaite.storage.interfaces.IStorageSamplesContainer
            Products.DCWorkflow.interfaces.IAfterTransitionEvent"
       handler=".samplescontainer.AfterTransitionEventHandler"
-  />
+      />
 
 </configure>

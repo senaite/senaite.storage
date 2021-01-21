@@ -4,86 +4,19 @@
     xmlns:plone="http://namespaces.plone.org/plone"
     i18n_domain="senaite.storage">
 
-  <!-- Include child packages -->
+  <!-- package includes -->
+  <include package=".container"/>
+  <include package=".facility"/>
+  <include package=".position"/>
+  <include package=".storage"/>
   <include package=".theme"/>
-  <include package=".workflow"/>
   <include package=".viewlets"/>
+  <include package=".workflow"/>
 
   <!-- Static directory for js, css and image resources -->
   <plone:static
       directory="static"
       type="plone"
       name="senaite.storage.static" />
-
-  <!-- Listing view of facilities for storage -->
-  <browser:page
-    for="senaite.storage.interfaces.IStorageRootFolder"
-    name="folder_view"
-    class=".storagerootfolder.StorageRootFolderContentsView"
-    permission="senaite.core.permissions.ManageBika"
-    layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
-
-  <!-- Listing view of containers from a storage facility -->
-  <browser:page
-    for="senaite.storage.interfaces.IStorageFacility"
-    name="folder_view"
-    class=".containers.ContainersView"
-    permission="senaite.core.permissions.ManageBika"
-    layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
-
-  <!-- Listing view of containers from a container -->
-  <browser:page
-    for="senaite.storage.interfaces.IStorageContainer"
-    name="folder_view"
-    class=".containers.ContainersView"
-    permission="senaite.core.permissions.ManageBika"
-    layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
-
-  <!-- Listing view of samples from a samples container -->
-  <browser:page
-    for="senaite.storage.interfaces.IStorageSamplesContainer"
-    name="folder_view"
-    class=".samples.SamplesListing"
-    permission="senaite.core.permissions.ManageBika"
-    layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
-
-  <!--
-  Set containers to preselected samples
-  -->
-  <browser:page
-    for="*"
-    name="storage_store_samples"
-    class=".store_samples.StoreSamplesView"
-    permission="senaite.core.permissions.ManageAnalysisRequests"
-    layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
-
-  <!--
-  Add samples to a preselected container
-  -->
-  <browser:page
-    for="*"
-    name="storage_store_container"
-    class=".store_container.StoreContainerView"
-    permission="senaite.core.permissions.ManageAnalysisRequests"
-    layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
-
-  <!--
-  Samples view with additional filters and columns
-  -->
-  <subscriber
-    for="bika.lims.browser.analysisrequest.AnalysisRequestsView
-         bika.lims.interfaces.IAnalysisRequestsFolder"
-    provides="senaite.app.listing.interfaces.IListingViewAdapter"
-    factory=".analysisrequests.AnalysisRequestsListingViewAdapter" />
-  <subscriber
-    for="bika.lims.browser.analysisrequest.AnalysisRequestsView
-         bika.lims.interfaces.IClient"
-    provides="senaite.app.listing.interfaces.IListingViewAdapter"
-    factory=".analysisrequests.AnalysisRequestsListingViewAdapter" />
-  <subscriber
-    for="bika.lims.browser.analysisrequest.AnalysisRequestsView
-         bika.lims.interfaces.IBatch"
-    provides="senaite.app.listing.interfaces.IListingViewAdapter"
-    factory=".analysisrequests.AnalysisRequestsListingViewAdapter" />
 
 </configure>

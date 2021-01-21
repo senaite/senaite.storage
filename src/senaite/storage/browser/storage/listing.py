@@ -21,22 +21,33 @@
 import collections
 
 from bika.lims import api
-from bika.lims.api import get_icon
-from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.utils import get_link, get_progress_bar_html
+from bika.lims.utils import get_link
+from bika.lims.utils import get_link_for
+from bika.lims.utils import get_progress_bar_html
+from senaite.app.listing import ListingView
 from senaite.storage import senaiteMessageFactory as _
+from senaite.storage.catalog import SENAITE_STORAGE_CATALOG
+from senaite.storage.interfaces import IStorageUtilization
 
 
-class StorageListing(BikaListingView):
+class StorageListing(ListingView):
     """Listing view of storage-like objects
     """
 
     def __init__(self, context, request):
         super(StorageListing, self).__init__(context, request)
-        self.sort_on = "sortable_title"
-        self.show_select_row = False
-        self.show_select_all_checkboxes = False
-        self.show_select_column = False
+
+        self.catalog = SENAITE_STORAGE_CATALOG
+
+        self.title = api.get_title(context)
+        self.description = api.get_description(context)
+
+        self.show_select_all_checkboxes = True
+        self.show_select_column = True
+
+        self.icon_path = "{}/senaite_theme/icon/".format(self.portal_url)
+
+        # Context Actions
         self.context_actions = collections.OrderedDict()
 
         self.columns = collections.OrderedDict((
@@ -46,22 +57,27 @@ class StorageListing(BikaListingView):
             ("Id", {
                 "title": _("ID")}),
             ("SamplesUsage", {
-                "title": _("% Samples"),}),
+                "title": _("% Samples")}),
             ("Samples", {
-                "title": _("Samples"),}),
+                "title": _("Samples")}),
             ("Containers", {
-                "title": _("Containers"),}),
+                "title": _("Containers")}),
         ))
 
-        self.review_states = [
-            {
-                "id": "default",
-                "contentFilter": {"review_state": "active"},
-                "title": _("Active"),
-                "transitions": [],
-                "columns": self.columns.keys(),
-            },
-        ]
+    def before_render(self):
+        super(StorageListing, self).before_render()
+        # disable column sorting when expaned
+        if self.is_expanded():
+            self.toggle_column_sorting(False)
+
+    def is_expanded(self):
+        return self.review_state.get("id") == "expand"
+
+    def toggle_column_sorting(self, toggle=False):
+        """Toggle column sorting on/off
+        """
+        for key, value in self.columns.items():
+            value["sortable"] = toggle
 
     def get_usage_bar_html(self, percentage):
         """Returns an html that represents an usage bar
@@ -79,19 +95,40 @@ class StorageListing(BikaListingView):
         """Applies new properties to item that is currently being rendered as a
         row in the list
         """
+        item = super(StorageListing, self).folderitem(obj, item, index)
+
         obj = api.get_object(obj)
-        item["replace"]["Title"] = get_link(item["url"], item["Title"])
+        icon = api.get_icon(obj)
+        level = self.get_child_level(obj)
+        link = get_link_for(obj)
+
+        item["replace"]["Title"] = "{} {}".format(icon, link)
+        item["Description"] = api.get_description(obj)
         item["replace"]["Id"] = get_link(item["url"], api.get_id(obj))
+        item["node_level"] = level
 
         # Samples usage
-        capacity = obj.get_samples_capacity()
-        samples = obj.get_samples_utilization()
+        utilization = IStorageUtilization(obj)
+        capacity = utilization.get_samples_capacity()
+        samples = utilization.get_samples_utilization()
         percentage = capacity and samples*100/capacity or 0
         item["replace"]["SamplesUsage"] = self.get_usage_bar_html(percentage)
         item["replace"]["Samples"] = "{:01d} / {:01d} ({:01d}%)"\
             .format(samples, capacity, percentage)
 
-        # Container types icons
-        item["before"]["Title"] = get_icon(obj)
+        if self.is_expanded() and level == 0:
+            item["state_class"] = "table-primary"
+        elif self.is_expanded() and level > 0:
+            item["state_class"] = "table-light"
 
         return item
+
+    def get_child_level(self, obj):
+        if obj == self.context:
+            return 0
+        level = 0
+        parent = api.get_parent(obj)
+        while parent != self.context:
+            level += 1
+            parent = api.get_parent(parent)
+        return level

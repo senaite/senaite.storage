@@ -1,0 +1,36 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    i18n_domain="senaite.storage">
+
+  <!-- Storage Utilization Adapter -->
+  <adapter
+      for="senaite.storage.interfaces.IStorageContent"
+      factory=".utilization.StorageUtilization" />
+
+  <!-- Storage Breadcrumbs Adapter -->
+  <adapter
+      for="senaite.storage.interfaces.IStorageContent"
+      factory=".breadcrumbs.StorageBreadcrumbs" />
+
+  <!--
+      Samples view with additional filters and columns
+  -->
+  <subscriber
+      for="bika.lims.browser.analysisrequest.AnalysisRequestsView
+           bika.lims.interfaces.IAnalysisRequestsFolder"
+      provides="senaite.app.listing.interfaces.IListingViewAdapter"
+      factory=".listing.AnalysisRequestsListingViewAdapter" />
+  <subscriber
+      for="bika.lims.browser.analysisrequest.AnalysisRequestsView
+           bika.lims.interfaces.IClient"
+      provides="senaite.app.listing.interfaces.IListingViewAdapter"
+      factory=".listing.AnalysisRequestsListingViewAdapter" />
+  <subscriber
+      for="bika.lims.browser.analysisrequest.AnalysisRequestsView
+           bika.lims.interfaces.IBatch"
+      provides="senaite.app.listing.interfaces.IListingViewAdapter"
+      factory=".listing.AnalysisRequestsListingViewAdapter" />
+
+</configure>

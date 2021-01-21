@@ -18,6 +18,8 @@
 # Copyright 2019-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims import api
+from senaite.storage.interfaces import IStorageSamplesContainer
 from bika.lims.browser.workflow import RequestContextAware
 from bika.lims.interfaces import IWorkflowActionUIDsAdapter
 from zope.interface import implementer
@@ -31,6 +33,11 @@ class WorkflowActionAddSamplesAdapter(RequestContextAware):
     def __call__(self, action, uids):
         """Redirects the user to the Samples selector view
         """
-        url = "{}/storage_store_container?uids={}".format(self.back_url,
-                                                          ",".join(uids))
+        # filter out UIDs not belonging to sample containers
+        objs = map(api.get_object, uids)
+        containers = filter(
+            lambda o: IStorageSamplesContainer.providedBy(o), objs)
+        container_uids = map(api.get_uid, containers)
+        url = "{}/storage_store_container?uids={}".format(
+            self.back_url, ",".join(container_uids))
         return self.redirect(redirect_url=url)

@@ -18,46 +18,48 @@
 # Copyright 2019-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from Products.Archetypes.Field import StringField
-from Products.Archetypes.Schema import Schema
-from Products.Archetypes.Widget import StringWidget
-from Products.Archetypes.atapi import registerType
+from bika.lims import api
 from bika.lims.browser.fields.addressfield import AddressField
 from bika.lims.browser.widgets.addresswidget import AddressWidget
 from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims.idserver import renameAfterCreation
+from bika.lims.utils import get_email_link
 from plone.app.folder.folder import ATFolder
+from Products.Archetypes.atapi import registerType
+from Products.Archetypes.Field import StringField
+from Products.Archetypes.Schema import Schema
+from Products.Archetypes.Widget import StringWidget
 from senaite.storage import PRODUCT_NAME
 from senaite.storage import senaiteMessageFactory as _
-from senaite.storage.interfaces import IStorageFacility, IStorageLayoutContainer
+from senaite.storage.interfaces import IStorageFacility
 from zope.interface import implements
 
 Phone = StringField(
-    name = 'Phone',
-    widget = StringWidget(
-        label = _("Phone")
+    name="Phone",
+    widget=StringWidget(
+        label=_("Phone")
     )
 )
 
 EmailAddress = StringField(
-    name = 'EmailAddress',
-    widget = StringWidget(
+    name="EmailAddress",
+    widget=StringWidget(
         label=_("Email Address"),
     ),
-    validators = ('isEmail',)
+    validators=("isEmail",)
 )
 
 Address = AddressField(
-    name = 'Address',
-    widget = AddressWidget(
+    name="Address",
+    widget=AddressWidget(
        label=_("Address"),
        render_own_label=True,
        showCopyFrom=False,
     ),
-    subfield_validators = {
-        'country': 'inline_field_validator',
-        'state': 'inline_field_validator',
-        'district': 'inline_field_validator',
+    subfield_validators={
+        "country": "inline_field_validator",
+        "state": "inline_field_validator",
+        "district": "inline_field_validator",
     },
 )
 
@@ -67,12 +69,12 @@ schema = BikaFolderSchema.copy() + Schema((
     Address,
 ))
 
+
 class StorageFacility(ATFolder):
     """Physical location or place where storage containers are located
     """
     implements(IStorageFacility)
     _at_rename_after_creation = True
-    displayContentsTab = False
     schema = schema
 
     def _renameAfterCreation(self, check_auto_id=False):
@@ -81,34 +83,18 @@ class StorageFacility(ATFolder):
     def getPossibleAddresses(self):
         return [Address.getName()]
 
-    def get_capacity(self):
-        """Returns the total number of containers that belong to this facility
-        """
-        return len(self.get_layout_containers())
-
-    def get_available_positions(self):
-        """Returns the number of available containers
-        """
-        return self.get_capacity()
-
-    def get_layout_containers(self):
-        """Returns the containers that belong to this facility and implement
-        IStorageLayoutContainer
-        """
-        return filter(lambda obj: IStorageLayoutContainer.providedBy(obj),
-                            self.objectValues())
-
-    def get_samples_capacity(self):
-        """Returns the total number of samples this facility can store
-        """
-        return sum(map(lambda con: con.get_samples_capacity(),
-                       self.get_layout_containers()))
-
-    def get_samples_utilization(self):
-        """Returns the total number of samples this facility actually stores
-        """
-        return sum(map(lambda con: con.get_samples_utilization(),
-                       self.get_layout_containers()))
+    def Description(self):
+        phone = self.getPhone()
+        if phone:
+            phone = _("Tel: {}".format(phone))
+        email = self.getEmailAddress()
+        if email:
+            email = _("Mail: {}".format(get_email_link(email)))
+        address = self.getAddress()
+        if address:
+            address = ",".join(filter(None, address.values()))
+        parts = filter(None, [email, phone, address])
+        return ", ".join(map(api.safe_unicode, parts))
 
 
 registerType(StorageFacility, PRODUCT_NAME)

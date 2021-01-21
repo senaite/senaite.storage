@@ -18,10 +18,12 @@
   <include package="bika.lims" file="permissions.zcml" />
 
   <!-- Package includes -->
+  <include package=".adapters"/>
   <include package=".browser"/>
+  <include package=".indexers"/>
   <include package=".monkeys"/>
-  <include package=".upgrade"/>
   <include package=".subscribers"/>
+  <include package=".upgrade"/>
   <include package=".workflow"/>
 
   <!-- Installation profile -->

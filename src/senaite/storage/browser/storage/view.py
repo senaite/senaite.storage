@@ -21,73 +21,85 @@
 import collections
 
 from bika.lims import api
-from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.utils import get_link, get_email_link, get_progress_bar_html
 from senaite.storage import senaiteMessageFactory as _
-from senaite.storage.browser.storagelisting import StorageListing
+from senaite.storage.browser.storage.listing import StorageListing
+from senaite.storage.interfaces import IStorageUtilization
 
 
-class StorageRootFolderContentsView(StorageListing):
+class StorageListingView(StorageListing):
     """Listing view of all StorageFacilities
     """
 
     def __init__(self, context, request):
-        super(StorageRootFolderContentsView, self).__init__(context, request)
+        super(StorageListingView, self).__init__(context, request)
+
         self.title = self.context.translate(_("Samples storage"))
         self.form_id = "list_storagerootfolder"
-        self.contentFilter = dict(
-            portal_type = "StorageFacility",
-            sort_on = "sortable_title",
-            sort_order = "ascending"
-        )
+
+        self.contentFilter = {
+            "sort_on": "path",
+            "sort_order": "ascending",
+            "path": {
+                "query": api.get_path(context),
+                "depth": 1,
+            }
+        }
+
+        # Add Facility action
+        self.context_actions[_("Add Facility")] = {
+            "url": "createObject?type_name=StorageFacility",
+            "icon": "{}/{}".format(self.icon_path, "storage-facility")
+        }
 
         self.columns = collections.OrderedDict((
             ("Title", {
                 "title": _("Name"),
                 "index": "sortable_index"}),
             ("SamplesUsage", {
-                "title": _("Samples"),}),
+                "title": _("Samples"),
+            }),
             ("Samples", {
-                "title": _("Samples usage"),}),
+                "title": _("Samples usage"),
+            }),
             ("Containers", {
-                "title": _("Containers"),}),
-            ("Phone", {
-                "title": _("Phone"),}),
-            ("EmailAddress", {
-                "title": _("Email"),}),
+                "title": _("Sample Containers"),
+            }),
+            ("Description", {
+                "title": _("Description"),
+            }),
         ))
 
         self.review_states = [
             {
                 "id": "default",
+                "title": _("Collapsed"),
                 "contentFilter": {"review_state": "active"},
-                "title": _("Active"),
-                "transitions": [],
+                "confirm_transitions": ["recover_samples"],
                 "columns": self.columns.keys(),
-            },
+            }, {
+                "id": "expand",
+                "title": _("Expanded"),
+                "contentFilter": {
+                    "sort_on": "path",
+                    "review_state": "active",
+                    "path": {
+                        "query": api.get_path(context),
+                    },
+                },
+                "confirm_transitions": ["recover_samples"],
+                "columns": self.columns.keys(),
+            }
         ]
-
-        # Add Facility button
-        self.context_actions[_("Add Facility")] = {
-            "url": "createObject?type_name=StorageFacility",
-            "icon": "++resource++bika.lims.images/add.png"
-        }
-
 
     def folderitem(self, obj, item, index):
         """Applies new properties to item (StorageFacility) that is currently
         being rendered as a row in the list
         """
-        item = super(StorageRootFolderContentsView,
-                     self).folderitem(obj, item, index)
-
+        item = super(StorageListingView, self).folderitem(obj, item, index)
         obj = api.get_object(obj)
-        item["replace"]["EmailAddress"] = get_email_link(item["EmailAddress"])
-        phone = obj.getPhone()
-        if phone:
-            item["replace"]["Phone"] = get_link("tel:{}".format(phone), phone)
-
         # Containers
-        containers = obj.get_layout_containers()
+        utilization = IStorageUtilization(obj)
+        containers = utilization.get_layout_containers()
         item["replace"]["Containers"] = "{:01d}".format(len(containers))
+
         return item

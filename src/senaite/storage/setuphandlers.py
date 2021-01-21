@@ -27,9 +27,9 @@ from plone import api as ploneapi
 from Products.CMFPlone.utils import _createObjectByType
 from Products.DCWorkflow.Guard import Guard
 from senaite.core.workflow import SAMPLE_WORKFLOW
-from senaite.storage import logger
 from senaite.storage import PRODUCT_NAME
 from senaite.storage import PROFILE_ID
+from senaite.storage import logger
 from senaite.storage.catalog import SENAITE_STORAGE_CATALOG
 
 ACTIONS_TO_HIDE = [
@@ -47,6 +47,20 @@ SITE_STRUCTURE = [
 ID_FORMATTING = [
     # An array of dicts. Each dict represents an ID formatting configuration
     {
+        "portal_type": "StorageFacility",
+        "form": "SF-{seq:05d}",
+        "prefix": "sstoragefacility",
+        "sequence_type": "generated",
+        "counter_type": "",
+        "split_length": 1,
+    }, {
+        "portal_type": "StoragePosition",
+        "form": "SP-{seq:05d}",
+        "prefix": "sstorageposition",
+        "sequence_type": "generated",
+        "counter_type": "",
+        "split_length": 1,
+    }, {
         "portal_type": "StorageContainer",
         "form": "SC-{seq:05d}",
         "prefix": "sstoragecontainer",
@@ -65,6 +79,9 @@ ID_FORMATTING = [
 
 CATALOGS_BY_TYPE = [
     # Tuples of (type, [catalog])
+    ("StorageFacility", ["portal_catalog", SENAITE_STORAGE_CATALOG]),
+    ("StoragePosition", ["portal_catalog", SENAITE_STORAGE_CATALOG]),
+    ("StorageContainer", ["portal_catalog", SENAITE_STORAGE_CATALOG]),
     ("StorageSamplesContainer", ["portal_catalog", SENAITE_STORAGE_CATALOG]),
 ]
 
@@ -77,10 +94,17 @@ INDEXES = [
     # Keeps the sample uids stored in each sample container
     (SENAITE_STORAGE_CATALOG, "get_samples_uids", "KeywordIndex"),
     # For searches, made of get_all_ids + Title
-    (SENAITE_STORAGE_CATALOG, "searchable_text", "TextIndexNG3"),
+    (SENAITE_STORAGE_CATALOG, "listing_searchable_text", "TextIndexNG3"),
     # Index used in searches to filter sample containers with available slots
+    (SENAITE_STORAGE_CATALOG, "Title", "FieldIndex"),
+    (SENAITE_STORAGE_CATALOG, "UID", "UUIDIndex"),
+    (SENAITE_STORAGE_CATALOG, "getId", "FieldIndex"),
     (SENAITE_STORAGE_CATALOG, "is_full", "BooleanIndex"),
+    (SENAITE_STORAGE_CATALOG, "object_provides", "KeywordIndex"),
+    (SENAITE_STORAGE_CATALOG, "path", "ExtendedPathIndex"),
+    (SENAITE_STORAGE_CATALOG, "portal_type", "FieldIndex"),
     (SENAITE_STORAGE_CATALOG, "review_state", "FieldIndex"),
+    (SENAITE_STORAGE_CATALOG, "sortable_title", "FieldIndex"),
     # Index used in ARs view to sort items by date stored by default
     (CATALOG_ANALYSIS_REQUEST_LISTING, "getDateStored", "DateIndex"),
 ]
@@ -88,6 +112,8 @@ INDEXES = [
 COLUMNS = [
     # Tuples of (catalog, column name)
     (SENAITE_STORAGE_CATALOG, "Title"),
+    (SENAITE_STORAGE_CATALOG, "Description"),
+    (SENAITE_STORAGE_CATALOG, "id"),
     # To get the UID of the selected container in searches (reference widget)
     (SENAITE_STORAGE_CATALOG, "UID"),
     # To display the column Date Stored in AR listings
@@ -102,6 +128,21 @@ WORKFLOWS_TO_UPDATE = {
         "permissions": (),
         "states": {
             "sample_received": {
+                # Do not remove transitions already there
+                "preserve_transitions": True,
+                "transitions": ("store",),
+            },
+            "to_be_verified": {
+                # Do not remove transitions already there
+                "preserve_transitions": True,
+                "transitions": ("store",),
+            },
+            "verified": {
+                # Do not remove transitions already there
+                "preserve_transitions": True,
+                "transitions": ("store",),
+            },
+            "published": {
                 # Do not remove transitions already there
                 "preserve_transitions": True,
                 "transitions": ("store",),
@@ -302,7 +343,7 @@ def hide_action(folder, action_id):
                 return n
         return -1
 
-    logger.info("Hide {} from control_panel".format(action_id, item.Title()))
+    logger.info("Hide {} from control_panel".format(action_id))
     cp = api.get_tool("portal_controlpanel")
     action_index = get_action_index(action_id)
     if (action_index == -1):
@@ -328,9 +369,11 @@ def migrate_storage_locations(portal):
     total = len(brains)
     for num, brain in enumerate(brains):
         if num % 100 == 0:
-            logger.info("Migrating Storage Locations: {}/{}".format(num, total))
-        object = api.get_object(brain)
-        # TODO Migrate
+            logger.info(
+                "Migrating Storage Locations: {}/{}".format(num, total))
+        object = api.get_object(brain)  # noqa
+        # XXX: Do we still need this?
+        # TODO: Migrate old storage locations
 
 
 def setup_workflows(portal):
