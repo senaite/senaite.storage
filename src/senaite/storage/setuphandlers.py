@@ -343,7 +343,7 @@ def hide_action(folder, action_id):
                 return n
         return -1
 
-    logger.info("Hide {} from control_panel".format(action_id, item.Title()))
+    logger.info("Hide {} from control_panel".format(action_id))
     cp = api.get_tool("portal_controlpanel")
     action_index = get_action_index(action_id)
     if (action_index == -1):
@@ -369,9 +369,11 @@ def migrate_storage_locations(portal):
     total = len(brains)
     for num, brain in enumerate(brains):
         if num % 100 == 0:
-            logger.info("Migrating Storage Locations: {}/{}".format(num, total))
-        object = api.get_object(brain)
-        # TODO Migrate
+            logger.info(
+                "Migrating Storage Locations: {}/{}".format(num, total))
+        object = api.get_object(brain)  # noqa
+        # XXX: Do we still need this?
+        # TODO: Migrate old storage locations
 
 
 def setup_workflows(portal):
