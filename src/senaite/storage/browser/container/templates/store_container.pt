@@ -126,11 +126,13 @@
                      value="Cancel"/>
             </div>
             <div class="col-sm-2">
-              <a tal:condition="python: not view.is_last_container()"
+              <a tal:define="container python:view.get_next_container();
+                             last_container python:view.is_last_container()"
+                 tal:condition="python: container and not last_container"
                  class="btn btn-primary"
                  tal:attributes="href python: view.get_next_url()">
                 <span i18n:translate="">Next container:</span>&nbsp;
-                <span tal:content="python: view.get_next_container().getId()"></span>&nbsp;
+                <span tal:content="python: container.getId()"></span>&nbsp;
                 <span> ⇶</span>
               </a>
             </div>

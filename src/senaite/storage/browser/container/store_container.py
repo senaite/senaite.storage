@@ -77,7 +77,8 @@ class StoreContainerView(BaseView):
         next_uids = self.get_next_uids()
         if next_uids:
             next_uids = ",".join(next_uids)
-            return "{}/{}?uids={}".format(self.back_url, self.action, next_uids)
+            return "{}/{}?uids={}".format(
+                self.back_url, self.action, next_uids)
         return self.back_url
 
     def get_next_container(self):
@@ -144,7 +145,7 @@ class StoreContainerView(BaseView):
                                  level="warning")
         if not IStorageSamplesContainer.providedBy(container):
             logger.warn("Not a samples container: {}".format(repr(container)))
-            self.redirect(redirect_url=self.get_next_url())
+            return self.redirect(redirect_url=self.get_next_url())
 
         # If container is full, there is no way to add more samples there
         if container.is_full():
