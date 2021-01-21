@@ -21,8 +21,6 @@
 import collections
 
 from bika.lims import api
-from bika.lims.utils import get_email_link
-from bika.lims.utils import get_link
 from senaite.storage import senaiteMessageFactory as _
 from senaite.storage.browser.storage.listing import StorageListing
 from senaite.storage.interfaces import IStorageUtilization
@@ -39,9 +37,12 @@ class StorageListingView(StorageListing):
         self.form_id = "list_storagerootfolder"
 
         self.contentFilter = {
-            "portal_type": ["StorageFacility"],
             "sort_on": "path",
-            "sort_order": "ascending"
+            "sort_order": "ascending",
+            "path": {
+                "query": api.get_path(context),
+                "depth": 1,
+            }
         }
 
         # Add Facility action
@@ -61,7 +62,7 @@ class StorageListingView(StorageListing):
                 "title": _("Samples usage"),
             }),
             ("Containers", {
-                "title": _("Containers"),
+                "title": _("Sample Containers"),
             }),
             ("Description", {
                 "title": _("Description"),
@@ -79,12 +80,6 @@ class StorageListingView(StorageListing):
                 "id": "expand",
                 "title": _("Expanded"),
                 "contentFilter": {
-                    "portal_type": [
-                        "StorageFacility",
-                        "StoragePosition",
-                        "StorageContainer",
-                        "StorageSamplesContainer",
-                    ],
                     "sort_on": "path",
                     "review_state": "active",
                     "path": {
