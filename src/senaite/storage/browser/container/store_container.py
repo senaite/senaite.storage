@@ -143,7 +143,7 @@ class StoreContainerView(BaseView):
             return self.redirect(message=_s("No items selected"),
                                  level="warning")
         if not IStorageSamplesContainer.providedBy(container):
-            logger.warn("Not a samples container: {}").format(repr(container))
+            logger.warn("Not a samples container: {}".format(repr(container)))
             self.redirect(redirect_url=self.get_next_url())
 
         # If container is full, there is no way to add more samples there
