@@ -96,3 +96,23 @@ class IStorageBreadcrumbs(Interface):
 class IStorageUtilization(Interface):
     """Adapter to provide storage utilization details
     """
+
+    def get_capacity():
+        """Returns the total number of containers
+        """
+
+    def get_available_positions():
+        """Returns the number of available containers
+        """
+
+    def get_layout_containers():
+        """Returns the contained containers
+        """
+
+    def get_samples_capacity():
+        """Returns the total sample capacity
+        """
+
+    def get_samples_utilization():
+        """Returns the total number of samples
+        """
