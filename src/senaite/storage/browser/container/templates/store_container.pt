@@ -29,7 +29,7 @@
         <p tal:content="python: container.get_full_title()"
            tal:condition="python: container != view.context"></p>
         <p>
-          <span i18n:translate="">Available positions: </span>
+          <span i18n:translate="">Used positions: </span>
           <span tal:define="used python: container.get_samples_utilization();
                             total python: container.get_samples_capacity();"
                 tal:content="python: '{}/{}'.format(used, total)"></span>
