@@ -14,6 +14,8 @@ def after_activate(obj):
 
     def activate_children(children):
         for child in children:
+            if api.is_active(child):
+                continue
             logger.info("*** Activating {} ***".format(api.get_id(child)))
             api.do_transition_for(child, "activate")
             activate_children(child.objectValues())
@@ -33,6 +35,8 @@ def after_deactivate(obj):
 
     def deactivate_children(children):
         for child in children:
+            if not api.is_active(child):
+                continue
             logger.info("*** Deactivating {} ***".format(api.get_id(child)))
             api.do_transition_for(child, "deactivate")
             deactivate_children(child.objectValues())
