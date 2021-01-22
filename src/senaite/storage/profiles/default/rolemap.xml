@@ -3,7 +3,19 @@
 
   <permissions>
 
-    <!-- Action Transition Permissions -->
+    <!-- Store/Recover Sample Transition Permissions -->
+    <permission name="senaite.storage: Transition: Store Sample" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="senaite.storage: Transition: Recover Sample" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+
+    <!-- Add/Recover Samples Transition Permissions -->
     <permission name="senaite.storage: Transition: Add Samples" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
@@ -15,12 +27,14 @@
       <role name="Manager"/>
     </permission>
 
-    <!-- WF Transition Permissions -->
+    <!-- Activate/Deactivate Transition Permissions -->
     <permission name="senaite.storage: Transition: Activate" acquire="False">
+      <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
     </permission>
     <permission name="senaite.storage: Transition: Deactivate" acquire="False">
+      <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
     </permission>

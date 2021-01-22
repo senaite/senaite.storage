@@ -49,6 +49,7 @@
   <!-- State: inactive -->
   <state state_id="inactive" title="Inactive" i18n:attributes="title">
     <exit-transition transition_id="activate" />
+    <exit-transition transition_id="recover_samples" />
 
     <!-- Transition permissions -->
     <permission-map name="senaite.storage: Transition: Activate" acquired="True" />

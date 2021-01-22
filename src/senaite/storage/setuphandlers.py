@@ -175,7 +175,7 @@ WORKFLOWS_TO_UPDATE = {
                 "new_state": "stored",
                 "action": "Store sample",
                 "guard": {
-                    "guard_permissions": "",
+                    "guard_permissions": "senaite.storage: Transition: Store Sample",  # noqa
                     "guard_roles": "",
                     "guard_expr": "",
                 }
@@ -187,7 +187,7 @@ WORKFLOWS_TO_UPDATE = {
                 "new_state": "stored",
                 "action": "Recover sample",
                 "guard": {
-                    "guard_permissions": "",
+                    "guard_permissions": "senaite.storage: Transition: Recover Sample",  # noqa
                     "guard_roles": "",
                     "guard_expr": "",
                 }
