@@ -1,0 +1,8 @@
+<object name="portal_factory" meta_type="Plone Factory Tool">
+  <factorytypes>
+    <type remove="True" portal_type="StorageContainer"/>
+    <type remove="True" portal_type="StorageFacility"/>
+    <type remove="True" portal_type="StorageRootFolder"/>
+    <type remove="True" portal_type="StorageSamplesContainer"/>
+  </factorytypes>
+</object>
