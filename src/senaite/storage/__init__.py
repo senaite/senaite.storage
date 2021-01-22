@@ -25,10 +25,8 @@ from Products.Archetypes.atapi import listTypes
 from Products.Archetypes.atapi import process_types
 from Products.CMFCore.permissions import AddPortalContent
 from Products.CMFCore.utils import ContentInit
+from senaite.storage.config import PRODUCT_NAME
 from zope.i18nmessageid import MessageFactory
-
-PRODUCT_NAME = "senaite.storage"
-PROFILE_ID = "profile-{}:default".format(PRODUCT_NAME)
 
 # Make senaite.storage modules importable by through-the-web
 # https://docs.plone.org/develop/plone/security/sandboxing.html

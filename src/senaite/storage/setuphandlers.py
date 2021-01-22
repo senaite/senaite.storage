@@ -27,10 +27,10 @@ from plone import api as ploneapi
 from Products.CMFPlone.utils import _createObjectByType
 from Products.DCWorkflow.Guard import Guard
 from senaite.core.workflow import SAMPLE_WORKFLOW
-from senaite.storage import PRODUCT_NAME
-from senaite.storage import PROFILE_ID
 from senaite.storage import logger
 from senaite.storage.catalog import SENAITE_STORAGE_CATALOG
+from senaite.storage.config import PRODUCT_NAME
+from senaite.storage.config import PROFILE_ID
 
 ACTIONS_TO_HIDE = [
     # Tuples of (id, folder_id)

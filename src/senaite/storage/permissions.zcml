@@ -1,0 +1,14 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    i18n_domain="senaite.core">
+
+  <!-- Add/Recover Samples Permissions -->
+  <permission id="senaite.storage.permissions.AddSamples" title="senaite.storage: Transition: Add Samples"/>
+  <permission id="senaite.storage.permissions.RecoverSamples" title="senaite.storage: Transition: Recover Samples"/>
+
+  <!-- Activate/Deactivate Permissions -->
+  <permission id="senaite.storage.permissions.TransitionDeactivate" title="senaite.storage: Transition: Deactivate"/>
+  <permission id="senaite.storage.permissions.TransitionActivate" title="senaite.storage: Transition: Activate"/>
+
+
+</configure>

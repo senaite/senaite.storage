@@ -2,6 +2,13 @@
     xmlns="http://namespaces.zope.org/zope"
     i18n_domain="senaite.storage">
 
+  <!-- Event handler for storage activate/deactivate transition -->
+  <subscriber
+      for="senaite.storage.interfaces.IStorageContent
+           Products.DCWorkflow.interfaces.IAfterTransitionEvent"
+      handler=".storage.AfterTransitionEventHandler"
+      />
+
   <!-- Event handler for Sample's recover transition -->
   <subscriber
       for="bika.lims.interfaces.IAnalysisRequest
