@@ -262,7 +262,15 @@ def post_uninstall(portal_setup):
     context = portal_setup._getImportContext(profile_id)  # noqa
     portal = context.getSite()  # noqa
 
+    # recover all stored samples
+    recover_samples(portal)
+
+    # unindex the storage structure
+    # -> makes it disappear in the navigation
     unindex_storage_structure(portal)
+
+    # uninstall storage workflow settings
+    uninstall_workflows(portal)
 
     logger.info("{} uninstall handler [DONE]".format(PRODUCT_NAME.upper()))
 
@@ -630,3 +638,41 @@ def unindex_storage_structure(portal):
         unindex(obj, recurse=True)
 
     storage.unindexObject()
+
+
+def recover_samples(portal):
+    """recover all stored samples
+    """
+    logger.info("*** Recovering all stored samples ***")
+    catalog = api.get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
+    query = {"review_state": "stored"}
+    brains = catalog(query)
+    total = len(brains)
+    logger.info("Recovering {} samples ... ".format(total))
+    for num, brain in enumerate(brains):
+        api.do_transition_for(brain, "recover")
+        logger.info("Recovering sample {}/{}: {}".format(
+            num + 1, total, api.get_id(brain)))
+
+
+def uninstall_workflows(portal):
+    """Uninstall injected WFs
+    """
+    logger.info("Uninstall storage workflows ...")
+    wf_tool = api.get_tool("portal_workflow")
+
+    workflow = wf_tool.getWorkflowById(SAMPLE_WORKFLOW)
+    states = workflow.states
+
+    DELETE_STATES = ["stored"]
+    DELETE_TRANSITIONS = ["store", "recover"]
+
+    for sid, state in states.items():
+        if sid in DELETE_STATES:
+            states.deleteStates([sid])
+            logger.info("Deleted state '{}' from workflow '{}'".format(
+                sid, workflow.getId()))
+            continue
+        transitions = filter(
+            lambda t: t not in DELETE_TRANSITIONS, state.transitions)
+        state.transitions = tuple(transitions)
