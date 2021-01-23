@@ -35,6 +35,7 @@
     <exit-transition transition_id="add_samples" />
     <exit-transition transition_id="recover_samples" />
     <exit-transition transition_id="move_container" />
+    <exit-transition transition_id="book_out_samples" />
 
     <!-- Transition permissions -->
     <permission-map name="senaite.storage: Transition: Deactivate" acquired="True" />
@@ -101,6 +102,17 @@
     <guard>
       <guard-permission>senaite.storage: Transition: Recover Samples</guard-permission>
       <guard-expression>python:here.guard_recover_samples()</guard-expression>
+    </guard>
+  </transition>
+
+  <!-- Transition: book_out_Samples -->
+  <transition transition_id="book_out_samples" title="Book out samples"
+              new_state="" trigger="USER" before_script="" after_script=""
+              i18n:attributes="title">
+    <action url="%(content_url)s/storage_book_out_samples" category="workflow" icon="">Book out samples</action>
+    <guard>
+      <guard-permission>senaite.storage: Transition: Book out Samples</guard-permission>
+      <guard-expression>python:here.guard_book_out_samples()</guard-expression>
     </guard>
   </transition>
 

@@ -150,7 +150,28 @@ WORKFLOWS_TO_UPDATE = {
             "stored": {
                 "title": "Stored",
                 "description": "Sample is stored",
-                "transitions": ("recover", "detach"),
+                "transitions": ("recover", "detach", "book_out"),
+                # Copy permissions from sample_received first
+                "permissions_copy_from": "sample_received",
+                # Override permissions
+                "permissions": {
+                    # Note here we are passing tuples, so these permissions are
+                    # set with acquire=False
+                    permissions.AddAnalysis: (),
+                    permissions.AddAttachment: (),
+                    permissions.TransitionCancelAnalysisRequest: (),
+                    permissions.TransitionReinstateAnalysisRequest: (),
+                    permissions.EditFieldResults: (),
+                    permissions.EditResults: (),
+                    permissions.TransitionPreserveSample: (),
+                    permissions.TransitionPublishResults: (),
+                    permissions.TransitionScheduleSampling: (),
+                }
+            },
+            "booked_out": {
+                "title": "Booked out",
+                "description": "Sample is booked_out",
+                "transitions": (),
                 # Copy permissions from sample_received first
                 "permissions_copy_from": "sample_received",
                 # Override permissions
@@ -191,7 +212,17 @@ WORKFLOWS_TO_UPDATE = {
                     "guard_roles": "",
                     "guard_expr": "",
                 }
-            }
+            },
+            "book_out": {
+                "title": "Book out",
+                "new_state": "booked_out",
+                "action": "Book out sample",
+                "guard": {
+                    "guard_permissions": "senaite.storage: Transition: Book out Sample",  # noqa
+                    "guard_roles": "",
+                    "guard_expr": "",
+                }
+            },
         }
     }
 }

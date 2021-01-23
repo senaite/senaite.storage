@@ -18,14 +18,13 @@
 # Copyright 2019-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims import api
+from bika.lims.utils import changeWorkflowState
+from bika.lims.workflow import doActionFor as do_action_for
 from senaite.core.workflow import SAMPLE_WORKFLOW
 from senaite.storage import api as _api
 from senaite.storage import logger
 from zope.lifecycleevent import modified
-
-from bika.lims import api
-from bika.lims.utils import changeWorkflowState
-from bika.lims.workflow import doActionFor as do_action_for
 
 
 def after_store(sample):
@@ -44,6 +43,32 @@ def after_store(sample):
     if not parts:
         # There are no partitions left, transition the primary
         do_action_for(primary, "store")
+
+
+def after_book_out(sample):
+    """Event triggered after "book_out" transition takes place for a given sample
+    """
+
+    # remove the sample from the storage
+    container = _api.get_storage_sample(api.get_uid(sample))
+    if container:
+        container.remove_object(sample)
+    else:
+        logger.warn("Container for Sample {} not found".format(sample.getId()))
+
+    primary = sample.getParentAnalysisRequest()
+    if not primary:
+        return
+
+    # Store primary sample if its partitions have been stored
+    parts = primary.getDescendants()
+
+    # Partitions in some statuses won't be considered
+    skip = ['cancelled', 'stored', 'retracted', 'rejected']
+    parts = filter(lambda part: api.get_review_status(part) not in skip, parts)
+    if not parts:
+        # There are no partitions left, transition the primary
+        do_action_for(primary, "book_out")
 
 
 def after_recover(sample):

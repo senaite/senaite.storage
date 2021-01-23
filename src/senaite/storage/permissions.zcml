@@ -5,13 +5,15 @@
   <!-- Move Storage Container Permission -->
   <permission id="senaite.storage.permissions.MoveContainer" title="senaite.storage: Transition: Move Container"/>
 
-  <!-- Store/Recover Sample Permissions -->
+  <!-- Store/Recover/Book out Sample Permissions -->
   <permission id="senaite.storage.permissions.StoreSample" title="senaite.storage: Transition: Store Sample"/>
   <permission id="senaite.storage.permissions.RecoverSample" title="senaite.storage: Transition: Recover Sample"/>
+  <permission id="senaite.storage.permissions.BookOutSample" title="senaite.storage: Transition: Book out Sample"/>
 
-  <!-- Add/Recover Samples Permissions -->
+  <!-- Add/Recover/Book out Samples Permissions -->
   <permission id="senaite.storage.permissions.AddSamples" title="senaite.storage: Transition: Add Samples"/>
   <permission id="senaite.storage.permissions.RecoverSamples" title="senaite.storage: Transition: Recover Samples"/>
+  <permission id="senaite.storage.permissions.BookOutSamples" title="senaite.storage: Transition: Book out Samples"/>
 
   <!-- Activate/Deactivate Permissions -->
   <permission id="senaite.storage.permissions.TransitionDeactivate" title="senaite.storage: Transition: Deactivate"/>

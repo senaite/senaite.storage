@@ -12,7 +12,7 @@
         <strong i18n:translate="">
           Stored sample
         </strong>
-        (<span tal:replace="python: view.view.ulocalized_time(info['when'], long_format=0)"/>)
+        (<span tal:replace="python:view.ulocalized_time(info['when'], long_format=0)"/>)
       </p>
       <p class="description">
         <span i18n:translate="">Location:</span>
