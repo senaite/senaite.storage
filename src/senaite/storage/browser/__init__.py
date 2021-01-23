@@ -20,8 +20,8 @@
 
 import collections
 
-from Products.Five.browser import BrowserView
 from bika.lims import api
+from Products.Five.browser import BrowserView
 from senaite.storage import logger
 
 
