@@ -23,4 +23,13 @@
     provides="bika.lims.interfaces.IWorkflowActionAdapter"
     permission="zope.Public" />
 
+  <!-- Workflow action "move_container" -->
+  <adapter
+    name="workflow_action_move_container"
+    for="senaite.storage.interfaces.IStorageContent
+         zope.publisher.interfaces.browser.IBrowserRequest"
+    factory=".storagecontainer.WorkflowActionMoveContainerAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="zope.Public" />
+
 </configure>

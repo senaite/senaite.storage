@@ -34,6 +34,7 @@
     <exit-transition transition_id="deactivate" />
     <exit-transition transition_id="add_samples" />
     <exit-transition transition_id="recover_samples" />
+    <exit-transition transition_id="move_container" />
 
     <!-- Transition permissions -->
     <permission-map name="senaite.storage: Transition: Deactivate" acquired="True" />
@@ -50,6 +51,7 @@
   <state state_id="inactive" title="Inactive" i18n:attributes="title">
     <exit-transition transition_id="activate" />
     <exit-transition transition_id="recover_samples" />
+    <exit-transition transition_id="move_container" />
 
     <!-- Transition permissions -->
     <permission-map name="senaite.storage: Transition: Activate" acquired="True" />
@@ -82,9 +84,9 @@
 
   <!-- Transition: add_samples -->
   <transition transition_id="add_samples" title="Add samples"
-              new_state="active" trigger="USER" before_script="" after_script=""
+              new_state="" trigger="USER" before_script="" after_script=""
               i18n:attributes="title">
-    <action url="" category="workflow" icon="">Add samples</action>
+    <action url="%(content_url)s/storage_store_container" category="workflow" icon="">Add samples</action>
     <guard>
       <guard-permission>senaite.storage: Transition: Add Samples</guard-permission>
       <guard-expression>python:here.guard_add_samples()</guard-expression>
@@ -93,12 +95,23 @@
 
   <!-- Transition: recover_samples -->
   <transition transition_id="recover_samples" title="Recover samples"
-              new_state="active" trigger="USER" before_script="" after_script=""
+              new_state="" trigger="USER" before_script="" after_script=""
               i18n:attributes="title">
     <action url="" category="workflow" icon="">Recover samples</action>
     <guard>
       <guard-permission>senaite.storage: Transition: Recover Samples</guard-permission>
       <guard-expression>python:here.guard_recover_samples()</guard-expression>
+    </guard>
+  </transition>
+
+  <!-- Transition: move_container -->
+  <transition transition_id="move_container" title="Move container"
+              new_state="" trigger="USER" before_script="" after_script=""
+              i18n:attributes="title">
+    <action url="%(content_url)s/storage_move_container" category="workflow" icon="">Move container</action>
+    <guard>
+      <guard-permission>senaite.storage: Transition: Move Container</guard-permission>
+      <guard-expression>python:here.guard_move_container()</guard-expression>
     </guard>
   </transition>
 

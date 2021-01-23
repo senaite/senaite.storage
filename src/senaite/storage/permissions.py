@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+TransitionMoveContainer = "senaite.storage: Transition: Move Container"
+
 TransitionStoreSample = "senaite.storage: Transition: Store Sample"
 TransitionRecoverSample = "senaite.storage: Transition: Recover Sample"
 

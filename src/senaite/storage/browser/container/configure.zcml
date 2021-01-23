@@ -42,4 +42,14 @@
       permission="senaite.core.permissions.ManageAnalysisRequests"
       layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
 
+  <!--
+      Move containers
+  -->
+  <browser:page
+      for="*"
+      name="storage_move_container"
+      class=".move_container.MoveContainerView"
+      permission="zope.Public"
+      layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
+
 </configure>
