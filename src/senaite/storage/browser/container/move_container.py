@@ -105,7 +105,8 @@ class MoveContainerView(BaseView):
         """
         parents = list(reversed(self.get_parents_for(container)))
         parents.append(container)
-        return " / ".join(map(api.get_title, parents))
+        path = " / ".join(map(api.get_title, parents))
+        return api.safe_unicode(path)
 
     def get_movable_containers(self):
         """Get movable containers
