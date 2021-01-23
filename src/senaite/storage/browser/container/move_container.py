@@ -84,8 +84,9 @@ class MoveContainerView(BaseView):
             return False
         cb = parent.manage_cutObjects(ids=[api.get_id(source)])
         destination.manage_pasteObjects(cb_copy_data=cb)
+
         message = _(u"Moved container {} → {}".format(
-            api.get_title(source), self.get_container_path(destination)))
+            self.get_title(source), self.get_container_path(destination)))
         self.add_status_message(message, level="info")
         return True
 
@@ -100,13 +101,18 @@ class MoveContainerView(BaseView):
 
         return get_parents(container, predicate=predicate)
 
+    def get_title(self, obj):
+        """Return the object title as unicode
+        """
+        title = api.get_title(obj)
+        return api.safe_unicode(title)
+
     def get_container_path(self, container):
         """Return the facility container path
         """
         parents = list(reversed(self.get_parents_for(container)))
         parents.append(container)
-        path = " / ".join(map(api.get_title, parents))
-        return api.safe_unicode(path)
+        return " / ".join(map(self.get_title, parents))
 
     def get_movable_containers(self):
         """Get movable containers
@@ -157,7 +163,7 @@ class MoveContainerView(BaseView):
                 "obj": obj,
                 "id": api.get_id(obj),
                 "uid": api.get_uid(obj),
-                "title": api.get_title(obj),
+                "title": self.get_title(obj),
                 "path": self.get_container_path(obj),
                 "url": api.get_url(obj),
                 "targets": self.get_move_targets_for(obj),
