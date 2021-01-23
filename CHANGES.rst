@@ -4,6 +4,7 @@ Changelog
 2.1.0 (unreleased)
 ------------------
 
+- #22 Allow to move containers
 - #21 Allow storage contents to be deactivated
 - #19 Improved storage listing and structuring with positions
 
