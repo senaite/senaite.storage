@@ -48,6 +48,9 @@ class AnalysisRequestsListingViewAdapter(object):
         # Add review state "stored" in the listing
         self.add_stored_review_state()
 
+        # Add review state "booked out" in the listing
+        self.add_booked_out_review_state()
+
         # In "stored" status, display all samples in "flat style"
         if self.is_stored_state():
             self.flat_listing = True
@@ -55,9 +58,6 @@ class AnalysisRequestsListingViewAdapter(object):
         # In "booked_out" status, display all samples in "flat style"
         if self.is_booked_out_state():
             self.flat_listing = True
-
-        # Add review state "booked out" in the listing
-        self.add_booked_out_review_state()
 
         if self.flat_listing:
             if "isRootAncestor" in self.listing.contentFilter:
