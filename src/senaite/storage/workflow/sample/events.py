@@ -47,14 +47,6 @@ def after_store(sample):
 def after_book_out(sample):
     """Event triggered after "book_out" transition takes place for a given sample
     """
-
-    # remove the sample from the storage
-    container = _api.get_storage_sample(api.get_uid(sample))
-    if container:
-        container.remove_object(sample)
-    else:
-        logger.warn("Container for Sample {} not found".format(sample.getId()))
-
     primary = sample.getParentAnalysisRequest()
     if not primary:
         return
