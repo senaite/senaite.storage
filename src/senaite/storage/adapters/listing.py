@@ -39,15 +39,27 @@ class AnalysisRequestsListingViewAdapter(object):
         self.listing = listing
         self.context = context
         self.installed = is_installed()
+        self.flat_listing = False
 
     def before_render(self):
         if not self.installed:
             return
+
         # Add review state "stored" in the listing
         self.add_stored_review_state()
 
         # In "stored" status, display all samples in "flat style"
         if self.is_stored_state():
+            self.flat_listing = True
+
+        # In "booked_out" status, display all samples in "flat style"
+        if self.is_booked_out_state():
+            self.flat_listing = True
+
+        # Add review state "booked out" in the listing
+        self.add_booked_out_review_state()
+
+        if self.flat_listing:
             if "isRootAncestor" in self.listing.contentFilter:
                 del self.listing.contentFilter["isRootAncestor"]
 
@@ -113,21 +125,95 @@ class AnalysisRequestsListingViewAdapter(object):
                              column_values, after="getDateStored",
                              review_states=("stored", ))
 
+    def add_booked_out_review_state(self):
+        """Adds the "booked_out" review state to the listing's review_states pool
+        """
+        # Columns to hide
+        hide = [
+            "getAnalysesNum",
+            "getDateVerified",
+            "getDatePreserved",
+            "getDatePublished",
+            "getDueDate",
+            "getStorageLocation",
+            "Printed"
+            "Progress",
+            "SamplingDate",
+            "getSamplesContainer",
+        ]
+        columns = filter(lambda c: c not in hide, self.listing.columns.keys())
+
+        # Custom transitions
+        print_stickers = {
+            "id": "print_stickers",
+            "title": _("Print stickers"),
+            "url": "workflow_action?action=print_stickers"
+        }
+
+        # "booked_out" review state
+        stored = {
+            "id": "booked_out",
+            "title": _("Booked out"),
+            "contentFilter": {
+                "review_state": ("booked_out",),
+                "sort_on": "created",
+                "sort_order": "descending",
+            },
+            "transitions": [],
+            "custom_transitions": [print_stickers],
+            "columns": columns,
+        }
+
+        # Add the review state
+        utils.add_review_state(self.listing, stored, after="stored")
+
+        # Add the column "getDateBookedOut" to "booked_out" review_state
+        column_values = {
+            "title": _("Book out date"),
+            "index": "getDateBookedOut",
+            "toggle": True}
+        utils.add_column(
+            self.listing, "getDateBookedOut", column_values,
+            after="getDateStored", review_states=("booked_out",))
+
+        # Add the column "getBookOutReason" to "booked_out" review_state
+        column_values = {
+            "title": _("Book out reason"),
+            "toggle": True}
+        utils.add_column(
+            self.listing, "getBookOutReason", column_values,
+            after="getDateBookedOut", review_states=("booked_out",))
+
+        # Add the column "getBookOutActor" to "booked_out" review_state
+        column_values = {
+            "title": _("Booked out by"),
+            "index": "getBookOutActor",
+            "toggle": True}
+        utils.add_column(
+            self.listing, "getBookOutActor", column_values,
+            after="getBookOutReason", review_states=("booked_out",))
+
     def folder_item(self, obj, item, index):
         # Return immediately when add-on is not installed
         if not self.installed:
             return item
 
-        # Do nothing if the current state is not "stored"
-        if not self.is_stored_state():
-            return item
+        # Ingore partitions and add column
+        if self.is_stored_state():
+            # Show the date time when the sample was stored
+            item["getDateStored"] = self.str_time(obj.getDateStored)
+
+        if self.is_booked_out_state():
+            # Show the date time when the sample was stored
+            item["getDateBookedOut"] = self.str_time(obj.getDateBookedOut)
+            item["getBookOutReason"] = obj.getBookOutReason
+            item["getBookOutActor"] = obj.getBookOutActor
 
         # Display all samples in "flat style"
-        item["parent"] = ""
-        item["children"] = []
+        if self.flat_listing:
+            item["parent"] = ""
+            item["children"] = []
 
-        # Show the date time when the sample was stored
-        item["getDateStored"] = self.str_time(obj.getDateStored)
         return item
 
     def str_time(self, date_time, long_format=1):
@@ -142,3 +228,11 @@ class AnalysisRequestsListingViewAdapter(object):
         if not review_state:
             return False
         return review_state.get("id", "") == "stored"
+
+    def is_booked_out_state(self):
+        """Returns whether the current review state of the listing is "booked_out"
+        """
+        review_state = self.listing.review_state
+        if not review_state:
+            return False
+        return review_state.get("id", "") == "booked_out"
