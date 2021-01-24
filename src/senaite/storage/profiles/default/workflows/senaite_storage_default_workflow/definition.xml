@@ -105,7 +105,7 @@
     </guard>
   </transition>
 
-  <!-- Transition: book_out_Samples -->
+  <!-- Transition: book_out_samples -->
   <transition transition_id="book_out_samples" title="Book out samples"
               new_state="" trigger="USER" before_script="" after_script=""
               i18n:attributes="title">
