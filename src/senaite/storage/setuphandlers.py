@@ -206,7 +206,7 @@ WORKFLOWS_TO_UPDATE = {
                 "guard": {
                     "guard_permissions": "senaite.storage: Transition: Store Sample",  # noqa
                     "guard_roles": "",
-                    "guard_expr": "",
+                    "guard_expr": "python:here.guard_store_sample()",
                 }
             },
             "recover": {
@@ -228,7 +228,7 @@ WORKFLOWS_TO_UPDATE = {
                 "guard": {
                     "guard_permissions": "senaite.storage: Transition: Book out Sample",  # noqa
                     "guard_roles": "",
-                    "guard_expr": "",
+                    "guard_expr": "python:here.guard_book_out_sample()",
                 }
             },
         }
@@ -702,8 +702,8 @@ def uninstall_workflows(portal):
     workflow = wf_tool.getWorkflowById(SAMPLE_WORKFLOW)
     states = workflow.states
 
-    DELETE_STATES = ["stored"]
-    DELETE_TRANSITIONS = ["store", "recover"]
+    DELETE_STATES = ["stored", "booked_out"]
+    DELETE_TRANSITIONS = ["store", "recover", "book_out"]
 
     for sid, state in states.items():
         if sid in DELETE_STATES:
