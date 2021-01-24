@@ -63,7 +63,7 @@ class MoveContainerView(BaseView):
             return [self.context]
         if IStorageContainer.providedBy(self.context):
             return [self.context]
-        return None
+        return []
 
     def add_status_message(self, message, level="info"):
         """Set a portal status message
