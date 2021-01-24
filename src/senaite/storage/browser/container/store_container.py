@@ -117,6 +117,30 @@ class StoreContainerView(BaseView):
         }
         return json.dumps(base_query)
 
+    def get_sample_info(self, sample):
+        """Returns the sample info
+        """
+        if not sample:
+            return {}
+        sample = api.get_object(sample)
+        wf_tool = api.get_tool("portal_workflow")
+        sample_wf = wf_tool[SAMPLE_WORKFLOW]
+        status = api.get_workflow_status_of(sample)
+        status_title = status
+        state = sample_wf.states.get(status)
+        if state:
+            status_title = state.title
+        return {
+            "obj": sample,
+            "id": api.get_id(sample),
+            "uid": api.get_uid(sample),
+            "title": api.get_title(sample),
+            "url": api.get_url(sample),
+            "sample_type": sample.getSampleTypeTitle(),
+            "status": status,
+            "status_title": status_title,
+        }
+
     def get_allowed_states(self):
         # Get the Sample (aka AR) workflow definition
         portal_wf = api.get_tool("portal_workflow")
