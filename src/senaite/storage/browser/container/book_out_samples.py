@@ -70,6 +70,10 @@ class BookOutSamplesView(BaseView):
         if IAnalysisRequest.providedBy(self.context):
             return [self.context]
 
+        # when coming from the WF menu inside a storage sample
+        if IStorageSamplesContainer.providedBy(self.context):
+            return self.context.get_samples()
+
         # fetch objects from request
         objs = self.get_objects_from_request()
         samples = []
