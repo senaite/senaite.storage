@@ -41,6 +41,6 @@ def has_editable_analyses(sample):
         return False
     for analysis in analyses:
         status = api.get_workflow_status_of(analysis)
-        if status in ["assigned", "unsassigned"]:
+        if status in ["assigned", "unassigned"]:
             return True
     return False
