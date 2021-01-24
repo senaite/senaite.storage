@@ -38,7 +38,7 @@ class BookOutSamplesView(BaseView):
                 return self.redirect(
                     redirect_url=self.request.getHeader("http_referer"),
                     message=_("Please specify a reason"), level="error")
-            samples = self.get_objects()
+            samples = self.get_samples()
             wf = api.get_tool("portal_workflow")
             for sample in samples:
                 wf.doActionFor(sample, "book_out", comment=comment)
@@ -49,8 +49,10 @@ class BookOutSamplesView(BaseView):
             return self.redirect(message=_("Cancelled"))
         return self.template()
 
-    def get_objects(self):
-        """Get the objects to be moved
+    def get_samples(self):
+        """Extract the samples from the request UIDs
+
+        This might be either a samples container or a sample context
         """
         if IAnalysisRequest.providedBy(self.context):
             return [self.context]
@@ -73,7 +75,7 @@ class BookOutSamplesView(BaseView):
     def get_samples_data(self):
         """Returns a list of containers that can be moved
         """
-        for obj in self.get_objects():
+        for obj in self.get_samples():
             obj = api.get_object(obj)
             yield {
                 "obj": obj,
@@ -81,4 +83,5 @@ class BookOutSamplesView(BaseView):
                 "uid": api.get_uid(obj),
                 "title": self.get_title(obj),
                 "url": api.get_url(obj),
+                "sample_type": obj.getSampleTypeTitle(),
             }
