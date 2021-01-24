@@ -20,22 +20,24 @@
 
 import json
 
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _s
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.workflow import SAMPLE_WORKFLOW
 from senaite.storage import logger
 from senaite.storage import senaiteMessageFactory as _
-
 from senaite.storage.browser import BaseView
 from senaite.storage.interfaces import IStorageSamplesContainer
 
 
 class StoreContainerView(BaseView):
-    """Store Container View. Allows to store samples in preselected containers
+    """Store Container View.
+
+    Allows to store samples in preselected containers.
+
+    View displayed when coming from the storage container listing.
     """
     template = ViewPageTemplateFile("templates/store_container.pt")
-    action = "storage_store_container"
 
     def __init__(self, context, request):
         super(StoreContainerView, self).__init__(context, request)

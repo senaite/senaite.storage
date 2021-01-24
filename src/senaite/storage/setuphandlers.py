@@ -179,7 +179,7 @@ WORKFLOWS_TO_UPDATE = {
             "booked_out": {
                 "title": "Booked out",
                 "description": "Sample is booked out from the system",
-                "transitions": (),
+                "transitions": ("recover", ),
                 # Copy permissions from sample_received first
                 "permissions_copy_from": "cancelled",
                 # Override permissions

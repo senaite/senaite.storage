@@ -24,7 +24,6 @@ from bika.lims.workflow import doActionFor as do_action_for
 from senaite.core.workflow import SAMPLE_WORKFLOW
 from senaite.storage import api as _api
 from senaite.storage import logger
-from zope.lifecycleevent import modified
 
 
 def after_store(sample):
@@ -84,9 +83,6 @@ def after_recover(sample):
     # Transition the sample to the state before it was stored
     previous_state = get_previous_state(sample) or "sample_due"
     changeWorkflowState(sample, SAMPLE_WORKFLOW, previous_state)
-
-    # Notify the sample has ben modified
-    modified(sample)
 
     # Reindex the sample
     sample.reindexObject()

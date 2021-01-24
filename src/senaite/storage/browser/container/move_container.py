@@ -7,8 +7,8 @@ from senaite.storage import senaiteMessageFactory as _
 from senaite.storage.api import get_parents
 from senaite.storage.browser import BaseView
 from senaite.storage.catalog import SENAITE_STORAGE_CATALOG
-from senaite.storage.interfaces import IStorageFacility
 from senaite.storage.interfaces import IStorageContainer
+from senaite.storage.interfaces import IStorageFacility
 from senaite.storage.interfaces import IStorageSamplesContainer
 
 
@@ -16,7 +16,6 @@ class MoveContainerView(BaseView):
     """Allows to move containers in other facilities/positions/containers
     """
     template = ViewPageTemplateFile("templates/move_container.pt")
-    action = "storage_move_container"
 
     def __init__(self, context, request):
         super(MoveContainerView, self).__init__(context, request)
