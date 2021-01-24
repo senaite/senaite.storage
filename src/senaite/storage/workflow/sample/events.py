@@ -24,6 +24,8 @@ from bika.lims.workflow import doActionFor as do_action_for
 from senaite.core.workflow import SAMPLE_WORKFLOW
 from senaite.storage import api as _api
 from senaite.storage import logger
+from senaite.storage.api import pause_snapshots_for
+from senaite.storage.api import resume_snapshots_for
 
 
 def after_store(sample):
@@ -74,7 +76,9 @@ def after_recover(sample):
 
     # Transition the sample to the state before it was stored
     previous_state = get_previous_state(sample) or "sample_due"
+    pause_snapshots_for(sample)
     changeWorkflowState(sample, SAMPLE_WORKFLOW, previous_state)
+    resume_snapshots_for(sample)
 
     # Reindex the sample
     sample.reindexObject()
