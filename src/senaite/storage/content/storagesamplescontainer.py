@@ -80,16 +80,6 @@ class StorageSamplesContainer(StorageLayoutContainer):
         """
         removed = super(StorageSamplesContainer, self).remove_object(
             object_brain_uid, notify_parent=notify_parent)
-        if not removed:
-            return False
-
-        # Do "recover" transition to sample
-        # TODO Better to do this remove_object call from WF's AfterTransition
-        # Otherwise, transition can be triggered through DC Workflow without
-        # the container being notified.
-        self.reindexObject(idxs=["get_samples_uids", "is_full"])
-        sample = api.get_object(object_brain_uid)
-        wf.doActionFor(sample, "recover")
         return removed
 
     def has_samples(self):
