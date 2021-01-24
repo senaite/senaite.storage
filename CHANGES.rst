@@ -6,6 +6,7 @@ Changelog
 
 - #22 Allow to move containers
 - #21 Allow storage contents to be deactivated
+- #20 Added uninstall profile
 - #19 Improved storage listing and structuring with positions
 
 

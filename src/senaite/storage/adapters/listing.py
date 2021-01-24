@@ -22,6 +22,7 @@ from bika.lims import api
 from senaite.app.listing import utils
 from senaite.app.listing.interfaces import IListingView
 from senaite.app.listing.interfaces import IListingViewAdapter
+from senaite.storage import is_installed
 from senaite.storage import senaiteMessageFactory as _
 from zope.component import adapts
 from zope.interface import implementer
@@ -37,8 +38,11 @@ class AnalysisRequestsListingViewAdapter(object):
     def __init__(self, listing, context):
         self.listing = listing
         self.context = context
+        self.installed = is_installed()
 
     def before_render(self):
+        if not self.installed:
+            return
         # Add review state "stored" in the listing
         self.add_stored_review_state()
 
@@ -51,15 +55,17 @@ class AnalysisRequestsListingViewAdapter(object):
         """Adds the "stored" review state to the listing's review_states pool
         """
         # Columns to hide
-        hide = ["getAnalysesNum",
-                "getDateVerified",
-                "getDatePreserved",
-                "getDatePublished",
-                "getDueDate",
-                "getStorageLocation",
-                "Printed"
-                "Progress",
-                "SamplingDate",]
+        hide = [
+            "getAnalysesNum",
+            "getDateVerified",
+            "getDatePreserved",
+            "getDatePublished",
+            "getDueDate",
+            "getStorageLocation",
+            "Printed"
+            "Progress",
+            "SamplingDate",
+        ]
         columns = filter(lambda c: c not in hide, self.listing.columns.keys())
 
         # Custom transitions
@@ -103,10 +109,15 @@ class AnalysisRequestsListingViewAdapter(object):
                 "replace_url": "getSamplesContainerURL",
                 "toggle": True
             }
-            utils.add_column(self.listing, "getSamplesContainer", column_values,
-                             after="getDateStored", review_states=("stored", ))
+            utils.add_column(self.listing, "getSamplesContainer",
+                             column_values, after="getDateStored",
+                             review_states=("stored", ))
 
     def folder_item(self, obj, item, index):
+        # Return immediately when add-on is not installed
+        if not self.installed:
+            return item
+
         # Do nothing if the current state is not "stored"
         if not self.is_stored_state():
             return item
@@ -130,4 +141,4 @@ class AnalysisRequestsListingViewAdapter(object):
         review_state = self.listing.review_state
         if not review_state:
             return False
-        return review_state.get("id","") == "stored"
+        return review_state.get("id", "") == "stored"
