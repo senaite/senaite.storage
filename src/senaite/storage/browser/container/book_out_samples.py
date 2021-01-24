@@ -2,11 +2,12 @@
 
 from bika.lims import api
 from bika.lims.interfaces import IAnalysisRequest
+from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.storage import logger
-from senaite.storage.interfaces import IStorageSamplesContainer
 from senaite.storage import senaiteMessageFactory as _
 from senaite.storage.browser import BaseView
+from senaite.storage.interfaces import IStorageSamplesContainer
 
 
 class BookOutSamplesView(BaseView):
@@ -39,15 +40,25 @@ class BookOutSamplesView(BaseView):
                     redirect_url=self.request.getHeader("http_referer"),
                     message=_("Please specify a reason"), level="error")
             samples = self.get_samples()
-            wf = api.get_tool("portal_workflow")
+
             for sample in samples:
-                wf.doActionFor(sample, "book_out", comment=comment)
+                self.book_out(sample, comment)
             return self.redirect()
 
         # Handle cancel
         if form_submitted and form_cancel:
             return self.redirect(message=_("Cancelled"))
         return self.template()
+
+    def book_out(self, sample, comment):
+        """Book out the sample
+        """
+        wf = api.get_tool("portal_workflow")
+        try:
+            wf.doActionFor(sample, "book_out", comment=comment)
+            return True
+        except WorkflowException:
+            return False
 
     def get_samples(self):
         """Extract the samples from the request UIDs
