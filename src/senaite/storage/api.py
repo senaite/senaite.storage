@@ -69,10 +69,10 @@ def get_parents(obj, parents=None, predicate=None):
 def pause_snapshots_for(obj):
     """Pause snapshots for the given object
     """
-    alsoProvides(sample, IDoNotSupportSnapshots)
+    alsoProvides(obj, IDoNotSupportSnapshots)
 
 
 def resume_snapshots_for(obj):
     """Resume snapshots for the given object
     """
-    noLongerProvides(sample, IDoNotSupportSnapshots)
+    noLongerProvides(obj, IDoNotSupportSnapshots)
