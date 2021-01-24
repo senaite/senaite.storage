@@ -20,7 +20,7 @@ class BookOutSamplesView(BaseView):
         self.context = context
         self.request = request
         self.portal = api.get_portal()
-        self.back_url = self.context.absolute_url()
+        self.back_url = api.get_url(self.context)
 
     def __call__(self):
         form = self.request.form
@@ -35,6 +35,10 @@ class BookOutSamplesView(BaseView):
             logger.info("*** BOOK OUT ***")
             uids = form.get("uids", [])
             comment = form.get("comment", "")
+            if not comment:
+                return self.redirect(
+                    redirect_url=self.request.getHeader("http_referer"),
+                    message=_("Please specify a reason"), level="error")
             samples = map(api.get_object_by_uid, uids)
             wf = api.get_tool("portal_workflow")
             for sample in samples:

@@ -37,7 +37,7 @@
            tal:define="portal context/@@plone_portal_state/portal;">
 
         <div class="col-sm-12">
-          <form class="form"
+          <form class="form rowlike"
                 id="book_out_samples_form"
                 name="book_out_samples_form"
                 method="POST">
@@ -47,7 +47,7 @@
             <input tal:replace="structure context/@@authenticator/authenticator"/>
 
             <div i18n:translate="" class="mb-3 text-secondary">
-              The following Samples will be permanently booked out from the system.
+              The following samples will be permanently booked out from the system.
             </div>
 
             <ul class="list mb-3" tal:repeat="sample view/get_samples_data">
@@ -61,13 +61,14 @@
               </li>
             </ul>
 
-            <div class="mb-3">
-              <label for="sample-book-out-reason">Comment</label>
+            <div class="mb-3 field">
+              <label for="sample-book-out-reason">Reason</label>
+              <span class="required"></span>
               <textarea name="comment"
                         class="form-control"
                         id="sample-book-out-reason"
                         placeholder=""
-                        style="height: 100px"></textarea>
+                        style="height: 150px"></textarea>
               <small i18n:translate="" class="form-text text-muted">
                 Please describe why the samples are booked out, e.g. disposed, shipped etc.
               </small>
@@ -75,7 +76,7 @@
 
             <!-- Form Controls -->
             <div>
-              <input class="btn btn-success btn-sm"
+              <input class="btn btn-primary btn-sm"
                      type="submit"
                      name="button_book_out"
                      i18n:attributes="value"
