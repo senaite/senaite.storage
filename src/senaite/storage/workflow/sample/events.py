@@ -88,7 +88,7 @@ def after_recover(sample):
     parts = primary.getDescendants()
 
     # Partitions in some statuses won't be considered.
-    skip = ["stored"]
+    skip = ["stored", "booked_out"]
     parts = filter(lambda part: api.get_review_status(part) in skip, parts)
     if not parts:
         # There are no partitions left, transition the primary
