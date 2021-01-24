@@ -27,19 +27,18 @@ class BookOutSamplesView(BaseView):
 
         # Form submit toggle
         form_submitted = form.get("submitted", False)
-        form_move = form.get("button_book_out", False)
+        form_book_out = form.get("button_book_out", False)
         form_cancel = form.get("button_cancel", False)
 
         # Handle book out
-        if form_submitted and form_move:
+        if form_submitted and form_book_out:
             logger.info("*** BOOK OUT ***")
-            uids = form.get("uids", [])
             comment = form.get("comment", "")
             if not comment:
                 return self.redirect(
                     redirect_url=self.request.getHeader("http_referer"),
                     message=_("Please specify a reason"), level="error")
-            samples = map(api.get_object_by_uid, uids)
+            samples = self.get_objects()
             wf = api.get_tool("portal_workflow")
             for sample in samples:
                 wf.doActionFor(sample, "book_out", comment=comment)
@@ -63,7 +62,7 @@ class BookOutSamplesView(BaseView):
             if IStorageSamplesContainer.providedBy(obj):
                 samples.extend(obj.get_samples())
 
-        return samples
+        return list(set(samples))
 
     def get_title(self, obj):
         """Return the object title as unicode

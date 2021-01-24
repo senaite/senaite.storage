@@ -68,7 +68,8 @@ class StoreContainerView(BaseView):
         request_uids.insert(0, current_uid)
         request_uids = list(set(request_uids))
         request_uids = ",".join(request_uids)
-        return "{}/{}?uids={}".format(self.back_url, self.action, request_uids)
+        return "{}/{}?uids={}".format(
+            self.back_url, self.__name__, request_uids)
 
     def get_next_url(self):
         """Returns the next url the system has to redirect to after submit. If
