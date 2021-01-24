@@ -68,6 +68,7 @@ def after_recover(sample):
     """Unassigns the sample from its storage container and "recover". It also
     transitions the sample to its previous state before it was stored
     """
+    # remove from container
     container = _api.get_storage_sample(api.get_uid(sample))
     if container:
         container.remove_object(sample)
@@ -76,6 +77,7 @@ def after_recover(sample):
 
     # Transition the sample to the state before it was stored
     previous_state = get_previous_state(sample) or "sample_due"
+    # Note: we pause the snapshots here because events are fired next
     pause_snapshots_for(sample)
     changeWorkflowState(sample, SAMPLE_WORKFLOW, previous_state)
     resume_snapshots_for(sample)
