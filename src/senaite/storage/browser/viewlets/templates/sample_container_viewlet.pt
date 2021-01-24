@@ -4,7 +4,8 @@
 
   <div id="portal-alert">
     <div class="portlet-alert-item alert alert-info alert-dismissible"
-         tal:define="info python:view.get_sample_container_info()">
+         tal:define="info python:view.get_sample_container_info();"
+         tal:condition="info">
       <button type="button" class="close" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
