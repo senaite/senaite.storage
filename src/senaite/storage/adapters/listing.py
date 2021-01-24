@@ -98,6 +98,7 @@ class AnalysisRequestsListingViewAdapter(object):
             },
             "transitions": [],
             "custom_transitions": [print_stickers],
+            "confirm_transitions": ["recover"],
             "columns": columns,
         }
 
@@ -161,6 +162,7 @@ class AnalysisRequestsListingViewAdapter(object):
             },
             "transitions": [],
             "custom_transitions": [print_stickers],
+            "confirm_transitions": ["recover"],
             "columns": columns,
         }
 
