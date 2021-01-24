@@ -170,10 +170,10 @@ WORKFLOWS_TO_UPDATE = {
             },
             "booked_out": {
                 "title": "Booked out",
-                "description": "Sample is booked_out",
+                "description": "Sample is booked out from the system",
                 "transitions": (),
                 # Copy permissions from sample_received first
-                "permissions_copy_from": "sample_received",
+                "permissions_copy_from": "sample_registered",
                 # Override permissions
                 "permissions": {
                     # Note here we are passing tuples, so these permissions are
