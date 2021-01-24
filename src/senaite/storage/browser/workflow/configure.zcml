@@ -35,6 +35,16 @@
     provides="bika.lims.interfaces.IWorkflowActionAdapter"
     permission="zope.Public" />
 
+
+  <!-- Workflow action "book_out_samples" -->
+  <adapter
+    name="workflow_action_book_out_samples"
+    for="senaite.storage.interfaces.IStorageContent
+         zope.publisher.interfaces.browser.IBrowserRequest"
+    factory=".storagecontainer.WorkflowActionBookOutSamplesAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="zope.Public" />
+
   <!-- Workflow action "move_container" -->
   <adapter
     name="workflow_action_move_container"
