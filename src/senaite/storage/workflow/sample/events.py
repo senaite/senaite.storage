@@ -63,7 +63,7 @@ def after_book_out(sample):
     parts = primary.getDescendants()
 
     # Partitions in some statuses won't be considered
-    skip = ['cancelled', 'stored', 'retracted', 'rejected']
+    skip = ["cancelled", "stored", "retracted", "rejected"]
     parts = filter(lambda part: api.get_review_status(part) not in skip, parts)
     if not parts:
         # There are no partitions left, transition the primary
