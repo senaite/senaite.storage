@@ -20,6 +20,7 @@
 
 from bika.lims import api
 from senaite.storage.catalog import SENAITE_STORAGE_CATALOG
+from senaite.storage.config import STORAGE_WORKFLOW_ID
 
 
 def get_storage_sample(sample_obj_brain_or_uid, as_brain=False):
@@ -39,6 +40,13 @@ def get_storage_catalog():
     """Returns the storage catalog
     """
     return api.get_tool(SENAITE_STORAGE_CATALOG)
+
+
+def get_storage_workflow():
+    """Returns the storage workflow
+    """
+    wf_tool = api.get_tool("portal_workflow")
+    return wf_tool.getWorkflowByd(STORAGE_WORKFLOW_ID)
 
 
 def get_parents(obj, parents=None, predicate=None):

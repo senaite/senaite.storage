@@ -88,7 +88,13 @@ class StorageListingView(StorageListing):
                 },
                 "confirm_transitions": ["recover_samples"],
                 "columns": self.columns.keys(),
-            }
+            }, {
+                "id": "inactive",
+                "title": _("Inactive"),
+                "contentFilter": {"review_state": "inactive"},
+                "confirm_transitions": ["recover_samples"],
+                "columns": self.columns.keys(),
+            },
         ]
 
     def folderitem(self, obj, item, index):

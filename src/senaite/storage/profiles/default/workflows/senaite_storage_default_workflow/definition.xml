@@ -22,51 +22,63 @@
   <!-- doesn't check whether you have the right to view the objects listed. -->
   <permission>List folder contents</permission>
 
-  <!-- This governs whether the user can add all samples at once -->
-  <permission>Storage: Recover all samples</permission>
+  <!-- senaite.storage permissions -->
+  <permission>senaite.storage: Transition: Add Samples</permission>
+  <permission>senaite.storage: Transition: Recover Samples</permission>
+  <permission>senaite.storage: Transition: Activate</permission>
+  <permission>senaite.storage: Transition: Deactivate</permission>
 
   <!-- State: active -->
   <state state_id="active" title="Active" i18n:attributes="title">
+    <!-- Transitions -->
+    <exit-transition transition_id="deactivate" />
     <exit-transition transition_id="add_samples" />
     <exit-transition transition_id="recover_samples" />
-    <!-- Delete objects -->
-    <permission-map name="Delete objects" acquired="False">
-      <permission-role>Manager</permission-role>
-    </permission-map>
-    <!-- Modify portal content -->
-    <permission-map name="Modify portal content" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Owner</permission-role>
-    </permission-map>
-    <!-- View -->
-    <permission-map name="View" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Owner</permission-role>
-    </permission-map>
-    <!-- Access contents information -->
-    <permission-map name="Access contents information" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Owner</permission-role>
-    </permission-map>
-    <!-- List folder contents -->
-    <permission-map name="List folder contents" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Owner</permission-role>
-    </permission-map>
-    <!-- List folder contents -->
-    <permission-map name="Storage: Recover all samples" acquired="False">
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-    </permission-map>
+
+    <!-- Transition permissions -->
+    <permission-map name="senaite.storage: Transition: Deactivate" acquired="True" />
+
+    <!-- Permission mappings -->
+    <permission-map name="Access contents information" acquired="True" />
+    <permission-map name="Delete objects" acquired="True" />
+    <permission-map name="List folder contents" acquired="True" />
+    <permission-map name="Modify portal content" acquired="True" />
+    <permission-map name="View" acquired="True" />
   </state>
+
+  <!-- State: inactive -->
+  <state state_id="inactive" title="Inactive" i18n:attributes="title">
+    <exit-transition transition_id="activate" />
+    <exit-transition transition_id="recover_samples" />
+
+    <!-- Transition permissions -->
+    <permission-map name="senaite.storage: Transition: Activate" acquired="True" />
+
+    <!-- Plone's permissions -->
+    <permission-map name="Access contents information" acquired="True" />
+    <permission-map name="Delete objects" acquired="True" />
+    <permission-map name="List folder contents" acquired="True" />
+    <permission-map name="Modify portal content" acquired="True" />
+    <permission-map name="View" acquired="True" />
+  </state>
+
+  <!-- Transition: activate -->
+  <transition transition_id="activate" title="Activate" new_state="active" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Activate</action>
+    <guard>
+      <guard-permission>senaite.storage: Transition: Activate</guard-permission>
+      <guard-expression></guard-expression>
+    </guard>
+  </transition>
+
+  <!-- Transition: deactivate -->
+  <transition transition_id="deactivate" title="Deactivate" new_state="inactive" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Deactivate</action>
+    <guard>
+      <guard-permission>senaite.storage: Transition: Deactivate</guard-permission>
+      <guard-expression></guard-expression>
+    </guard>
+  </transition>
 
   <!-- Transition: add_samples -->
   <transition transition_id="add_samples" title="Add samples"
@@ -74,6 +86,7 @@
               i18n:attributes="title">
     <action url="" category="workflow" icon="">Add samples</action>
     <guard>
+      <guard-permission>senaite.storage: Transition: Add Samples</guard-permission>
       <guard-expression>python:here.guard_add_samples()</guard-expression>
     </guard>
   </transition>
@@ -84,12 +97,12 @@
               i18n:attributes="title">
     <action url="" category="workflow" icon="">Recover samples</action>
     <guard>
-      <guard-permission>Storage: Recover all samples</guard-permission>
+      <guard-permission>senaite.storage: Transition: Recover Samples</guard-permission>
       <guard-expression>python:here.guard_recover_samples()</guard-expression>
     </guard>
   </transition>
 
-
+  <!-- WF Variables -->
   <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">
     <description>Previous transition</description>
     <default>

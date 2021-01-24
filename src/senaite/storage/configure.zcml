@@ -14,8 +14,11 @@
   <!-- Register Translations -->
   <i18n:registerTranslations directory="locales" />
 
-  <!-- Needed for "BIKA: Manage Bika" permission -->
+  <!-- Include senaite.core permissions -->
   <include package="bika.lims" file="permissions.zcml" />
+
+  <!-- Include senaite.storage permissions -->
+  <include file="permissions.zcml" />
 
   <!-- Package includes -->
   <include package=".adapters"/>

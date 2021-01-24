@@ -17,5 +17,3 @@
 #
 # Copyright 2019-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
-
-DEFAULT_WORKFLOW_ID = "senaite_storage_default_workflow"
