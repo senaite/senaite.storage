@@ -30,6 +30,7 @@ class StorageUtilization(object):
         if IStorageSamplesContainer.providedBy(self.context):
             return [self.context]
         query = {
+            "review_state": "active",
             "path": {
                 "query": api.get_path(self.context),
             }}
