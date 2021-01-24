@@ -218,7 +218,7 @@ WORKFLOWS_TO_UPDATE = {
                 "guard": {
                     "guard_permissions": "senaite.storage: Transition: Recover Sample",  # noqa
                     "guard_roles": "",
-                    "guard_expr": "",
+                    "guard_expr": "python:here.guard_recover_sample()",
                 }
             },
             "book_out": {
