@@ -54,6 +54,8 @@ class BookOutSamplesView(BaseView):
 
         This might be either a samples container or a sample context
         """
+
+        # when coming from the WF menu inside a sample
         if IAnalysisRequest.providedBy(self.context):
             return [self.context]
 
@@ -61,8 +63,12 @@ class BookOutSamplesView(BaseView):
         objs = self.get_objects_from_request()
         samples = []
         for obj in objs:
+            # wjen coming from a samples container listing
             if IStorageSamplesContainer.providedBy(obj):
                 samples.extend(obj.get_samples())
+            # when coming from the samples listing
+            if IAnalysisRequest.providedBy(obj):
+                samples.append(obj)
 
         return list(set(samples))
 
