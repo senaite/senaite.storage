@@ -3,6 +3,12 @@
 
   <permissions>
 
+    <permission name="senaite.storage: Transition: Move Container" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+
     <!-- Store/Recover Sample Transition Permissions -->
     <permission name="senaite.storage: Transition: Store Sample" acquire="False">
       <role name="LabClerk"/>
