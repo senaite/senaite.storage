@@ -32,6 +32,35 @@ def getDateStored(self):
 
 
 @check_installed(None)
+def getDateBookedOut(self):
+    """Returns the date the sample was booked out
+    """
+    return wf.getTransitionDate(self, "book_out") or None
+
+
+@check_installed(None)
+def getBookOutReason(self):
+    """Returns the review history comment for the sample book out
+    """
+    if api.get_review_status(self) != "booked_out":
+        return ""
+    history = api.get_review_history(self)
+    entry = history[0]
+    return api.safe_unicode(entry.get("comments", ""))
+
+
+@check_installed(None)
+def getBookOutActor(self):
+    """Returns the review history comment for the sample book out
+    """
+    if api.get_review_status(self) != "booked_out":
+        return ""
+    history = api.get_review_history(self)
+    entry = history[0]
+    return api.safe_unicode(entry.get("actor", ""))
+
+
+@check_installed(None)
 def getSamplesContainer(self):
     """Returns the samples container the sample is located in
     """

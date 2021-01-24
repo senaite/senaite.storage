@@ -108,6 +108,9 @@ INDEXES = [
     (SENAITE_STORAGE_CATALOG, "sortable_title", "FieldIndex"),
     # Index used in ARs view to sort items by date stored by default
     (CATALOG_ANALYSIS_REQUEST_LISTING, "getDateStored", "DateIndex"),
+    # Index used in ARs view to sort items by date booked out by default
+    (CATALOG_ANALYSIS_REQUEST_LISTING, "getDateBookedOut", "DateIndex"),
+    (CATALOG_ANALYSIS_REQUEST_LISTING, "getBookOutActor", "FieldIndex"),
 ]
 
 COLUMNS = [
@@ -119,6 +122,10 @@ COLUMNS = [
     (SENAITE_STORAGE_CATALOG, "UID"),
     # To display the column Date Stored in AR listings
     (CATALOG_ANALYSIS_REQUEST_LISTING, "getDateStored"),
+    # To display the column Date Booked Out in AR listings
+    (CATALOG_ANALYSIS_REQUEST_LISTING, "getDateBookedOut"),
+    (CATALOG_ANALYSIS_REQUEST_LISTING, "getBookOutReason"),
+    (CATALOG_ANALYSIS_REQUEST_LISTING, "getBookOutActor"),
     # To display the Container where the Sample is located in listings
     (CATALOG_ANALYSIS_REQUEST_LISTING, "getSamplesContainerURL"),
     (CATALOG_ANALYSIS_REQUEST_LISTING, "getSamplesContainerID")
@@ -174,7 +181,7 @@ WORKFLOWS_TO_UPDATE = {
                 "description": "Sample is booked out from the system",
                 "transitions": (),
                 # Copy permissions from sample_received first
-                "permissions_copy_from": "sample_registered",
+                "permissions_copy_from": "cancelled",
                 # Override permissions
                 "permissions": {
                     # Note here we are passing tuples, so these permissions are
