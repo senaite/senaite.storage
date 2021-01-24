@@ -39,4 +39,13 @@
       post_handler="senaite.storage.setuphandlers.post_install"
       provides="Products.GenericSetup.interfaces.EXTENSION" />
 
+  <!-- Uninstall profile -->
+  <genericsetup:registerProfile
+    name="uninstall"
+    title="SENAITE STORAGE (uninstall)"
+    directory="profiles/uninstall"
+    description="Uninstalls SENAITE STORAGE"
+    post_handler=".setuphandlers.post_uninstall"
+    provides="Products.GenericSetup.interfaces.EXTENSION" />
+
 </configure>
