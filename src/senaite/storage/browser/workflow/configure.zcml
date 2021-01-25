@@ -35,7 +35,6 @@
     provides="bika.lims.interfaces.IWorkflowActionAdapter"
     permission="zope.Public" />
 
-
   <!-- Workflow action "book_out_samples" -->
   <adapter
     name="workflow_action_book_out_samples"
