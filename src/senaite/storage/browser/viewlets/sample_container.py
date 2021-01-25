@@ -19,10 +19,11 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
+from bika.lims import workflow as wf
+from bika.lims.browser import ulocalized_time
 from plone.app.layout.viewlets import ViewletBase
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.storage.catalog import SENAITE_STORAGE_CATALOG
-from bika.lims import workflow as wf
 
 
 class SampleContainerViewlet(ViewletBase):
@@ -70,3 +71,7 @@ class SampleContainerViewlet(ViewletBase):
         if self.is_stored():
             return ""
         return self.template()
+
+    def ulocalized_time(self, time, long_format=None, time_only=None):
+        return ulocalized_time(time, long_format, time_only,
+                               context=self.context, request=self.request)

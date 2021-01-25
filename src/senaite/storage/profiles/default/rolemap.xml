@@ -3,13 +3,14 @@
 
   <permissions>
 
+    <!-- Move Container -->
     <permission name="senaite.storage: Transition: Move Container" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
     </permission>
 
-    <!-- Store/Recover Sample Transition Permissions -->
+    <!-- Store/Recover/Book out Sample Transition Permissions (sample objects) -->
     <permission name="senaite.storage: Transition: Store Sample" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
@@ -20,14 +21,24 @@
       <role name="LabManager"/>
       <role name="Manager"/>
     </permission>
+    <permission name="senaite.storage: Transition: Book out Sample" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
 
-    <!-- Add/Recover Samples Transition Permissions -->
+    <!-- Add/Recover/Book out Samples Transition Permissions (storage listings) -->
     <permission name="senaite.storage: Transition: Add Samples" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
     </permission>
     <permission name="senaite.storage: Transition: Recover Samples" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="senaite.storage: Transition: Book out Samples" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>

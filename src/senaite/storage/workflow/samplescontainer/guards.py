@@ -25,8 +25,17 @@ security = ModuleSecurityInfo(__name__)
 
 
 @security.public
-def guard_recover_samples(samples_container):
-    """Guard for recover all samples from this container
+def guard_add_samples(samples_container):
+    """Guard for adding samples to this container
+    """
+    if not IStorageSamplesContainer.providedBy(samples_container):
+        return False
+    return not samples_container.is_full()
+
+
+@security.public
+def guard_book_out_samples(samples_container):
+    """Guard for booking out samples in this container
     """
     if not IStorageSamplesContainer.providedBy(samples_container):
         return False
@@ -34,9 +43,9 @@ def guard_recover_samples(samples_container):
 
 
 @security.public
-def guard_add_samples(samples_container):
-    """Guard for adding samples to this container
+def guard_recover_samples(samples_container):
+    """Guard for recover all samples from this container
     """
     if not IStorageSamplesContainer.providedBy(samples_container):
         return False
-    return not samples_container.is_full()
+    return samples_container.has_samples()

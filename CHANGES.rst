@@ -4,6 +4,7 @@ Changelog
 2.1.0 (unreleased)
 ------------------
 
+- #23 Allow storage container to be booked out
 - #22 Allow to move containers
 - #21 Allow storage contents to be deactivated
 - #20 Added uninstall profile

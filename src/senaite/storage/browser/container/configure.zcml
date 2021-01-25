@@ -43,6 +43,16 @@
       layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
 
   <!--
+      Book out samples
+  -->
+  <browser:page
+      for="*"
+      name="storage_book_out_samples"
+      class=".book_out_samples.BookOutSamplesView"
+      permission="senaite.core.permissions.ManageAnalysisRequests"
+      layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
+
+  <!--
       Move containers
   -->
   <browser:page

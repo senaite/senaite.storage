@@ -162,6 +162,7 @@
 
                   <tal:cols repeat="col python: range(columns)">
                     <tal:slot define="item python:container.get_object_at(row,col);
+                                      info python:view.get_sample_info(item);
                                       alpha python:container.position_to_alpha(row,col);
                                       pos python:container.get_absolute_position(row,col);">
                       <td tal:condition="python: not item"
@@ -181,8 +182,22 @@
                       </td>
                       <td tal:condition="python: item and True or False"
                           class="non-empty-slot">
-                        <div class="sample-id font-weight-bold text-center" tal:content="python: item.getId()"></div>
-                        <div class="sample-type small text-center" tal:content="python: item.getSampleTypeTitle()"></div>
+                        <!-- sample title -->
+                        <a href="#"
+                           tal:attributes="href info/url">
+                          <div class="sample-id font-weight-bold text-center"
+                               tal:content="info/id"></div>
+                        </a>
+                        <!-- sample type -->
+                        <div class="sample-type small text-center"
+                             tal:content="info/sample_type"></div>
+                        <!-- sample status -->
+                        <div class="small text-center">
+                          <span i18n:translate="">Status</span>:
+                          <span class="sample-status text-center"
+                                tal:content="info/status_title"></span>
+                        </div>
+
                         <div class="slot-bottom">
                           <span class="float-left badge badge-light" tal:content="python:alpha"></span>
                           <span class="float-right badge badge-light" tal:content="python:pos"></span>

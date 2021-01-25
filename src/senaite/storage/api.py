@@ -19,8 +19,11 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
+from bika.lims.interfaces import IDoNotSupportSnapshots
 from senaite.storage.catalog import SENAITE_STORAGE_CATALOG
 from senaite.storage.config import STORAGE_WORKFLOW_ID
+from zope.interface import alsoProvides
+from zope.interface import noLongerProvides
 
 
 def get_storage_sample(sample_obj_brain_or_uid, as_brain=False):
@@ -61,3 +64,15 @@ def get_parents(obj, parents=None, predicate=None):
     if predicate(parent):
         return parents
     return get_parents(parent, parents=parents, predicate=predicate)
+
+
+def pause_snapshots_for(obj):
+    """Pause snapshots for the given object
+    """
+    alsoProvides(obj, IDoNotSupportSnapshots)
+
+
+def resume_snapshots_for(obj):
+    """Resume snapshots for the given object
+    """
+    noLongerProvides(obj, IDoNotSupportSnapshots)

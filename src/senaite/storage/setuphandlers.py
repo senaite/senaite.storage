@@ -108,6 +108,9 @@ INDEXES = [
     (SENAITE_STORAGE_CATALOG, "sortable_title", "FieldIndex"),
     # Index used in ARs view to sort items by date stored by default
     (CATALOG_ANALYSIS_REQUEST_LISTING, "getDateStored", "DateIndex"),
+    # Index used in ARs view to sort items by date booked out by default
+    (CATALOG_ANALYSIS_REQUEST_LISTING, "getDateBookedOut", "DateIndex"),
+    (CATALOG_ANALYSIS_REQUEST_LISTING, "getBookOutActor", "FieldIndex"),
 ]
 
 COLUMNS = [
@@ -119,6 +122,10 @@ COLUMNS = [
     (SENAITE_STORAGE_CATALOG, "UID"),
     # To display the column Date Stored in AR listings
     (CATALOG_ANALYSIS_REQUEST_LISTING, "getDateStored"),
+    # To display the column Date Booked Out in AR listings
+    (CATALOG_ANALYSIS_REQUEST_LISTING, "getDateBookedOut"),
+    (CATALOG_ANALYSIS_REQUEST_LISTING, "getBookOutReason"),
+    (CATALOG_ANALYSIS_REQUEST_LISTING, "getBookOutActor"),
     # To display the Container where the Sample is located in listings
     (CATALOG_ANALYSIS_REQUEST_LISTING, "getSamplesContainerURL"),
     (CATALOG_ANALYSIS_REQUEST_LISTING, "getSamplesContainerID")
@@ -151,9 +158,30 @@ WORKFLOWS_TO_UPDATE = {
             "stored": {
                 "title": "Stored",
                 "description": "Sample is stored",
-                "transitions": ("recover", "detach"),
+                "transitions": ("recover", "detach", "book_out"),
                 # Copy permissions from sample_received first
                 "permissions_copy_from": "sample_received",
+                # Override permissions
+                "permissions": {
+                    # Note here we are passing tuples, so these permissions are
+                    # set with acquire=False
+                    permissions.AddAnalysis: (),
+                    permissions.AddAttachment: (),
+                    permissions.TransitionCancelAnalysisRequest: (),
+                    permissions.TransitionReinstateAnalysisRequest: (),
+                    permissions.EditFieldResults: (),
+                    permissions.EditResults: (),
+                    permissions.TransitionPreserveSample: (),
+                    permissions.TransitionPublishResults: (),
+                    permissions.TransitionScheduleSampling: (),
+                }
+            },
+            "booked_out": {
+                "title": "Booked out",
+                "description": "Sample is booked out from the system",
+                "transitions": ("recover", ),
+                # Copy permissions from sample_received first
+                "permissions_copy_from": "cancelled",
                 # Override permissions
                 "permissions": {
                     # Note here we are passing tuples, so these permissions are
@@ -178,7 +206,7 @@ WORKFLOWS_TO_UPDATE = {
                 "guard": {
                     "guard_permissions": "senaite.storage: Transition: Store Sample",  # noqa
                     "guard_roles": "",
-                    "guard_expr": "",
+                    "guard_expr": "python:here.guard_store_sample()",
                 }
             },
             "recover": {
@@ -190,9 +218,19 @@ WORKFLOWS_TO_UPDATE = {
                 "guard": {
                     "guard_permissions": "senaite.storage: Transition: Recover Sample",  # noqa
                     "guard_roles": "",
-                    "guard_expr": "",
+                    "guard_expr": "python:here.guard_recover_sample()",
                 }
-            }
+            },
+            "book_out": {
+                "title": "Book out",
+                "new_state": "booked_out",
+                "action": "Book out sample",
+                "guard": {
+                    "guard_permissions": "senaite.storage: Transition: Book out Sample",  # noqa
+                    "guard_roles": "",
+                    "guard_expr": "python:here.guard_book_out_sample()",
+                }
+            },
         }
     }
 }
@@ -664,8 +702,8 @@ def uninstall_workflows(portal):
     workflow = wf_tool.getWorkflowById(SAMPLE_WORKFLOW)
     states = workflow.states
 
-    DELETE_STATES = ["stored"]
-    DELETE_TRANSITIONS = ["store", "recover"]
+    DELETE_STATES = ["stored", "booked_out"]
+    DELETE_TRANSITIONS = ["store", "recover", "book_out"]
 
     for sid, state in states.items():
         if sid in DELETE_STATES:

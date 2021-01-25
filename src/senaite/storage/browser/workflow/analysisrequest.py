@@ -18,6 +18,7 @@
 # Copyright 2019-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims import api
 from bika.lims.browser.workflow import RequestContextAware
 from bika.lims.interfaces import IWorkflowActionUIDsAdapter
 from zope.interface import implementer
@@ -31,6 +32,19 @@ class WorkflowActionStoreAdapter(RequestContextAware):
     def __call__(self, action, uids):
         """Redirects the user to the Storage container selector view
         """
-        url = "{}/storage_store_samples?uids={}".format(self.back_url,
-                                                        ",".join(uids))
+        url = "{}/storage_store_samples?uids={}".format(
+            api.get_url(self.context), ",".join(uids))
+        return self.redirect(redirect_url=url)
+
+
+@implementer(IWorkflowActionUIDsAdapter)
+class WorkflowActionBookOutAdapter(RequestContextAware):
+    """Adapter in charge of Analysis Requests 'book_out' action
+    """
+
+    def __call__(self, action, uids):
+        """Redirects the user to the book out form
+        """
+        url = "{}/storage_book_out_samples?uids={}".format(
+            api.get_url(self.context), ",".join(uids))
         return self.redirect(redirect_url=url)

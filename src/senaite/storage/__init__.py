@@ -38,9 +38,9 @@ from zope.i18nmessageid import MessageFactory
 # provide security declarations for all of the the packages and sub-packages
 # along the path used to access the module. Thus, all the modules from the path
 # passed in to `allow_module` will be available.
-allow_module('senaite.storage.workflow.samplescontainer.guards')
-allow_module('senaite.storage.workflow.storage.guards')
-
+allow_module("senaite.storage.workflow.sample.guards")
+allow_module("senaite.storage.workflow.samplescontainer.guards")
+allow_module("senaite.storage.workflow.storage.guards")
 
 # Defining a Message Factory for when this product is internationalized.
 senaiteMessageFactory = MessageFactory(PRODUCT_NAME)

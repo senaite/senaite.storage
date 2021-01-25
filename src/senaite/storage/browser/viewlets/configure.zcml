@@ -12,6 +12,15 @@
       permission="zope2.View"
       layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
 
+  <!-- Sample booked out viewlet -->
+  <browser:viewlet
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="senaite.storage.sample_booked_out_viewlet"
+      class=".sample_booked_out.SampleBookedOutViewlet"
+      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+      template="templates/sample_booked_out_viewlet.pt"
+      permission="zope2.View"
+      layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
 
   <!-- JS Viewlet Manager -->
   <browser:viewletManager

@@ -4,7 +4,8 @@
 
   <div id="portal-alert">
     <div class="portlet-alert-item alert alert-info alert-dismissible"
-         tal:define="info python:view.get_sample_container_info()">
+         tal:define="info python:view.get_sample_container_info();"
+         tal:condition="info">
       <button type="button" class="close" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
@@ -12,7 +13,7 @@
         <strong i18n:translate="">
           Stored sample
         </strong>
-        (<span tal:replace="python: view.view.ulocalized_time(info['when'], long_format=0)"/>)
+        (<span tal:replace="python:view.ulocalized_time(info['when'], long_format=0)"/>)
       </p>
       <p class="description">
         <span i18n:translate="">Location:</span>

@@ -13,7 +13,7 @@
     <!-- Title -->
     <metal:title fill-slot="content-title">
       <h1 i18n:translate="">
-        Move Containers
+        Book out samples
       </h1>
     </metal:title>
 
@@ -30,54 +30,56 @@
 
     <!-- Content -->
     <metal:core fill-slot="content-core">
-      <div id="move-container-view"
+      <div id="book-out-samples-view"
            class="row"
            tal:define="portal context/@@plone_portal_state/portal;">
 
         <div class="col-sm-12">
-          <form class="form"
-                id="move_container_form"
-                name="move_container_form"
+          <form class="form rowlike"
+                id="book_out_samples_form"
+                name="book_out_samples_form"
                 method="POST">
 
             <!-- Hidden Fields -->
             <input type="hidden" name="submitted" value="1"/>
             <input tal:replace="structure context/@@authenticator/authenticator"/>
 
-            <div class="card mb-3"
-                 tal:repeat="container view/get_container_data">
+            <div i18n:translate="" class="mb-3 text-secondary">
+              The following samples will be permanently booked out from the system.
+            </div>
 
-              <div class="card-header">
-                Move container
-                <a href="#"
-                   tal:attributes="href container/url"
-                   tal:content="container/path">
-                </a>
-                to
-              </div>
+            <ul class="list mb-3" tal:repeat="sample view/get_samples_data">
+              <li class="list-item">
+                <input type="hidden" name="uids:list" tal:attributes="value sample/uid"/>
+                <div class="list-group-item-heading">
+                  <a href="#"
+                     tal:attributes="href sample/url">
+                  <span tal:content="sample/title"/>
+                  <small>(<span tal:replace="sample/sample_type">)</small>
+                </div>
+              </li>
+            </ul>
 
-              <div class="card-body">
-                <!-- target position/container selection -->
-                <select class="form-control"
-                        tal:attributes="name string:move.${container/uid}:record:ignore_empty">
-                  <option selected value="" i18n:translate="">Choose container destination...</option>
-                  <option tal:repeat="target container/targets"
-                          tal:attributes="value target/UID">
-                    <span tal:replace="python:view.get_container_path(target)"/>
-                  </option>
-                </select>
-              </div>
+            <div class="mb-3 field">
+              <label for="sample-book-out-reason">Reason</label>
+              <span class="required"></span>
+              <textarea name="comment"
+                        class="form-control"
+                        id="sample-book-out-reason"
+                        placeholder=""
+                        style="height: 150px"></textarea>
+              <small i18n:translate="" class="form-text text-muted">
+                Please describe why the samples are booked out, e.g. disposed, shipped etc.
+              </small>
             </div>
 
             <!-- Form Controls -->
             <div>
-              <!-- Move containers -->
-              <input class="btn btn-success btn-sm"
+              <input class="btn btn-primary btn-sm"
                      type="submit"
-                     name="button_move"
+                     name="button_book_out"
                      i18n:attributes="value"
-                     value="Move Containers"/>
-              <!-- Cancel -->
+                     value="Book Out"/>
               <input class="btn btn-secondary btn-sm"
                      type="submit"
                      name="button_cancel"
@@ -90,5 +92,6 @@
 
       </div>
     </metal:core>
+
   </body>
 </html>

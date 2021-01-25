@@ -20,22 +20,24 @@
 
 import json
 
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _s
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.workflow import SAMPLE_WORKFLOW
 from senaite.storage import logger
 from senaite.storage import senaiteMessageFactory as _
-
 from senaite.storage.browser import BaseView
 from senaite.storage.interfaces import IStorageSamplesContainer
 
 
 class StoreContainerView(BaseView):
-    """Store Container View. Allows to store samples in preselected containers
+    """Store Container View.
+
+    Allows to store samples in preselected containers.
+
+    View displayed when coming from the storage container listing.
     """
     template = ViewPageTemplateFile("templates/store_container.pt")
-    action = "storage_store_container"
 
     def __init__(self, context, request):
         super(StoreContainerView, self).__init__(context, request)
@@ -66,7 +68,8 @@ class StoreContainerView(BaseView):
         request_uids.insert(0, current_uid)
         request_uids = list(set(request_uids))
         request_uids = ",".join(request_uids)
-        return "{}/{}?uids={}".format(self.back_url, self.action, request_uids)
+        return "{}/{}?uids={}".format(
+            self.back_url, self.__name__, request_uids)
 
     def get_next_url(self):
         """Returns the next url the system has to redirect to after submit. If
@@ -113,6 +116,30 @@ class StoreContainerView(BaseView):
             "sort_on": "created"
         }
         return json.dumps(base_query)
+
+    def get_sample_info(self, sample):
+        """Returns the sample info
+        """
+        if not sample:
+            return {}
+        sample = api.get_object(sample)
+        wf_tool = api.get_tool("portal_workflow")
+        sample_wf = wf_tool[SAMPLE_WORKFLOW]
+        status = api.get_workflow_status_of(sample)
+        status_title = status
+        state = sample_wf.states.get(status)
+        if state:
+            status_title = state.title
+        return {
+            "obj": sample,
+            "id": api.get_id(sample),
+            "uid": api.get_uid(sample),
+            "title": api.get_title(sample),
+            "url": api.get_url(sample),
+            "sample_type": sample.getSampleTypeTitle(),
+            "status": status,
+            "status_title": status_title,
+        }
 
     def get_allowed_states(self):
         # Get the Sample (aka AR) workflow definition
