@@ -19,13 +19,15 @@
 # Some rights reserved, see README and LICENSE.
 
 import logging
-
 from AccessControl import allow_module
 from Products.Archetypes.atapi import listTypes
 from Products.Archetypes.atapi import process_types
 from Products.CMFCore.permissions import AddPortalContent
 from Products.CMFCore.utils import ContentInit
+from senaite.storage.interfaces import ISenaiteStorageLayer
 from zope.i18nmessageid import MessageFactory
+
+from bika.lims.api import get_request
 
 PRODUCT_NAME = "senaite.storage"
 PROFILE_ID = "profile-{}:default".format(PRODUCT_NAME)
@@ -45,6 +47,26 @@ allow_module('senaite.storage.workflow.samplescontainer.guards')
 senaiteMessageFactory = MessageFactory(PRODUCT_NAME)
 
 logger = logging.getLogger(PRODUCT_NAME)
+
+
+def is_installed():
+    """Returns whether the product is installed or not
+    """
+    request = get_request()
+    return ISenaiteStorageLayer.providedBy(request)
+
+
+def check_installed(default_return):
+    """Decorator to prevent the function to be called if product not installed
+    :param default_return: value to return if not installed
+    """
+    def is_installed_decorator(func):
+        def wrapper(*args, **kwargs):
+            if not is_installed():
+                return default_return
+            return func(*args, **kwargs)
+        return wrapper
+    return is_installed_decorator
 
 
 def initialize(context):

@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<layers>
+
+  <!-- Remove Browser Layer -->
+  <layer name="sample.storage"
+         interface="senaite.storage.interfaces.ISenaiteStorageLayer"
+         remove="True" />
+
+</layers>

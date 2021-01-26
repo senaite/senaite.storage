@@ -18,9 +18,11 @@
 # Copyright 2019-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+
 from senaite.core.listing import utils
 from senaite.core.listing.interfaces import IListingView, IListingViewAdapter
 from senaite.storage import api
+from senaite.storage import is_installed
 from senaite.storage import senaiteMessageFactory as _
 from zope.component import adapts
 from zope.interface import implements
@@ -36,8 +38,12 @@ class AnalysisRequestsListingViewAdapter(object):
     def __init__(self, listing, context):
         self.listing = listing
         self.context = context
+        self.installed = is_installed()
 
     def before_render(self):
+        if not self.installed:
+            return
+
         # Add review state "stored" in the listing
         self.add_stored_review_state()
 
@@ -106,6 +112,10 @@ class AnalysisRequestsListingViewAdapter(object):
                              after="getDateStored", review_states=("stored", ))
 
     def folder_item(self, obj, item, index):
+        # Return immediately when add-on is not installed
+        if not self.installed:
+            return item
+
         # Do nothing if the current state is not "stored"
         if not self.is_stored_state():
             return item
