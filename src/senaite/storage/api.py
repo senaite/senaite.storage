@@ -18,18 +18,32 @@
 # Copyright 2019-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims import api
+from senaite.storage import logger
 from senaite.storage.catalog import SENAITE_STORAGE_CATALOG
+
+from bika.lims import api
 
 
 def get_storage_sample(sample_obj_brain_or_uid, as_brain=False):
     """Returns the storage container the sample passed in is stored in
     """
+    catalog = get_storage_catalog()
+    if not catalog:
+        # Might be the product is not installed or catalog not present
+        logger.warn("Senaite storage catalog not found")
+        return None
+
     query = dict(portal_type="StorageSamplesContainer",
                  get_samples_uids=[api.get_uid(sample_obj_brain_or_uid)])
-    brains = api.search(query, SENAITE_STORAGE_CATALOG)
+    brains = api.search(query, catalog.id)
     if not brains:
         return None
     if as_brain:
         return brains[0]
     return api.get_object(brains[0])
+
+
+def get_storage_catalog():
+    """Returns the storage catalog tool or None
+    """
+    return api.get_tool(SENAITE_STORAGE_CATALOG, default=None)
