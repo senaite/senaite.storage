@@ -9,7 +9,7 @@
   <adapter
     name="workflow_action_store"
     for="*
-         zope.publisher.interfaces.browser.IBrowserRequest"
+         senaite.storage.interfaces.ISenaiteStorageLayer"
     factory=".analysisrequest.WorkflowActionStoreAdapter"
     provides="bika.lims.interfaces.IWorkflowActionAdapter"
     permission="zope.Public" />
