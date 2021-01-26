@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.0.3 (unreleased)
+------------------
+
+- #24 Added uninstaller profile
+
+
 1.0.2 (2020-08-11)
 ------------------
 

@@ -18,6 +18,8 @@
 # Copyright 2019-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from Acquisition import aq_base
+
 from bika.lims import api
 from bika.lims import permissions
 from bika.lims.catalog.analysisrequest_catalog import \
@@ -199,7 +201,35 @@ def post_install(portal_setup):
     # Injects "store" and "recover" transitions into senaite's workflow
     setup_workflows(portal)
 
+    # reindex storage structure
+    # needed when uninstalled/reinstalled
+    reindex_storage_structure(portal)
+
     logger.info("{} install handler [DONE]".format(PRODUCT_NAME.upper()))
+
+
+def post_uninstall(portal_setup):
+    """Runs after the last import step of the *uninstall* profile
+    This handler is registered as a *post_handler* in the generic setup profile
+    :param portal_setup: SetupTool
+    """
+    logger.info("{} uninstall handler [BEGIN]".format(PRODUCT_NAME.upper()))
+
+    # https://docs.plone.org/develop/addons/components/genericsetup.html#custom-installer-code-setuphandlers-py
+    profile_id = "profile-{}:uninstall".format(PRODUCT_NAME)
+    context = portal_setup._getImportContext(profile_id)  # noqa
+    portal = context.getSite()  # noqa
+
+    # recover all stored samples
+    recover_samples(portal)
+
+    # uninstall storage workflow settings
+    uninstall_workflows(portal)
+
+    # remove portal/storage and objects inside
+    remove_storage(portal)
+
+    logger.info("{} uninstall handler [DONE]".format(PRODUCT_NAME.upper()))
 
 
 def setup_catalogs(portal):
@@ -503,3 +533,72 @@ def setup_site_structure(portal):
         obj.reindexObject()
 
     logger.info("Setup site structure [DONE]")
+
+
+def reindex_storage_structure(portal):
+    """Reindex storage structure
+    """
+    logger.info("*** Reindex storage structure ***")
+
+    def reindex(obj, recurse=False):
+        # skip catalog tools etc.
+        if api.is_object(obj):
+            logger.info("Reindexing {}".format(repr(obj)))
+            obj.reindexObject()
+        if recurse and hasattr(aq_base(obj), "objectValues"):
+            map(lambda o: reindex(o, recurse=recurse),
+                obj.objectValues())
+
+    storage = portal.senaite_storage
+
+    for obj in storage.objectValues():
+        reindex(obj, recurse=True)
+
+    storage.reindexObject()
+
+
+def remove_storage(portal):
+    """Removes storage objects
+    """
+    logger.info("Removing storage objects ...")
+    portal._delObject("senaite_storage")
+    portal.reindexObject()
+    logger.info("Removing storage objects [DONE]")
+
+
+def recover_samples(portal):
+    """recover all stored samples
+    """
+    logger.info("*** Recovering all stored samples ***")
+    catalog = api.get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
+    query = {"review_state": "stored"}
+    brains = catalog(query)
+    total = len(brains)
+    logger.info("Recovering {} samples ... ".format(total))
+    for num, brain in enumerate(brains):
+        api.do_transition_for(brain, "recover")
+        logger.info("Recovering sample {}/{}: {}".format(
+            num + 1, total, api.get_id(brain)))
+
+
+def uninstall_workflows(portal):
+    """Uninstall injected WFs
+    """
+    logger.info("Uninstall storage workflows ...")
+    wf_tool = api.get_tool("portal_workflow")
+
+    workflow = wf_tool.getWorkflowById("bika_ar_workflow")
+    states = workflow.states
+
+    DELETE_STATES = ["stored"]
+    DELETE_TRANSITIONS = ["store", "recover"]
+
+    for sid, state in states.items():
+        if sid in DELETE_STATES:
+            states.deleteStates([sid])
+            logger.info("Deleted state '{}' from workflow '{}'".format(
+                sid, workflow.getId()))
+            continue
+        transitions = filter(
+            lambda t: t not in DELETE_TRANSITIONS, state.transitions)
+        state.transitions = tuple(transitions)

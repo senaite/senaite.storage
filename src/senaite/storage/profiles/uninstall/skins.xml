@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<object name="portal_skins">
+
+  <!-- Register folder for through-the-web Zope scripts (python) -->
+  <object remove="True"
+          name="senaite_storage_scripts"
+          meta_type="Filesystem Directory View"
+          directory="senaite.storage:zope_scripts"/>
+
+  <skin-path name="*">
+    <layer remove="True" name="senaite_storage_scripts" insert-after="custom"/>
+  </skin-path>
+
+</object>

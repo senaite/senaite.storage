@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<object name="portal_workflow" meta_type="Plone Workflow Tool">
+  <object remove="True" name="senaite_storage_default_workflow" meta_type="Workflow"/>
+</object>

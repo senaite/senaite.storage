@@ -17,4 +17,11 @@
         handler="senaite.storage.upgrade.v01_00_002.upgrade"
         profile="senaite.storage:default"/>
 
+  <genericsetup:upgradeStep
+      title="Upgrade to SENAITE STORAGE 1.0.3"
+      source="1.0.2"
+      destination="1.0.3"
+      handler="senaite.storage.upgrade.v01_00_003.upgrade"
+      profile="senaite.storage:default"/>
+
 </configure>

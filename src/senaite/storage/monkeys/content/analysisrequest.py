@@ -18,9 +18,10 @@
 # Copyright 2019-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from senaite.storage import api as _api
+
 from bika.lims import api
 from bika.lims import workflow as wf
-from senaite.storage import api as _api
 
 
 def getDateStored(self):
