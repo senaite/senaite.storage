@@ -223,12 +223,11 @@ def post_uninstall(portal_setup):
     # recover all stored samples
     recover_samples(portal)
 
-    # unindex the storage structure
-    # -> makes it disappear in the navigation
-    unindex_storage_structure(portal)
-
     # uninstall storage workflow settings
     uninstall_workflows(portal)
+
+    # remove portal/storage and objects inside
+    remove_storage(portal)
 
     logger.info("{} uninstall handler [DONE]".format(PRODUCT_NAME.upper()))
 
@@ -535,6 +534,7 @@ def setup_site_structure(portal):
 
     logger.info("Setup site structure [DONE]")
 
+
 def reindex_storage_structure(portal):
     """Reindex storage structure
     """
@@ -557,26 +557,13 @@ def reindex_storage_structure(portal):
     storage.reindexObject()
 
 
-def unindex_storage_structure(portal):
-    """Unindex storage structure
+def remove_storage(portal):
+    """Removes storage objects
     """
-    logger.info("*** Unindex storage structure ***")
-
-    def unindex(obj, recurse=False):
-        # skip catalog tools etc.
-        if api.is_object(obj):
-            logger.info("Unindexing {}".format(repr(obj)))
-            obj.unindexObject()
-        if recurse and hasattr(aq_base(obj), "objectValues"):
-            map(lambda o: unindex(o, recurse=recurse),
-                obj.objectValues())
-
-    storage = portal.senaite_storage
-
-    for obj in storage.objectValues():
-        unindex(obj, recurse=True)
-
-    storage.unindexObject()
+    logger.info("Removing storage objects ...")
+    portal._delObject("senaite_storage")
+    portal.reindexObject()
+    logger.info("Removing storage objects [DONE]")
 
 
 def recover_samples(portal):
