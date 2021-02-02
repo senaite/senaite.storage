@@ -4,6 +4,7 @@ Changelog
 2.1.0 (unreleased)
 ------------------
 
+- #26 Disallow to modify portal content when stored/booked out samples
 - #23 Allow storage container to be booked out
 - #22 Allow to move containers
 - #21 Allow storage contents to be deactivated
