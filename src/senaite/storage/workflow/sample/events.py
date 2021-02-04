@@ -23,7 +23,6 @@ from bika.lims.utils import changeWorkflowState
 from bika.lims.workflow import doActionFor as do_action_for
 from senaite.core.workflow import SAMPLE_WORKFLOW
 from senaite.storage import api as _api
-from senaite.storage import logger
 from senaite.storage.api import pause_snapshots_for
 from senaite.storage.api import resume_snapshots_for
 
@@ -49,6 +48,10 @@ def after_store(sample):
 def after_book_out(sample):
     """Event triggered after "book_out" transition takes place for a given sample
     """
+
+    # remove the sample from the container
+    _api.remove_sample_from_container(sample)
+
     primary = sample.getParentAnalysisRequest()
     if not primary:
         return
@@ -68,15 +71,10 @@ def after_recover(sample):
     """Unassigns the sample from its storage container and "recover". It also
     transitions the sample to its previous state before it was stored
     """
-    # remove from container
-    container = _api.get_storage_sample(api.get_uid(sample))
-    if container:
-        container.remove_object(sample)
-    else:
-        logger.warn("Container for Sample {} not found".format(sample.getId()))
-
+    # remove the sample from the container
+    _api.remove_sample_from_container(sample)
     # Transition the sample to the state before it was stored
-    previous_state = get_previous_state(sample) or "sample_due"
+    previous_state = _api.get_previous_state(sample, default="sample_due")
     # Note: we pause the snapshots here because events are fired next
     pause_snapshots_for(sample)
     changeWorkflowState(sample, SAMPLE_WORKFLOW, previous_state)
@@ -99,14 +97,3 @@ def after_recover(sample):
     if not parts:
         # There are no partitions left, transition the primary
         do_action_for(primary, "recover")
-
-
-def get_previous_state(instance, omit=("stored", "booked_out")):
-    # Get the review history, most recent actions first
-    history = api.get_review_history(instance)
-    for item in history:
-        status = item.get("review_state")
-        if not status or status in omit:
-            continue
-        return status
-    return None

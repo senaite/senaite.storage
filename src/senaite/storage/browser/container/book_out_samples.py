@@ -66,16 +66,9 @@ class BookOutSamplesView(BaseView):
         This might be either a samples container or a sample context
         """
 
-        # when coming from the WF menu inside a sample
-        if IAnalysisRequest.providedBy(self.context):
-            return [self.context]
-
-        # when coming from the WF menu inside a storage sample
-        if IStorageSamplesContainer.providedBy(self.context):
-            return self.context.get_samples()
-
         # fetch objects from request
         objs = self.get_objects_from_request()
+
         samples = []
         for obj in objs:
             # wjen coming from a samples container listing
@@ -85,7 +78,16 @@ class BookOutSamplesView(BaseView):
             if IAnalysisRequest.providedBy(obj):
                 samples.append(obj)
 
-        return list(set(samples))
+        if samples:
+            return list(set(samples))
+
+        # when coming from the WF menu inside a sample
+        if IAnalysisRequest.providedBy(self.context):
+            return [self.context]
+
+        # when coming from the WF menu inside a storage sample
+        if IStorageSamplesContainer.providedBy(self.context):
+            return self.context.get_samples()
 
     def get_title(self, obj):
         """Return the object title as unicode
