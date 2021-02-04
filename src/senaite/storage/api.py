@@ -20,23 +20,47 @@
 
 from bika.lims import api
 from bika.lims.interfaces import IDoNotSupportSnapshots
+from senaite.storage import logger
 from senaite.storage.catalog import SENAITE_STORAGE_CATALOG
 from senaite.storage.config import STORAGE_WORKFLOW_ID
 from zope.interface import alsoProvides
 from zope.interface import noLongerProvides
 
 
-def get_storage_sample(sample_obj_brain_or_uid, as_brain=False):
-    """Returns the storage container the sample passed in is stored in
+def remove_sample_from_container(sample):
+    """Remove the sample from the container
+    """
+    # remove from container
+    container = get_storage_sample(sample)
+    if container:
+        container.remove_object(sample)
+    else:
+        logger.warn("Container for Sample {} not found".format(
+            api.get_id(sample)))
+
+
+def get_storage_sample(sample, as_brain=False):
+    """Returns the storage container of the sample
     """
     query = dict(portal_type="StorageSamplesContainer",
-                 get_samples_uids=[api.get_uid(sample_obj_brain_or_uid)])
+                 get_samples_uids=[api.get_uid(sample)])
     brains = api.search(query, SENAITE_STORAGE_CATALOG)
     if not brains:
         return None
     if as_brain:
         return brains[0]
     return api.get_object(brains[0])
+
+
+def get_previous_state(obj, omit=("stored", "booked_out"), default=None):
+    # Get the review history, most recent actions first
+    history = api.get_review_history(obj)
+    for item in history:
+        status = item.get("review_state")
+        if not status or status in omit:
+            continue
+        return status
+    return default
 
 
 def get_storage_catalog():
