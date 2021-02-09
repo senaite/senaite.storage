@@ -23,6 +23,8 @@ import collections
 from bika.lims import api
 from senaite.storage import senaiteMessageFactory as _
 from senaite.storage.browser.facility.view import FacilityListingView
+from senaite.storage.permissions import AddStorageContainer
+from senaite.storage.permissions import AddStorageSamplesContainer
 
 
 class ContainerListingView(FacilityListingView):
@@ -50,11 +52,13 @@ class ContainerListingView(FacilityListingView):
         self.context_actions = collections.OrderedDict((
             (_("Add container"), {
                 "url": "createObject?type_name=StorageContainer",
+                "permission": AddStorageContainer,
                 "icon": "{}/{}".format(
                     self.icon_path, "storage-container"),
             }),
             (_("Add samples container"), {
                 "url": "createObject?type_name=StorageSamplesContainer",
+                "permission": AddStorageSamplesContainer,
                 "icon": "{}/{}".format(
                     self.icon_path, "storage-sample-container")
             }),

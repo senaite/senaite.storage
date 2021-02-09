@@ -3,11 +3,13 @@
 import collections
 
 from bika.lims import api
-from senaite.storage import senaiteMessageFactory as _
-from senaite.storage.browser.storage.listing import StorageListing
-from senaite.storage.api import get_parents
 from bika.lims.utils import get_link_for
+from senaite.storage import senaiteMessageFactory as _
+from senaite.storage.api import get_parents
+from senaite.storage.browser.storage.listing import StorageListing
 from senaite.storage.interfaces import IStorageFacility
+from senaite.storage.permissions import AddStorageContainer
+from senaite.storage.permissions import AddStoragePosition
 
 
 class FacilityListingView(StorageListing):
@@ -36,11 +38,12 @@ class FacilityListingView(StorageListing):
         self.context_actions = collections.OrderedDict((
             (_("Add storage position"), {
                 "url": "++add++StoragePosition",
-                "permission": "cmf.AddPortalContent",
+                "permission": AddStoragePosition,
                 "icon": "{}/{}".format(self.icon_path, "storage-position"),
             }),
             (_("Add container"), {
                 "url": "createObject?type_name=StorageContainer",
+                "permission": AddStorageContainer,
                 "icon": "{}/{}".format(self.icon_path, "storage-container"),
             }),
         ))

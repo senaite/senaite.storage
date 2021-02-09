@@ -26,6 +26,7 @@ from bika.lims.catalog.analysisrequest_catalog import \
     CATALOG_ANALYSIS_REQUEST_LISTING
 from senaite.app.listing.view import ListingView
 from senaite.storage import senaiteMessageFactory as _
+from senaite.storage.permissions import TransitionAddSamples
 
 
 class SampleListingView(ListingView):
@@ -55,6 +56,7 @@ class SampleListingView(ListingView):
             uid = api.get_uid(context)
             self.context_actions[_("Add Samples")] = {
                 "url": "storage_store_container?uids={}".format(uid),
+                "permission": TransitionAddSamples,
                 "icon": "{}/{}".format(self.icon_path, "sample")
             }
 

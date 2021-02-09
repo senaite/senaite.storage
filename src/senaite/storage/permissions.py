@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 
+# Add Permissions
+AddStorageRootFolder = "senaite.storage: Add Storage Root Folder"
+AddStorageFacility = "senaite.storage: Add Storage Facility"
+AddStorageContainer = "senaite.storage: Add Storage Container"
+AddStorageSamplesContainer = "senaite.storage: Add Storage Samples Container"
+AddStoragePosition = "senaite.storage: Add Storage Position"
+
 # Permissions when context is a sample
 TransitionStoreSample = "senaite.storage: Transition: Store Sample"
 TransitionRecoverSample = "senaite.storage: Transition: Recover Sample"

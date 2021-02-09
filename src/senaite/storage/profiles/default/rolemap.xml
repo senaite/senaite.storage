@@ -3,6 +3,28 @@
 
   <permissions>
 
+    <!-- Add permissions -->
+    <permission name="senaite.storage: Add Storage Root Folder" acquire="False">
+      <role name="Manager"/>
+      <role name="LabManager"/>
+    </permission>
+    <permission name="senaite.storage: Add Storage Facility" acquire="False">
+      <role name="Manager"/>
+      <role name="LabManager"/>
+    </permission>
+    <permission name="senaite.storage: Add Storage Container" acquire="False">
+      <role name="Manager"/>
+      <role name="LabManager"/>
+    </permission>
+    <permission name="senaite.storage: Add Storage Samples Container" acquire="False">
+      <role name="Manager"/>
+      <role name="LabManager"/>
+    </permission>
+    <permission name="senaite.storage: Add Storage Position" acquire="False">
+      <role name="Manager"/>
+      <role name="LabManager"/>
+    </permission>
+
     <!-- Move Container -->
     <permission name="senaite.storage: Transition: Move Container" acquire="False">
       <role name="LabClerk"/>

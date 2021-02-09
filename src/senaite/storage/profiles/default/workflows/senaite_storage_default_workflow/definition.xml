@@ -22,7 +22,13 @@
   <!-- doesn't check whether you have the right to view the objects listed. -->
   <permission>List folder contents</permission>
 
-  <!-- senaite.storage permissions -->
+  <!-- senaite.storage Add permissions -->
+  <permission>senaite.storage: Add Storage Facility</permission>
+  <permission>senaite.storage: Add Storage Container</permission>
+  <permission>senaite.storage: Add Storage Samples Container</permission>
+  <permission>senaite.storage: Add Storage Position</permission>
+
+  <!-- senaite.storage Transition permissions -->
   <permission>senaite.storage: Transition: Add Samples</permission>
   <permission>senaite.storage: Transition: Recover Samples</permission>
   <permission>senaite.storage: Transition: Activate</permission>
@@ -36,32 +42,44 @@
     <exit-transition transition_id="recover_samples" />
     <exit-transition transition_id="move_container" />
 
-    <!-- Transition permissions -->
-    <permission-map name="senaite.storage: Transition: Deactivate" acquired="True" />
-
-    <!-- Permission mappings -->
+    <!-- Plone permission mappings -->
     <permission-map name="Access contents information" acquired="True" />
     <permission-map name="Delete objects" acquired="True" />
     <permission-map name="List folder contents" acquired="True" />
     <permission-map name="Modify portal content" acquired="True" />
     <permission-map name="View" acquired="True" />
+    <!-- senaite.storage Add permissions -->
+    <permission-map name="senaite.storage: Add Storage Facility" acquired="True" />
+    <permission-map name="senaite.storage: Add Storage Container" acquired="True" />
+    <permission-map name="senaite.storage: Add Storage Samples Container" acquired="True" />
+    <permission-map name="senaite.storage: Add Storage Position" acquired="True" />
+    <!-- senaite.storage Transition permissions -->
+    <permission-map name="senaite.storage: Transition: Deactivate" acquired="True" />
+    <permission-map name="senaite.storage: Transition: Add Samples" acquired="True" />
+    <permission-map name="senaite.storage: Transition: Recover Samples" acquired="True" />
   </state>
 
   <!-- State: inactive -->
   <state state_id="inactive" title="Inactive" i18n:attributes="title">
+    <!-- Transitions -->
     <exit-transition transition_id="activate" />
     <exit-transition transition_id="recover_samples" />
     <exit-transition transition_id="move_container" />
-
-    <!-- Transition permissions -->
-    <permission-map name="senaite.storage: Transition: Activate" acquired="True" />
-
-    <!-- Plone's permissions -->
+    <!-- Plone permission mappings -->
     <permission-map name="Access contents information" acquired="True" />
-    <permission-map name="Delete objects" acquired="True" />
+    <permission-map name="Delete objects" acquired="False" />
     <permission-map name="List folder contents" acquired="True" />
-    <permission-map name="Modify portal content" acquired="True" />
+    <permission-map name="Modify portal content" acquired="False" />
     <permission-map name="View" acquired="True" />
+    <!-- senaite.storage permissions -->
+    <permission-map name="senaite.storage: Add Storage Facility" acquired="False" />
+    <permission-map name="senaite.storage: Add Storage Container" acquired="False" />
+    <permission-map name="senaite.storage: Add Storage Samples Container" acquired="False" />
+    <permission-map name="senaite.storage: Add Storage Position" acquired="False" />
+    <!-- senaite.storage Transition permissions -->
+    <permission-map name="senaite.storage: Transition: Activate" acquired="True" />
+    <permission-map name="senaite.storage: Transition: Add Samples" acquired="False" />
+    <permission-map name="senaite.storage: Transition: Recover Samples" acquired="False" />
   </state>
 
   <!-- Transition: activate -->

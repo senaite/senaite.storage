@@ -24,6 +24,7 @@ from bika.lims import api
 from senaite.storage import senaiteMessageFactory as _
 from senaite.storage.browser.storage.listing import StorageListing
 from senaite.storage.interfaces import IStorageUtilization
+from senaite.storage.permissions import AddStorageFacility
 
 
 class StorageListingView(StorageListing):
@@ -48,6 +49,7 @@ class StorageListingView(StorageListing):
         # Add Facility action
         self.context_actions[_("Add Facility")] = {
             "url": "createObject?type_name=StorageFacility",
+            "permission": AddStorageFacility,
             "icon": "{}/{}".format(self.icon_path, "storage-facility")
         }
 

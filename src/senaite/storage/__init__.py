@@ -26,6 +26,7 @@ from Products.Archetypes.atapi import listTypes
 from Products.Archetypes.atapi import process_types
 from Products.CMFCore.permissions import AddPortalContent
 from Products.CMFCore.utils import ContentInit
+from senaite.storage import permissions
 from senaite.storage.config import PRODUCT_NAME
 from senaite.storage.interfaces import ISenaiteStorageLayer
 from zope.i18nmessageid import MessageFactory
@@ -85,9 +86,11 @@ def initialize(context):
     allTypes = zip(content_types, constructors)
     for atype, constructor in allTypes:
         kind = "%s: Add %s" % (PRODUCT_NAME, atype.portal_type)
+        perm_name = "Add{}".format(atype.portal_type)
+        perm = getattr(permissions, perm_name, AddPortalContent)
         ContentInit(kind,
                     content_types=(atype,),
-                    permission=AddPortalContent,
+                    permission=perm,
                     extra_constructors=(constructor, ),
                     fti=ftis,
                     ).initialize(context)
