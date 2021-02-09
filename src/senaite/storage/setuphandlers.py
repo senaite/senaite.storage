@@ -25,6 +25,7 @@ from bika.lims.catalog.analysisrequest_catalog import \
     CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog.catalog_utilities import addZCTextIndex
 from plone import api as ploneapi
+from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFPlone.utils import _createObjectByType
 from Products.DCWorkflow.Guard import Guard
 from senaite.core.workflow import SAMPLE_WORKFLOW
@@ -167,6 +168,7 @@ WORKFLOWS_TO_UPDATE = {
                     permissions.TransitionPreserveSample: (),
                     permissions.TransitionPublishResults: (),
                     permissions.TransitionScheduleSampling: (),
+                    ModifyPortalContent: (),
                 }
             },
         },
