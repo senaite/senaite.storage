@@ -168,7 +168,6 @@ WORKFLOWS_TO_UPDATE = {
                     permissions.TransitionPreserveSample: (),
                     permissions.TransitionPublishResults: (),
                     permissions.TransitionScheduleSampling: (),
-                    permissions.TransitionDispatchSample: ("Manager", "LabManager", ),
                     ModifyPortalContent: (),
                 }
             },
