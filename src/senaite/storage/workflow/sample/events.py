@@ -27,6 +27,15 @@ from senaite.core.workflow import SAMPLE_WORKFLOW
 from senaite.storage import api as _api
 
 
+def before_dispatch(sample):
+    """Event triggered before "dispatch" transition takes place for a given sample
+    """
+    # recover sample if the sample was stored
+    state = api.get_workflow_status_of(sample)
+    if state == "stored":
+        do_action_for(sample, "recover")
+
+
 def after_store(sample):
     """Event triggered after "store" transition takes place for a given sample
     """
