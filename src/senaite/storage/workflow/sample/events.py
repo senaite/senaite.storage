@@ -19,12 +19,12 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
+from bika.lims.api.snapshot import pause_snapshots_for
+from bika.lims.api.snapshot import resume_snapshots_for
 from bika.lims.utils import changeWorkflowState
 from bika.lims.workflow import doActionFor as do_action_for
 from senaite.core.workflow import SAMPLE_WORKFLOW
 from senaite.storage import api as _api
-from senaite.storage.api import pause_snapshots_for
-from senaite.storage.api import resume_snapshots_for
 
 
 def after_store(sample):
@@ -45,28 +45,6 @@ def after_store(sample):
         do_action_for(primary, "store")
 
 
-def after_book_out(sample):
-    """Event triggered after "book_out" transition takes place for a given sample
-    """
-
-    # remove the sample from the container
-    _api.remove_sample_from_container(sample)
-
-    primary = sample.getParentAnalysisRequest()
-    if not primary:
-        return
-
-    # Store primary sample if its partitions have been stored
-    parts = primary.getDescendants()
-
-    # Partitions in some statuses won't be considered
-    skip = ["cancelled", "stored", "retracted", "rejected"]
-    parts = filter(lambda part: api.get_review_status(part) not in skip, parts)
-    if not parts:
-        # There are no partitions left, transition the primary
-        do_action_for(primary, "book_out")
-
-
 def after_recover(sample):
     """Unassigns the sample from its storage container and "recover". It also
     transitions the sample to its previous state before it was stored
@@ -74,7 +52,8 @@ def after_recover(sample):
     # remove the sample from the container
     _api.remove_sample_from_container(sample)
     # Transition the sample to the state before it was stored
-    previous_state = _api.get_previous_state(sample, default="sample_due")
+    previous_state = api.get_previous_worfklow_status_of(
+        sample, skip=("stored", ), default="sample_due")
     # Note: we pause the snapshots here because events are fired next
     pause_snapshots_for(sample)
     changeWorkflowState(sample, SAMPLE_WORKFLOW, previous_state)
@@ -92,7 +71,7 @@ def after_recover(sample):
     parts = primary.getDescendants()
 
     # Partitions in some statuses won't be considered.
-    skip = ["stored", "booked_out"]
+    skip = ["cancelled", "stored", "retracted", "rejected"]
     parts = filter(lambda part: api.get_review_status(part) in skip, parts)
     if not parts:
         # There are no partitions left, transition the primary

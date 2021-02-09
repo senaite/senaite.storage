@@ -13,13 +13,6 @@ def guard_store_sample(sample):
 
 
 @security.public
-def guard_book_out_sample(sample):
-    """Sample guard to control if the sample can be booked out
-    """
-    return True
-
-
-@security.public
 def guard_recover_sample(sample):
     """Sample guard to control if the sample can be recovered
     """

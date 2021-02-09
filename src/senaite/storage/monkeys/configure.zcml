@@ -11,27 +11,6 @@
     replacement=".content.analysisrequest.getDateStored" />
 
   <monkey:patch
-    description="The date the Sample was booked out"
-    class="bika.lims.content.analysisrequest.AnalysisRequest"
-    original="getDateBookedOut"
-    ignoreOriginal="True"
-    replacement=".content.analysisrequest.getDateBookedOut" />
-
-  <monkey:patch
-    description="The reason of the book out"
-    class="bika.lims.content.analysisrequest.AnalysisRequest"
-    original="getBookOutReason"
-    ignoreOriginal="True"
-    replacement=".content.analysisrequest.getBookOutReason" />
-
-  <monkey:patch
-    description="The user in charge of the book out"
-    class="bika.lims.content.analysisrequest.AnalysisRequest"
-    original="getBookOutActor"
-    ignoreOriginal="True"
-    replacement=".content.analysisrequest.getBookOutActor" />
-
-  <monkey:patch
     description="The container ID where the sample is stored"
     class="bika.lims.content.analysisrequest.AnalysisRequest"
     original="getSamplesContainerID"

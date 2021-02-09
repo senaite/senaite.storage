@@ -45,24 +45,6 @@ class WorkflowActionAddSamplesAdapter(RequestContextAware):
 
 
 @implementer(IWorkflowActionUIDsAdapter)
-class WorkflowActionBookOutSamplesAdapter(RequestContextAware):
-    """Adapter in charge of "book out samples" action
-    """
-
-    def __call__(self, action, uids):
-        """Redirects the user to the Samples selector view
-        """
-        # filter out UIDs not belonging to sample containers
-        objs = map(api.get_object, uids)
-        containers = filter(
-            lambda o: IStorageSamplesContainer.providedBy(o), objs)
-        container_uids = map(api.get_uid, containers)
-        url = "{}/storage_book_out_samples?uids={}".format(
-            self.back_url, ",".join(container_uids))
-        return self.redirect(redirect_url=url)
-
-
-@implementer(IWorkflowActionUIDsAdapter)
 class WorkflowActionMoveContainerAdapter(RequestContextAware):
     """Adapter in charge of "move container" action
     """

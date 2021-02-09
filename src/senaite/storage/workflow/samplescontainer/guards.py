@@ -34,15 +34,6 @@ def guard_add_samples(samples_container):
 
 
 @security.public
-def guard_book_out_samples(samples_container):
-    """Guard for booking out samples in this container
-    """
-    if not IStorageSamplesContainer.providedBy(samples_container):
-        return False
-    return samples_container.has_samples()
-
-
-@security.public
 def guard_recover_samples(samples_container):
     """Guard for recover all samples from this container
     """

@@ -2,14 +2,12 @@
     xmlns="http://namespaces.zope.org/zope"
     i18n_domain="senaite.core">
 
-  <!-- Store/Recover/Book out Sample Permissions (context is a sample) -->
+  <!-- Store/Recover Sample Permissions (context is a sample) -->
   <permission id="senaite.storage.permissions.StoreSample" title="senaite.storage: Transition: Store Sample"/>
-  <permission id="senaite.storage.permissions.BookOutSample" title="senaite.storage: Transition: Book out Sample"/>
   <permission id="senaite.storage.permissions.RecoverSample" title="senaite.storage: Transition: Recover Sample"/>
 
-  <!-- Add/Recover/Book out Samples Permissions (context is a storage container) -->
+  <!-- Add/Recover Samples Permissions (context is a storage container) -->
   <permission id="senaite.storage.permissions.AddSamples" title="senaite.storage: Transition: Add Samples"/>
-  <permission id="senaite.storage.permissions.BookOutSamples" title="senaite.storage: Transition: Book out Samples"/>
   <permission id="senaite.storage.permissions.RecoverSamples" title="senaite.storage: Transition: Recover Samples"/>
 
   <!-- Activate/Deactivate Permissions (context is a storage container) -->
