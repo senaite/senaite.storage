@@ -244,7 +244,7 @@ class StorageLayoutContainer(ATFolder):
         """
         if not self.is_valid_position(row, column):
             return True
-        item  = self.get_item_at(row, column)
+        item = self.get_item_at(row, column)
         return item and self.is_taken(item) or False
 
     def is_empty(self, item):
@@ -284,7 +284,7 @@ class StorageLayoutContainer(ATFolder):
         """Returns a uid this container contains at the given position.
         """
         item = self.get_item_at(row, column)
-        return item and item.get("uid","") or None
+        return item and item.get("uid", "") or None
 
     def get_object_at(self, row, column):
         """Returns an object this container contains at the given position
@@ -301,7 +301,7 @@ class StorageLayoutContainer(ATFolder):
         uid = api.get_uid(object_brain_uid)
         if not uid:
             return None
-        els = filter(lambda el: el.get("uid","") == uid,
+        els = filter(lambda el: el.get("uid", "") == uid,
                      self.getPositionsLayout())
         if not els:
             return None
@@ -326,7 +326,7 @@ class StorageLayoutContainer(ATFolder):
         IStorageLayoutContainer
         """
         return filter(lambda obj: IStorageLayoutContainer.providedBy(obj),
-                            self.objectValues())
+                      self.objectValues())
 
     def get_first_empty_position(self):
         """Returns the first empty position of the layout as a tuple (row, col)
@@ -460,7 +460,7 @@ class StorageLayoutContainer(ATFolder):
                    'row': row,
                    'column': column,
                    'samples_capacity': samples_capacity,
-                   'samples_utilization': samples_utilization,}]
+                   'samples_utilization': samples_utilization, }]
         for item in self.getPositionsLayout():
             if item["row"] == row and item["column"] == column:
                 continue

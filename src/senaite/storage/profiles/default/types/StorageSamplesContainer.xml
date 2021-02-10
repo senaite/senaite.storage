@@ -56,7 +56,7 @@
           i18n:attributes="title"
           i18n:domain="plone"
           visible="True">
-    <permission value="View"/>
+    <permission value="senaite.storage: Transition: Add Samples"/>
   </action>
 
 </object>

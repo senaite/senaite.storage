@@ -21,8 +21,20 @@
 import events
 
 
+def BeforeTransitionEventHandler(sample, event):
+    """Actions to be done *before a transition* for a sample takes place
+    """
+    if not event.transition:
+        return
+
+    function_name = "before_{}".format(event.transition.id)
+    if hasattr(events, function_name):
+        # Call the before_* function from events package
+        getattr(events, function_name)(sample)
+
+
 def AfterTransitionEventHandler(sample, event):
-    """Actions to be done after a transition for a sample takes place
+    """Actions to be done *after a transition* for a sample takes place
     """
     if not event.transition:
         return

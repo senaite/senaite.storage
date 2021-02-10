@@ -26,6 +26,7 @@ from bika.lims.catalog.analysisrequest_catalog import \
     CATALOG_ANALYSIS_REQUEST_LISTING
 from senaite.app.listing.view import ListingView
 from senaite.storage import senaiteMessageFactory as _
+from senaite.storage.permissions import TransitionAddSamples
 
 
 class SampleListingView(ListingView):
@@ -55,6 +56,7 @@ class SampleListingView(ListingView):
             uid = api.get_uid(context)
             self.context_actions[_("Add Samples")] = {
                 "url": "storage_store_container?uids={}".format(uid),
+                "permission": TransitionAddSamples,
                 "icon": "{}/{}".format(self.icon_path, "sample")
             }
 
@@ -128,16 +130,6 @@ class SampleListingView(ListingView):
         """
         return self.context.plone_utils.addPortalMessage(message, level)
 
-    def get_previous_state(self, obj, omit=("stored",)):
-        # Get the review history, most recent actions first
-        history = api.get_review_history(obj)
-        for item in history:
-            status = item.get("review_state")
-            if not status or status in omit:
-                continue
-            return status
-        return None
-
     def folderitems(self):
         """We add this function to tell baselisting to use brains instead of
         full objects"""
@@ -155,7 +147,7 @@ class SampleListingView(ListingView):
         position = self.context.get_object_position(api.get_uid(obj))
         item["position"] = self.context.position_to_alpha(
             position[0], position[1])
-        prev_state = self.get_previous_state(obj)
+        prev_state = api.get_previous_worfklow_status_of(obj, skip=("stored",))
         if prev_state:
             item["PreviousState"] = self.translate_review_state(
                 prev_state, api.get_portal_type(obj))

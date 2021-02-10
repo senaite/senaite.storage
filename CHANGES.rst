@@ -4,6 +4,7 @@ Changelog
 2.1.0 (unreleased)
 ------------------
 
+- #27 Integrate dispatch workflow from senaite.core
 - #26 Disallow to modify portal content when stored/booked out samples
 - #25 Remove booked out samples from container
 - #23 Allow storage container to be booked out

@@ -19,12 +19,9 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
-from bika.lims.interfaces import IDoNotSupportSnapshots
 from senaite.storage import logger
 from senaite.storage.catalog import SENAITE_STORAGE_CATALOG
 from senaite.storage.config import STORAGE_WORKFLOW_ID
-from zope.interface import alsoProvides
-from zope.interface import noLongerProvides
 
 
 def remove_sample_from_container(sample):
@@ -52,17 +49,6 @@ def get_storage_sample(sample, as_brain=False):
     return api.get_object(brains[0])
 
 
-def get_previous_state(obj, omit=("stored", "booked_out"), default=None):
-    # Get the review history, most recent actions first
-    history = api.get_review_history(obj)
-    for item in history:
-        status = item.get("review_state")
-        if not status or status in omit:
-            continue
-        return status
-    return default
-
-
 def get_storage_catalog():
     """Returns the storage catalog
     """
@@ -88,15 +74,3 @@ def get_parents(obj, parents=None, predicate=None):
     if predicate(parent):
         return parents
     return get_parents(parent, parents=parents, predicate=predicate)
-
-
-def pause_snapshots_for(obj):
-    """Pause snapshots for the given object
-    """
-    alsoProvides(obj, IDoNotSupportSnapshots)
-
-
-def resume_snapshots_for(obj):
-    """Resume snapshots for the given object
-    """
-    noLongerProvides(obj, IDoNotSupportSnapshots)
