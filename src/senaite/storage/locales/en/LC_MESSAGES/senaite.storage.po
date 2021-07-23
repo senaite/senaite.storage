@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2020-08-11 10:04+0000\n"
+"POT-Creation-Date: 2021-07-23 20:52+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -91,7 +91,7 @@ msgstr ""
 msgid "Containers usage"
 msgstr ""
 
-#: senaite/storage/browser/analysisrequests.py:90
+#: senaite/storage/browser/analysisrequests.py:95
 msgid "Date stored"
 msgstr ""
 
@@ -153,7 +153,7 @@ msgstr ""
 msgid "Position"
 msgstr ""
 
-#: senaite/storage/browser/analysisrequests.py:67
+#: senaite/storage/browser/analysisrequests.py:72
 msgid "Print stickers"
 msgstr ""
 
@@ -167,6 +167,10 @@ msgstr ""
 
 #: senaite/storage/configure.zcml:41
 msgid "SENAITE STORAGE"
+msgstr ""
+
+#: senaite/storage/configure.zcml:50
+msgid "SENAITE STORAGE (uninstall)"
 msgstr ""
 
 #: senaite/storage/browser/templates/store_container.pt:63
@@ -206,7 +210,7 @@ msgstr ""
 msgid "Samples usage"
 msgstr ""
 
-#: senaite/storage/browser/analysisrequests.py:100
+#: senaite/storage/browser/analysisrequests.py:105
 msgid "Storage"
 msgstr ""
 
@@ -226,7 +230,7 @@ msgstr ""
 msgid "Store samples"
 msgstr ""
 
-#: senaite/storage/browser/analysisrequests.py:74
+#: senaite/storage/browser/analysisrequests.py:79
 msgid "Stored"
 msgstr ""
 

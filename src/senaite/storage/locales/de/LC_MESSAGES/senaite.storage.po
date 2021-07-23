@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2020-08-11 10:04+0000\n"
+"POT-Creation-Date: 2021-07-23 20:52+0000\n"
 "PO-Revision-Date: 2019-03-31 21:21+0000\n"
 "Last-Translator: A. Migulo, 2019\n"
 "Language-Team: German (https://www.transifex.com/senaite/teams/97702/de/)\n"
@@ -98,7 +98,7 @@ msgstr "Behälter"
 msgid "Containers usage"
 msgstr "Verwendung des Behälters"
 
-#: senaite/storage/browser/analysisrequests.py:90
+#: senaite/storage/browser/analysisrequests.py:95
 msgid "Date stored"
 msgstr "Einlagerungsdatum"
 
@@ -160,7 +160,7 @@ msgstr "Telefon"
 msgid "Position"
 msgstr "Position"
 
-#: senaite/storage/browser/analysisrequests.py:67
+#: senaite/storage/browser/analysisrequests.py:72
 msgid "Print stickers"
 msgstr "Aufkleber drucken"
 
@@ -175,6 +175,10 @@ msgstr "Zeilen"
 #: senaite/storage/configure.zcml:41
 msgid "SENAITE STORAGE"
 msgstr "SENAITE Lagerverwaltung"
+
+#: senaite/storage/configure.zcml:50
+msgid "SENAITE STORAGE (uninstall)"
+msgstr ""
 
 #: senaite/storage/browser/templates/store_container.pt:63
 msgid "Sample"
@@ -213,7 +217,7 @@ msgstr "Probeneinlagerung"
 msgid "Samples usage"
 msgstr "Verwendung der Proben"
 
-#: senaite/storage/browser/analysisrequests.py:100
+#: senaite/storage/browser/analysisrequests.py:105
 msgid "Storage"
 msgstr "Einlagerung"
 
@@ -233,7 +237,7 @@ msgstr "Proben einlagern"
 msgid "Store samples"
 msgstr "Proben einlagern"
 
-#: senaite/storage/browser/analysisrequests.py:74
+#: senaite/storage/browser/analysisrequests.py:79
 msgid "Stored"
 msgstr "Eingelagert"
 

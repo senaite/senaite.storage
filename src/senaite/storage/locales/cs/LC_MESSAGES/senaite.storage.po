@@ -1,12 +1,15 @@
 # --- PLEASE EDIT THE LINES BELOW CORRECTLY ---
 # SOME DESCRIPTIVE TITLE.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Translators:
+# trendspotter, 2020
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2020-08-11 10:04+0000\n"
+"POT-Creation-Date: 2021-07-23 20:52+0000\n"
 "PO-Revision-Date: 2019-03-31 21:21+0000\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Last-Translator: trendspotter, 2020\n"
 "Language-Team: Czech (https://www.transifex.com/senaite/teams/97702/cs/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -20,228 +23,232 @@ msgstr ""
 
 #: senaite/storage/browser/templates/store_samples.pt:32
 msgid "${back_link}"
-msgstr ""
+msgstr "${back_link}"
 
 #: senaite/storage/browser/storagelisting.py:49
 msgid "% Samples"
-msgstr ""
+msgstr "% Vzorky"
 
 #: senaite/storage/browser/templates/store_samples.pt:32
 msgid "&larr; Back"
-msgstr ""
+msgstr "&larr; Zpět"
 
 #: senaite/storage/browser/containers.py:70
 #: senaite/storage/browser/storagelisting.py:60
 #: senaite/storage/browser/storagerootfolder.py:67
 msgid "Active"
-msgstr ""
+msgstr "Aktivní"
 
 #: senaite/storage/browser/storagerootfolder.py:74
 msgid "Add Facility"
-msgstr ""
+msgstr "Přidat zařízení"
 
 #: senaite/storage/browser/templates/store_container.pt:117
 msgid "Add Sample"
-msgstr ""
+msgstr "Přidat vzorek"
 
 #: senaite/storage/browser/samples.py:102
 msgid "Add Samples"
-msgstr ""
+msgstr "Přidat vzorky"
 
 #: senaite/storage/browser/containers.py:84
 msgid "Add container"
-msgstr ""
+msgstr "Přidat kontejner"
 
 #: senaite/storage/profiles/default/workflows/senaite_storage_default_workflow/definition.xml
 msgid "Add samples"
-msgstr ""
+msgstr "Přidat vzorky"
 
 #: senaite/storage/browser/containers.py:89
 msgid "Add samples container"
-msgstr ""
+msgstr "Přidat kontejner vzorků"
 
 #: senaite/storage/content/storagefacility.py:53
 msgid "Address"
-msgstr ""
+msgstr "Adresa"
 
 #: senaite/storage/content/storagelayoutcontainer.py:47
 msgid "Alphabet letters will be used to represent a row within the container"
-msgstr ""
+msgstr "Písmena abecedy budou použita k reprezentaci řádku v kontejneru"
 
 #: senaite/storage/browser/templates/store_container.pt:34
 msgid "Available positions:"
-msgstr ""
+msgstr "Dostupné pozice:"
 
 #: senaite/storage/browser/templates/store_container.pt:124
 #: senaite/storage/browser/templates/store_samples.pt:152
 msgid "Cancel"
-msgstr ""
+msgstr "Zrušit"
 
 #: senaite/storage/browser/store_container.py:150
 msgid "Cannot store samples. Samples container {} is full"
-msgstr ""
+msgstr "Nelze ukládat vzorky. Kontejner na vzorky {} je plný"
 
 #: senaite/storage/content/storagelayoutcontainer.py:60
 msgid "Columns"
-msgstr ""
+msgstr "Sloupce"
 
 #: senaite/storage/browser/containers.py:62
 #: senaite/storage/browser/storagelisting.py:53
 #: senaite/storage/browser/storagerootfolder.py:56
 msgid "Containers"
-msgstr ""
+msgstr "Kontejnery"
 
 #: senaite/storage/browser/containers.py:64
 msgid "Containers usage"
-msgstr ""
+msgstr "použití kontejnerů"
 
-#: senaite/storage/browser/analysisrequests.py:90
+#: senaite/storage/browser/analysisrequests.py:95
 msgid "Date stored"
-msgstr ""
+msgstr "Datum uloženo"
 
 #: senaite/storage/browser/storagerootfolder.py:60
 msgid "Email"
-msgstr ""
+msgstr "e-mail"
 
 #: senaite/storage/content/storagefacility.py:45
 msgid "Email Address"
-msgstr ""
+msgstr "e-mailová adresa"
 
 #: senaite/storage/content/storagecontainer.py:37
 msgid "Expected temperature"
-msgstr ""
+msgstr "Očekávaná teplota"
 
 #: senaite/storage/content/storagecontainer.py:38
 msgid "Expected temperature of this container"
-msgstr ""
+msgstr "Očekávaná teplota tohoto kontejneru"
 
 #: senaite/storage/browser/containers.py:54
 #: senaite/storage/browser/storagelisting.py:47
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #: senaite/storage/browser/viewlets/templates/sample_container_viewlet.pt:18
 msgid "Location:"
-msgstr ""
+msgstr "Umístění:"
 
 #: senaite/storage/browser/containers.py:51
 #: senaite/storage/browser/storagelisting.py:44
 #: senaite/storage/browser/storagerootfolder.py:49
 msgid "Name"
-msgstr ""
+msgstr "Název"
 
 #: senaite/storage/browser/templates/store_container.pt:133
 msgid "Next container:"
-msgstr ""
+msgstr "Další kontejner:"
 
 #: senaite/storage/browser/store_samples.py:53
 msgid "No items selected"
-msgstr ""
+msgstr "Nejsou vybrány žádné položky"
 
 #: senaite/storage/browser/store_container.py:159
 msgid "No position or not valid sample selected"
-msgstr ""
+msgstr "Není vybrána žádná poloha nebo není platný vzorek"
 
 #: senaite/storage/content/storagelayoutcontainer.py:61
 msgid "Number of positions per row. Numbers will be used to represent a column within a row"
-msgstr ""
+msgstr "Počet pozic na řádek. Čísla budou použita k představení sloupce v řádku"
 
 #: senaite/storage/browser/storagerootfolder.py:58
 #: senaite/storage/content/storagefacility.py:38
 msgid "Phone"
-msgstr ""
+msgstr "Telefon"
 
 #: senaite/storage/browser/samples.py:53
 #: senaite/storage/browser/templates/store_container.pt:105
 #: senaite/storage/browser/templates/store_samples.pt:130
 msgid "Position"
-msgstr ""
+msgstr "Pozici"
 
-#: senaite/storage/browser/analysisrequests.py:67
+#: senaite/storage/browser/analysisrequests.py:72
 msgid "Print stickers"
-msgstr ""
+msgstr "Tisk samolepek"
 
 #: senaite/storage/profiles/default/workflows/senaite_storage_default_workflow/definition.xml
 msgid "Recover samples"
-msgstr ""
+msgstr "Obnovit vzorky"
 
 #: senaite/storage/content/storagelayoutcontainer.py:46
 msgid "Rows"
-msgstr ""
+msgstr "Řádky"
 
 #: senaite/storage/configure.zcml:41
 msgid "SENAITE STORAGE"
+msgstr "ÚLOŽIŠTĚ SENAITE"
+
+#: senaite/storage/configure.zcml:50
+msgid "SENAITE STORAGE (uninstall)"
 msgstr ""
 
 #: senaite/storage/browser/templates/store_container.pt:63
 msgid "Sample"
-msgstr ""
+msgstr "Vzorek"
 
 #: senaite/storage/configure.zcml:41
 msgid "Sample storage module for SENAITE"
-msgstr ""
+msgstr "Modul úložiště vzorků pro SENAITE"
 
 #: senaite/storage/browser/store_container.py:178
 msgid "Sample storing canceled"
-msgstr ""
+msgstr "Ukládání vzorků bylo zrušeno"
 
 #: senaite/storage/browser/containers.py:58
 #: senaite/storage/browser/storagelisting.py:51
 #: senaite/storage/browser/storagerootfolder.py:52
 msgid "Samples"
-msgstr ""
+msgstr "Vzorky"
 
 #: senaite/storage/browser/templates/store_samples.pt:86
 msgid "Samples container"
-msgstr ""
+msgstr "Kontejner na vzorky"
 
 #: senaite/storage/profiles/default/types/StorageSamplesContainer.xml
 msgid "Samples container for storage"
-msgstr ""
+msgstr "Nádoba na vzorky pro skladování"
 
 #: senaite/storage/browser/storagerootfolder.py:36
 #: senaite/storage/profiles/default/controlpanel.xml
 #: senaite/storage/profiles/default/types/StorageRootFolder.xml
 msgid "Samples storage"
-msgstr ""
+msgstr "Úložiště vzorků"
 
 #: senaite/storage/browser/containers.py:60
 #: senaite/storage/browser/storagerootfolder.py:54
 msgid "Samples usage"
-msgstr ""
+msgstr "Použití vzorků"
 
-#: senaite/storage/browser/analysisrequests.py:100
+#: senaite/storage/browser/analysisrequests.py:105
 msgid "Storage"
-msgstr ""
+msgstr "Úložiště"
 
 #: senaite/storage/profiles/default/types/StorageFacility.xml
 msgid "Storage Facility"
-msgstr ""
+msgstr "Zařízení úložiště"
 
 #: senaite/storage/profiles/default/types/StorageContainer.xml
 msgid "Storage container"
-msgstr ""
+msgstr "Úložný kontejner"
 
 #: senaite/storage/browser/templates/store_samples.pt:146
 msgid "Store Samples"
-msgstr ""
+msgstr "Ukládání vzorků"
 
 #: senaite/storage/browser/templates/store_samples.pt:24
 msgid "Store samples"
-msgstr ""
+msgstr "Uložit vzorky"
 
-#: senaite/storage/browser/analysisrequests.py:74
+#: senaite/storage/browser/analysisrequests.py:79
 msgid "Stored"
-msgstr ""
+msgstr "Uloženo"
 
 #: senaite/storage/browser/viewlets/templates/sample_container_viewlet.pt:12
 msgid "Stored sample"
-msgstr ""
+msgstr "Uložený vzorek"
 
 #: senaite/storage/browser/store_container.py:169
 msgid "Stored sample {} at position {}"
-msgstr ""
+msgstr "Uložený vzorek {} na pozici {}"
 
 #: senaite/storage/browser/containers.py:56
 msgid "Temperature"
-msgstr ""
+msgstr "Teplota"

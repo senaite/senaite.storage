@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.0.3 (unreleased)
+1.0.3 (2021-07-23)
 ------------------
 
 - #24 Added uninstaller profile
