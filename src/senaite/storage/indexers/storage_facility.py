@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from bika.lims.catalog.indexers import get_searchable_text_tokens
 from plone.indexer import indexer
+from senaite.core.catalog.utils import get_searchable_text_tokens
 from senaite.storage.catalog import SENAITE_STORAGE_CATALOG
 from senaite.storage.interfaces import ISenaiteStorageCatalog
 from senaite.storage.interfaces import IStorageFacility
