@@ -23,11 +23,11 @@ from bika.lims import api
 from bika.lims import permissions
 from bika.lims.catalog.analysisrequest_catalog import \
     CATALOG_ANALYSIS_REQUEST_LISTING
-from bika.lims.catalog.catalog_utilities import addZCTextIndex
 from plone import api as ploneapi
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFPlone.utils import _createObjectByType
 from Products.DCWorkflow.Guard import Guard
+from senaite.core.api.catalog import add_zc_text_index
 from senaite.core.workflow import SAMPLE_WORKFLOW
 from senaite.storage import logger
 from senaite.storage.catalog import SENAITE_STORAGE_CATALOG
@@ -314,7 +314,7 @@ def setup_catalogs(portal):
         logger.info("Adding Index '%s' for field '%s' to catalog '%s"
                     % (meta_type, name, catalog))
         if meta_type == "ZCTextIndex":
-            addZCTextIndex(c, name)
+            add_zc_text_index(c, name)
         elif meta_type == "TextIndexNG3":
             c.addIndex(name, meta_type)
             index = c._catalog.getIndex(name)
