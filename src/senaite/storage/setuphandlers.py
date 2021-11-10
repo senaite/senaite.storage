@@ -21,13 +21,12 @@
 from Acquisition import aq_base
 from bika.lims import api
 from bika.lims import permissions
-from bika.lims.catalog.analysisrequest_catalog import \
-    CATALOG_ANALYSIS_REQUEST_LISTING
 from plone import api as ploneapi
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFPlone.utils import _createObjectByType
 from Products.DCWorkflow.Guard import Guard
 from senaite.core.api.catalog import add_zc_text_index
+from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.workflow import SAMPLE_WORKFLOW
 from senaite.storage import logger
 from senaite.storage.catalog import SENAITE_STORAGE_CATALOG
@@ -108,7 +107,7 @@ INDEXES = [
     (SENAITE_STORAGE_CATALOG, "review_state", "FieldIndex"),
     (SENAITE_STORAGE_CATALOG, "sortable_title", "FieldIndex"),
     # Index used in ARs view to sort items by date stored by default
-    (CATALOG_ANALYSIS_REQUEST_LISTING, "getDateStored", "DateIndex"),
+    (SAMPLE_CATALOG, "getDateStored", "DateIndex"),
 ]
 
 COLUMNS = [
@@ -119,10 +118,10 @@ COLUMNS = [
     # To get the UID of the selected container in searches (reference widget)
     (SENAITE_STORAGE_CATALOG, "UID"),
     # To display the column Date Stored in AR listings
-    (CATALOG_ANALYSIS_REQUEST_LISTING, "getDateStored"),
+    (SAMPLE_CATALOG, "getDateStored"),
     # To display the Container where the Sample is located in listings
-    (CATALOG_ANALYSIS_REQUEST_LISTING, "getSamplesContainerURL"),
-    (CATALOG_ANALYSIS_REQUEST_LISTING, "getSamplesContainerID")
+    (SAMPLE_CATALOG, "getSamplesContainerURL"),
+    (SAMPLE_CATALOG, "getSamplesContainerID")
 ]
 
 WORKFLOWS_TO_UPDATE = {
@@ -646,7 +645,7 @@ def recover_samples(portal):
     """recover all stored samples
     """
     logger.info("*** Recovering all stored samples ***")
-    catalog = api.get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
+    catalog = api.get_tool(SAMPLE_CATALOG)
     query = {"review_state": "stored"}
     brains = catalog(query)
     total = len(brains)

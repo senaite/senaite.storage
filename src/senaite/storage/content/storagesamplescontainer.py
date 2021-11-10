@@ -22,8 +22,7 @@ from Products.Archetypes.Schema import Schema
 from Products.Archetypes.atapi import registerType
 from bika.lims import api
 from bika.lims import workflow as wf
-from bika.lims.catalog.analysisrequest_catalog import \
-    CATALOG_ANALYSIS_REQUEST_LISTING
+from senaite.core.catalog import SAMPLE_CATALOG
 from bika.lims.interfaces import IAnalysisRequest
 from senaite.storage import PRODUCT_NAME
 from senaite.storage.content.storagelayoutcontainer import \
@@ -98,7 +97,7 @@ class StorageSamplesContainer(StorageLayoutContainer):
         if not samples_uids:
             return []
         query = dict(portal_type="AnalysisRequest", UID=samples_uids)
-        brains = api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
+        brains = api.search(query, SAMPLE_CATALOG)
         if as_brains:
             return brains
         return map(api.get_object, brains)
@@ -114,7 +113,7 @@ class StorageSamplesContainer(StorageLayoutContainer):
         if not samples_uids:
             return []
         query = dict(UID=samples_uids)
-        brains = api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
+        brains = api.search(query, SAMPLE_CATALOG)
         return map(lambda brain: brain.getSampleTypeUID, brains)
 
 
