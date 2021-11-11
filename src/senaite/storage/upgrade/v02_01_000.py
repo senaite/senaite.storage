@@ -5,14 +5,12 @@ from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.storage import PRODUCT_NAME
 from senaite.storage import logger
-from senaite.storage.catalog import SENAITE_STORAGE_CATALOG
 from senaite.storage.setuphandlers import post_install
 
 version = "2.1.0"
 
+# Tuples of (catalog, index)
 INDEXES_TO_REMOVE = [
-    # Replaced by `listing_searchable_text`
-    (SENAITE_STORAGE_CATALOG, "searchable_text"),
 ]
 
 

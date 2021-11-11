@@ -23,7 +23,7 @@ from bika.lims import workflow as wf
 from bika.lims.browser import ulocalized_time
 from plone.app.layout.viewlets import ViewletBase
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from senaite.storage.catalog import SENAITE_STORAGE_CATALOG
+from senaite.storage.catalog import STORAGE_CATALOG
 
 
 class SampleContainerViewlet(ViewletBase):
@@ -49,7 +49,7 @@ class SampleContainerViewlet(ViewletBase):
         # Search the container the sample is stored in
         query = {"portal_type": "StorageSamplesContainer",
                  "get_samples_uids": api.get_uid(self.context)}
-        brains = api.search(query, SENAITE_STORAGE_CATALOG)
+        brains = api.search(query, STORAGE_CATALOG)
         if not brains:
             return None
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from bika.lims import api
-from senaite.storage.catalog import SENAITE_STORAGE_CATALOG
+from senaite.storage.catalog import STORAGE_CATALOG
 from senaite.storage.interfaces import IStorageSamplesContainer
 from senaite.storage.interfaces import IStorageUtilization
 from zope.interface import implementer
@@ -34,7 +34,7 @@ class StorageUtilization(object):
             "path": {
                 "query": api.get_path(self.context),
             }}
-        brains = api.search(query, SENAITE_STORAGE_CATALOG)
+        brains = api.search(query, STORAGE_CATALOG)
         objs = map(api.get_object, brains)
         return filter(lambda o: IStorageSamplesContainer.providedBy(o), objs)
 

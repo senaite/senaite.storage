@@ -26,11 +26,12 @@ from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFPlone.utils import _createObjectByType
 from Products.DCWorkflow.Guard import Guard
 from senaite.core.catalog import SAMPLE_CATALOG
-from senaite.core.setuphandlers import setup_other_catalogs
 from senaite.core.setuphandlers import setup_catalog_mappings
+from senaite.core.setuphandlers import setup_core_catalogs
+from senaite.core.setuphandlers import setup_other_catalogs
 from senaite.core.workflow import SAMPLE_WORKFLOW
 from senaite.storage import logger
-from senaite.storage.catalog import SENAITE_STORAGE_CATALOG
+from senaite.storage.catalog import StorageCatalog
 from senaite.storage.config import PRODUCT_NAME
 from senaite.storage.config import PROFILE_ID
 
@@ -79,45 +80,22 @@ ID_FORMATTING = [
     },
 ]
 
+CATALOGS = (
+    StorageCatalog,
+)
+
+# Tuples of (type, [catalog])
 CATALOG_MAPPINGS = [
-    # Tuples of (type, [catalog])
-    ("StorageFacility", ["portal_catalog", SENAITE_STORAGE_CATALOG]),
-    ("StoragePosition", ["portal_catalog", SENAITE_STORAGE_CATALOG]),
-    ("StorageContainer", ["portal_catalog", SENAITE_STORAGE_CATALOG]),
-    ("StorageSamplesContainer", ["portal_catalog", SENAITE_STORAGE_CATALOG]),
 ]
 
+# Tuples of (catalog, index_name, index_attribute, index_type)
 INDEXES = [
-    # Tuples of (catalog, index_name, index_attribute, index_type)
-    # This index is required by reference_widget in searches
-    (SENAITE_STORAGE_CATALOG, "allowedRolesAndUsers", "", "KeywordIndex"),
-    # Ids of parent containers and current
-    (SENAITE_STORAGE_CATALOG, "get_all_ids", "", "KeywordIndex"),
-    # Keeps the sample uids stored in each sample container
-    (SENAITE_STORAGE_CATALOG, "get_samples_uids", "", "KeywordIndex"),
-    # For searches, made of get_all_ids + Title
-    (SENAITE_STORAGE_CATALOG, "listing_searchable_text", "", "ZCTextIndex"),
-    # Index used in searches to filter sample containers with available slots
-    (SENAITE_STORAGE_CATALOG, "Title", "", "FieldIndex"),
-    (SENAITE_STORAGE_CATALOG, "UID", "", "UUIDIndex"),
-    (SENAITE_STORAGE_CATALOG, "getId", "", "FieldIndex"),
-    (SENAITE_STORAGE_CATALOG, "is_full", "", "BooleanIndex"),
-    (SENAITE_STORAGE_CATALOG, "object_provides", "", "KeywordIndex"),
-    (SENAITE_STORAGE_CATALOG, "path", "", "ExtendedPathIndex"),
-    (SENAITE_STORAGE_CATALOG, "portal_type", "", "FieldIndex"),
-    (SENAITE_STORAGE_CATALOG, "review_state", "", "FieldIndex"),
-    (SENAITE_STORAGE_CATALOG, "sortable_title", "", "FieldIndex"),
     # Index used in ARs view to sort items by date stored by default
     (SAMPLE_CATALOG, "getDateStored", "", "DateIndex"),
 ]
 
+# Tuples of (catalog, column name)
 COLUMNS = [
-    # Tuples of (catalog, column name)
-    (SENAITE_STORAGE_CATALOG, "Title"),
-    (SENAITE_STORAGE_CATALOG, "Description"),
-    (SENAITE_STORAGE_CATALOG, "id"),
-    # To get the UID of the selected container in searches (reference widget)
-    (SENAITE_STORAGE_CATALOG, "UID"),
     # To display the column Date Stored in AR listings
     (SAMPLE_CATALOG, "getDateStored"),
     # To display the Container where the Sample is located in listings
@@ -228,9 +206,9 @@ def post_install(portal_setup):
     portal = context.getSite()  # noqa
 
     # Setup catalogs
+    setup_core_catalogs(portal, catalog_classes=CATALOGS)
     setup_other_catalogs(portal, indexes=INDEXES, columns=COLUMNS)
     setup_catalog_mappings(portal, catalog_mappings=CATALOG_MAPPINGS)
-
 
     # Setup site structure
     setup_site_structure(portal)

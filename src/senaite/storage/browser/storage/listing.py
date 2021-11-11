@@ -26,7 +26,7 @@ from bika.lims.utils import get_link_for
 from bika.lims.utils import get_progress_bar_html
 from senaite.app.listing import ListingView
 from senaite.storage import senaiteMessageFactory as _
-from senaite.storage.catalog import SENAITE_STORAGE_CATALOG
+from senaite.storage.catalog import STORAGE_CATALOG
 from senaite.storage.interfaces import IStorageUtilization
 
 
@@ -37,7 +37,7 @@ class StorageListing(ListingView):
     def __init__(self, context, request):
         super(StorageListing, self).__init__(context, request)
 
-        self.catalog = SENAITE_STORAGE_CATALOG
+        self.catalog = STORAGE_CATALOG
 
         self.title = api.get_title(context)
         self.description = api.get_description(context)
