@@ -7,6 +7,7 @@ from senaite.core.api.catalog import add_index
 from senaite.core.api.catalog import get_columns
 from senaite.core.api.catalog import get_index
 from senaite.core.api.catalog import get_indexes
+from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.storage import PRODUCT_NAME
@@ -102,7 +103,7 @@ def migrate_catalogs(portal):
     # we need to refresh the sample catalog, otherwise the stored samples are
     # not displayed
     logger.info("Refresh sample catalog")
-    sample_catalog = api.get_tool()
+    sample_catalog = api.get_tool(SAMPLE_CATALOG)
     pghandler = ZLogHandler(100)
     sample_catalog.refreshCatalog(pghandler=pghandler)
 
