@@ -206,9 +206,7 @@ def post_install(portal_setup):
     portal = context.getSite()  # noqa
 
     # Setup catalogs
-    setup_core_catalogs(portal, catalog_classes=CATALOGS)
-    setup_other_catalogs(portal, indexes=INDEXES, columns=COLUMNS)
-    setup_catalog_mappings(portal, catalog_mappings=CATALOG_MAPPINGS)
+    setup_catalogs(portal)
 
     # Setup site structure
     setup_site_structure(portal)
@@ -255,6 +253,14 @@ def post_uninstall(portal_setup):
     uninstall_workflows(portal)
 
     logger.info("{} uninstall handler [DONE]".format(PRODUCT_NAME.upper()))
+
+
+def setup_catalogs(portal):
+    """Setup storage catalogs
+    """
+    setup_core_catalogs(portal, catalog_classes=CATALOGS)
+    setup_other_catalogs(portal, indexes=INDEXES, columns=COLUMNS)
+    setup_catalog_mappings(portal, catalog_mappings=CATALOG_MAPPINGS)
 
 
 def hide_actions(portal):

@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from App.class_init import InitializeClass
+from bika.lims.catalog.base import BaseCatalog as OldBaseCatalog
 from senaite.core.catalog.base_catalog import COLUMNS as BASE_COLUMNS
 from senaite.core.catalog.base_catalog import INDEXES as BASE_INDEXES
 from senaite.core.catalog.base_catalog import BaseCatalog
@@ -67,4 +68,10 @@ class StorageCatalog(BaseCatalog):
         BaseCatalog.__init__(self, CATALOG_ID, title=CATALOG_TITLE)
 
 
+class SenaiteStorageCatalog(OldBaseCatalog):
+    """BBB: Remove after 2.0.1 migration
+    """
+
+
 InitializeClass(StorageCatalog)
+InitializeClass(SenaiteStorageCatalog)
