@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from bika.lims import api
+from Products.ZCatalog.ProgressHandler import ZLogHandler
 from senaite.core.api.catalog import add_column
 from senaite.core.api.catalog import add_index
 from senaite.core.api.catalog import get_columns
@@ -93,8 +94,16 @@ def migrate_catalogs(portal):
         portal.manage_delObjects([src_cat_id])
 
     # Update archetype tool
+    logger.info("Update catalog mapping in archetype_tool")
     at = api.get_tool("archetype_tool")
     for portal_type, catalogs in at.catalog_map.items():
         at.setCatalogsByType(portal_type, catalogs)
+
+    # we need to refresh the sample catalog, otherwise the stored samples are
+    # not displayed
+    logger.info("Refresh sample catalog")
+    sample_catalog = api.get_tool()
+    pghandler = ZLogHandler(100)
+    sample_catalog.refreshCatalog(pghandler=pghandler)
 
     logger.info("Migrate storage catalogs [DONE]")
