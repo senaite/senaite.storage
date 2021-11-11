@@ -31,6 +31,7 @@ from senaite.core.setuphandlers import setup_core_catalogs
 from senaite.core.setuphandlers import setup_other_catalogs
 from senaite.core.workflow import SAMPLE_WORKFLOW
 from senaite.storage import logger
+from senaite.storage.catalog import STORAGE_CATALOG
 from senaite.storage.catalog import StorageCatalog
 from senaite.storage.config import PRODUCT_NAME
 from senaite.storage.config import PROFILE_ID
@@ -251,6 +252,9 @@ def post_uninstall(portal_setup):
 
     # uninstall storage workflow settings
     uninstall_workflows(portal)
+
+    # uninstall storage catalog
+    uninstall_storage_catalog(portal)
 
     logger.info("{} uninstall handler [DONE]".format(PRODUCT_NAME.upper()))
 
@@ -567,15 +571,16 @@ def recover_samples(portal):
     total = len(brains)
     logger.info("Recovering {} samples ... ".format(total))
     for num, brain in enumerate(brains):
-        api.do_transition_for(brain, "recover")
+        obj = api.get_object(brain)
+        api.do_transition_for(obj, "recover")
         logger.info("Recovering sample {}/{}: {}".format(
-            num + 1, total, api.get_id(brain)))
+            num + 1, total, api.get_id(obj)))
 
 
 def uninstall_workflows(portal):
     """Uninstall injected WFs
     """
-    logger.info("Uninstall storage workflows ...")
+    logger.info("*** Uninstall storage workflows ...")
     wf_tool = api.get_tool("portal_workflow")
 
     workflow = wf_tool.getWorkflowById(SAMPLE_WORKFLOW)
@@ -593,3 +598,11 @@ def uninstall_workflows(portal):
         transitions = filter(
             lambda t: t not in DELETE_TRANSITIONS, state.transitions)
         state.transitions = tuple(transitions)
+
+
+def uninstall_storage_catalog(portal):
+    """Uninstall storage catalog
+    """
+    logger.info("*** Uninstall storage catalog ...")
+    if STORAGE_CATALOG in portal.objectIds():
+        portal.manage_delObjects([STORAGE_CATALOG])
