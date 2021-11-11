@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from bika.lims import api
-from Products.ZCatalog.ProgressHandler import ZLogHandler
 from senaite.core.api.catalog import add_column
 from senaite.core.api.catalog import add_index
 from senaite.core.api.catalog import get_columns
@@ -87,18 +86,8 @@ def migrate_catalogs(portal):
                 logger.info("Added missing column %s to %s"
                             % (column, dst_cat_id))
 
-        # copy over internal catalog structure from internal Catalog:
-        #
-        # self.data = IOBTree()  # mapping of rid to meta_data
-        # self.uids = OIBTree()  # mapping of uid to rid
-        # self.paths = IOBTree()  # mapping of rid to uid
-        dst_cat._catalog.data = src_cat._catalog.data
-        dst_cat._catalog.uids = src_cat._catalog.uids
-        dst_cat._catalog.paths = src_cat._catalog.paths
-
-        # refesh the catalog
-        pghandler = ZLogHandler(100)
-        dst_cat.refreshCatalog(pghandler=pghandler)
+        # rebuild the catalog
+        dst_cat.clearFindAndRebuild()
 
         # delete old catalog
         portal.manage_delObjects([src_cat_id])

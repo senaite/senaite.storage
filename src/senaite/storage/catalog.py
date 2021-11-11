@@ -69,7 +69,7 @@ class StorageCatalog(BaseCatalog):
 
 
 class SenaiteStorageCatalog(OldBaseCatalog):
-    """BBB: Remove after 2.0.1 migration
+    """BBB: Remove after 2.1.0 migration
     """
 
 
