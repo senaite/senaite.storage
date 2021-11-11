@@ -25,8 +25,9 @@ from plone import api as ploneapi
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFPlone.utils import _createObjectByType
 from Products.DCWorkflow.Guard import Guard
-from senaite.core.api.catalog import add_zc_text_index
 from senaite.core.catalog import SAMPLE_CATALOG
+from senaite.core.setuphandlers import setup_other_catalogs
+from senaite.core.setuphandlers import setup_catalog_mappings
 from senaite.core.workflow import SAMPLE_WORKFLOW
 from senaite.storage import logger
 from senaite.storage.catalog import SENAITE_STORAGE_CATALOG
@@ -78,7 +79,7 @@ ID_FORMATTING = [
     },
 ]
 
-CATALOGS_BY_TYPE = [
+CATALOG_MAPPINGS = [
     # Tuples of (type, [catalog])
     ("StorageFacility", ["portal_catalog", SENAITE_STORAGE_CATALOG]),
     ("StoragePosition", ["portal_catalog", SENAITE_STORAGE_CATALOG]),
@@ -87,27 +88,27 @@ CATALOGS_BY_TYPE = [
 ]
 
 INDEXES = [
-    # Tuples of (catalog, index_name, index_type)
+    # Tuples of (catalog, index_name, index_attribute, index_type)
     # This index is required by reference_widget in searches
-    (SENAITE_STORAGE_CATALOG, "allowedRolesAndUsers", "KeywordIndex"),
+    (SENAITE_STORAGE_CATALOG, "allowedRolesAndUsers", "", "KeywordIndex"),
     # Ids of parent containers and current
-    (SENAITE_STORAGE_CATALOG, "get_all_ids", "KeywordIndex"),
+    (SENAITE_STORAGE_CATALOG, "get_all_ids", "", "KeywordIndex"),
     # Keeps the sample uids stored in each sample container
-    (SENAITE_STORAGE_CATALOG, "get_samples_uids", "KeywordIndex"),
+    (SENAITE_STORAGE_CATALOG, "get_samples_uids", "", "KeywordIndex"),
     # For searches, made of get_all_ids + Title
-    (SENAITE_STORAGE_CATALOG, "listing_searchable_text", "TextIndexNG3"),
+    (SENAITE_STORAGE_CATALOG, "listing_searchable_text", "", "ZCTextIndex"),
     # Index used in searches to filter sample containers with available slots
-    (SENAITE_STORAGE_CATALOG, "Title", "FieldIndex"),
-    (SENAITE_STORAGE_CATALOG, "UID", "UUIDIndex"),
-    (SENAITE_STORAGE_CATALOG, "getId", "FieldIndex"),
-    (SENAITE_STORAGE_CATALOG, "is_full", "BooleanIndex"),
-    (SENAITE_STORAGE_CATALOG, "object_provides", "KeywordIndex"),
-    (SENAITE_STORAGE_CATALOG, "path", "ExtendedPathIndex"),
-    (SENAITE_STORAGE_CATALOG, "portal_type", "FieldIndex"),
-    (SENAITE_STORAGE_CATALOG, "review_state", "FieldIndex"),
-    (SENAITE_STORAGE_CATALOG, "sortable_title", "FieldIndex"),
+    (SENAITE_STORAGE_CATALOG, "Title", "", "FieldIndex"),
+    (SENAITE_STORAGE_CATALOG, "UID", "", "UUIDIndex"),
+    (SENAITE_STORAGE_CATALOG, "getId", "", "FieldIndex"),
+    (SENAITE_STORAGE_CATALOG, "is_full", "", "BooleanIndex"),
+    (SENAITE_STORAGE_CATALOG, "object_provides", "", "KeywordIndex"),
+    (SENAITE_STORAGE_CATALOG, "path", "", "ExtendedPathIndex"),
+    (SENAITE_STORAGE_CATALOG, "portal_type", "", "FieldIndex"),
+    (SENAITE_STORAGE_CATALOG, "review_state", "", "FieldIndex"),
+    (SENAITE_STORAGE_CATALOG, "sortable_title", "", "FieldIndex"),
     # Index used in ARs view to sort items by date stored by default
-    (SAMPLE_CATALOG, "getDateStored", "DateIndex"),
+    (SAMPLE_CATALOG, "getDateStored", "", "DateIndex"),
 ]
 
 COLUMNS = [
@@ -227,7 +228,9 @@ def post_install(portal_setup):
     portal = context.getSite()  # noqa
 
     # Setup catalogs
-    setup_catalogs(portal)
+    setup_other_catalogs(portal, indexes=INDEXES, columns=COLUMNS)
+    setup_catalog_mappings(portal, catalog_mappings=CATALOG_MAPPINGS)
+
 
     # Setup site structure
     setup_site_structure(portal)
@@ -274,77 +277,6 @@ def post_uninstall(portal_setup):
     uninstall_workflows(portal)
 
     logger.info("{} uninstall handler [DONE]".format(PRODUCT_NAME.upper()))
-
-
-def setup_catalogs(portal):
-    """Setup Plone catalogs
-    """
-    logger.info("Setup Catalogs ...")
-
-    # Setup catalogs by type
-    for type_name, catalogs in CATALOGS_BY_TYPE:
-        at = api.get_tool("archetype_tool")
-        # get the current registered catalogs
-        current_catalogs = at.getCatalogsByType(type_name)
-        # get the desired catalogs this type should be in
-        desired_catalogs = map(api.get_tool, catalogs)
-        # check if the catalogs changed for this portal_type
-        if set(desired_catalogs).difference(current_catalogs):
-            # fetch the brains to reindex
-            brains = api.search({"portal_type": type_name})
-            # updated the catalogs
-            at.setCatalogsByType(type_name, catalogs)
-            logger.info("Assign '%s' type to Catalogs %s" %
-                        (type_name, catalogs))
-            for brain in brains:
-                obj = api.get_object(brain)
-                logger.info("Reindexing '%s'" % repr(obj))
-                obj.reindexObject()
-
-    # Setup catalog indexes
-    to_index = []
-    for catalog, name, meta_type in INDEXES:
-        c = api.get_tool(catalog)
-        indexes = c.indexes()
-        if name in indexes:
-            logger.info("Index '%s' already in Catalog [SKIP]" % name)
-            continue
-
-        logger.info("Adding Index '%s' for field '%s' to catalog '%s"
-                    % (meta_type, name, catalog))
-        if meta_type == "ZCTextIndex":
-            add_zc_text_index(c, name)
-        elif meta_type == "TextIndexNG3":
-            c.addIndex(name, meta_type)
-            index = c._catalog.getIndex(name)
-            index.index.default_encoding = "utf-8"
-            index.index.query_parser = "txng.parsers.en"
-            index.index.autoexpand = "always"
-            index.index.autoexpand_limit = 3
-        else:
-            c.addIndex(name, meta_type)
-        to_index.append((c, name))
-        logger.info("Added Index '%s' for field '%s' to catalog [DONE]"
-                    % (meta_type, name))
-
-    for catalog, name in to_index:
-        logger.info("Indexing new index '%s' ..." % name)
-        catalog.manage_reindexIndex(name)
-        logger.info("Indexing new index '%s' [DONE]" % name)
-
-    # Setup catalog metadata columns
-    for catalog, name in COLUMNS:
-        c = api.get_tool(catalog)
-        if name not in c.schema():
-            logger.info("Adding Column '%s' to catalog '%s' ..."
-                        % (name, catalog))
-            c.addColumn(name)
-            logger.info("Added Column '%s' to catalog '%s' [DONE]"
-                        % (name, catalog))
-        else:
-            logger.info("Column '%s' already in catalog '%s'  [SKIP]"
-                        % (name, catalog))
-            continue
 
 
 def hide_actions(portal):
