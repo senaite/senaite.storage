@@ -1,18 +1,25 @@
 # -*- coding: utf-8 -*-
 
 from bika.lims import api
+from Products.ZCatalog.ProgressHandler import ZLogHandler
+from senaite.core.api.catalog import add_column
+from senaite.core.api.catalog import add_index
+from senaite.core.api.catalog import get_columns
+from senaite.core.api.catalog import get_index
+from senaite.core.api.catalog import get_indexes
+from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.storage import PRODUCT_NAME
 from senaite.storage import logger
-from senaite.storage.catalog import SENAITE_STORAGE_CATALOG
 from senaite.storage.setuphandlers import post_install
+from senaite.storage.setuphandlers import setup_catalogs
 
 version = "2.1.0"
 
-INDEXES_TO_REMOVE = [
-    # Replaced by `listing_searchable_text`
-    (SENAITE_STORAGE_CATALOG, "searchable_text"),
+
+MIGRATE_CATALOGS = [
+    ("senaite_storage_catalog", "senaite_catalog_storage"),
 ]
 
 
@@ -36,25 +43,68 @@ def upgrade(tool):
     # Reinstall
     post_install(setup)
 
-    remove_stale_indexes(portal)
+    # https://github.com/senaite/senaite.storage/pull/30
+    migrate_catalogs(portal)
 
     logger.info("{0} upgraded to version {1}".format(PRODUCT_NAME, version))
     return True
 
 
-def remove_stale_indexes(portal):
-    logger.info("Removing stale indexes ...")
-    for catalog, index in INDEXES_TO_REMOVE:
-        del_index(portal, catalog, index)
+def migrate_catalogs(portal):
+    """Migrate catalogs to Senaite
+    """
+    logger.info("Migrate storage catalogs...")
+    # 1. Install new core catalogs
+    setup_catalogs(portal)
 
+    # 3. Migrate old -> new indexes
+    for src_cat_id, dst_cat_id in MIGRATE_CATALOGS:
+        logger.info("Migrating catalog %s -> %s" %
+                    (src_cat_id, dst_cat_id))
 
-def del_index(portal, catalog_id, index_name):
-    logger.info("Removing '{}' index from '{}' ..."
-                .format(index_name, catalog_id))
-    catalog = api.get_tool(catalog_id)
-    if index_name not in catalog.indexes():
-        logger.info("Index '{}' not in catalog '{}' [SKIP]"
-                    .format(index_name, catalog_id))
-        return
-    catalog.delIndex(index_name)
-    logger.info("Removing old index '{}' ...".format(index_name))
+        src_cat = getattr(portal, src_cat_id, None)
+        dst_cat = getattr(portal, dst_cat_id, None)
+
+        if src_cat is None:
+            logger.info("Source catalog '%s' not found [SKIP]")
+            continue
+
+        # ensure indexes
+        for index in get_indexes(src_cat):
+            if index not in get_indexes(dst_cat):
+                index_obj = get_index(src_cat, index)
+                index_type = index_obj.__class__.__name__
+                # convert TextIndexNG3 to ZCTextIndex
+                if index_type == "TextIndexNG3":
+                    index_type = "ZCTextIndex"
+                add_index(dst_cat, index, index_type)
+                logger.info("Added missing index %s('%s') to %s"
+                            % (index_type, index, dst_cat_id))
+
+        # ensure columns
+        for column in get_columns(src_cat):
+            if column not in get_columns(dst_cat):
+                add_column(dst_cat, column)
+                logger.info("Added missing column %s to %s"
+                            % (column, dst_cat_id))
+
+        # rebuild the catalog
+        dst_cat.clearFindAndRebuild()
+
+        # delete old catalog
+        portal.manage_delObjects([src_cat_id])
+
+    # Update archetype tool
+    logger.info("Update catalog mapping in archetype_tool")
+    at = api.get_tool("archetype_tool")
+    for portal_type, catalogs in at.catalog_map.items():
+        at.setCatalogsByType(portal_type, catalogs)
+
+    # we need to refresh the sample catalog, otherwise the stored samples are
+    # not displayed
+    logger.info("Refresh sample catalog")
+    sample_catalog = api.get_tool(SAMPLE_CATALOG)
+    pghandler = ZLogHandler(100)
+    sample_catalog.refreshCatalog(pghandler=pghandler)
+
+    logger.info("Migrate storage catalogs [DONE]")

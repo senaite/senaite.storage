@@ -6,7 +6,7 @@ from senaite.storage import logger
 from senaite.storage import senaiteMessageFactory as _
 from senaite.storage.api import get_parents
 from senaite.storage.browser import BaseView
-from senaite.storage.catalog import SENAITE_STORAGE_CATALOG
+from senaite.storage.catalog import STORAGE_CATALOG
 from senaite.storage.interfaces import IStorageContainer
 from senaite.storage.interfaces import IStorageFacility
 from senaite.storage.interfaces import IStorageSamplesContainer
@@ -144,7 +144,7 @@ class MoveContainerView(BaseView):
             "portal_type": target_types,
             "review_state": "active"
         }
-        brains = api.search(query, SENAITE_STORAGE_CATALOG)
+        brains = api.search(query, STORAGE_CATALOG)
         for brain in brains:
             path = api.get_path(brain)
             if path.startswith(container_path):

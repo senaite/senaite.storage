@@ -4,6 +4,7 @@ Changelog
 2.1.0 (unreleased)
 ------------------
 
+- #30 Compatibility with Senaite catalog migration
 - #28 Added upgrade step event subscriber
 - #27 Integrate dispatch workflow from senaite.core
 - #26 Disallow to modify portal content when stored/booked out samples

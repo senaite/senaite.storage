@@ -22,9 +22,8 @@ import collections
 
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _s
-from bika.lims.catalog.analysisrequest_catalog import \
-    CATALOG_ANALYSIS_REQUEST_LISTING
 from senaite.app.listing.view import ListingView
+from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.storage import senaiteMessageFactory as _
 from senaite.storage.permissions import TransitionAddSamples
 
@@ -36,7 +35,7 @@ class SampleListingView(ListingView):
     def __init__(self, context, request):
         super(SampleListingView, self).__init__(context, request)
 
-        self.catalog = CATALOG_ANALYSIS_REQUEST_LISTING
+        self.catalog = SAMPLE_CATALOG
 
         self.contentFilter = {
             "UID": context.get_samples_uids(),

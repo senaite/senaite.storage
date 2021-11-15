@@ -20,7 +20,7 @@
 
 from bika.lims import api
 from senaite.storage import logger
-from senaite.storage.catalog import SENAITE_STORAGE_CATALOG
+from senaite.storage.catalog import STORAGE_CATALOG
 from senaite.storage.config import STORAGE_WORKFLOW_ID
 
 
@@ -41,7 +41,7 @@ def get_storage_sample(sample, as_brain=False):
     """
     query = dict(portal_type="StorageSamplesContainer",
                  get_samples_uids=[api.get_uid(sample)])
-    brains = api.search(query, SENAITE_STORAGE_CATALOG)
+    brains = api.search(query, STORAGE_CATALOG)
     if not brains:
         return None
     if as_brain:
@@ -52,7 +52,7 @@ def get_storage_sample(sample, as_brain=False):
 def get_storage_catalog():
     """Returns the storage catalog
     """
-    return api.get_tool(SENAITE_STORAGE_CATALOG)
+    return api.get_tool(STORAGE_CATALOG)
 
 
 def get_storage_workflow():

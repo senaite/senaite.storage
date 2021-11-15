@@ -21,16 +21,18 @@
 from Acquisition import aq_base
 from bika.lims import api
 from bika.lims import permissions
-from bika.lims.catalog.analysisrequest_catalog import \
-    CATALOG_ANALYSIS_REQUEST_LISTING
-from bika.lims.catalog.catalog_utilities import addZCTextIndex
 from plone import api as ploneapi
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFPlone.utils import _createObjectByType
 from Products.DCWorkflow.Guard import Guard
+from senaite.core.catalog import SAMPLE_CATALOG
+from senaite.core.setuphandlers import setup_catalog_mappings
+from senaite.core.setuphandlers import setup_core_catalogs
+from senaite.core.setuphandlers import setup_other_catalogs
 from senaite.core.workflow import SAMPLE_WORKFLOW
 from senaite.storage import logger
-from senaite.storage.catalog import SENAITE_STORAGE_CATALOG
+from senaite.storage.catalog import STORAGE_CATALOG
+from senaite.storage.catalog import StorageCatalog
 from senaite.storage.config import PRODUCT_NAME
 from senaite.storage.config import PROFILE_ID
 
@@ -79,50 +81,27 @@ ID_FORMATTING = [
     },
 ]
 
-CATALOGS_BY_TYPE = [
-    # Tuples of (type, [catalog])
-    ("StorageFacility", ["portal_catalog", SENAITE_STORAGE_CATALOG]),
-    ("StoragePosition", ["portal_catalog", SENAITE_STORAGE_CATALOG]),
-    ("StorageContainer", ["portal_catalog", SENAITE_STORAGE_CATALOG]),
-    ("StorageSamplesContainer", ["portal_catalog", SENAITE_STORAGE_CATALOG]),
+CATALOGS = (
+    StorageCatalog,
+)
+
+# Tuples of (type, [catalog])
+CATALOG_MAPPINGS = [
 ]
 
+# Tuples of (catalog, index_name, index_attribute, index_type)
 INDEXES = [
-    # Tuples of (catalog, index_name, index_type)
-    # This index is required by reference_widget in searches
-    (SENAITE_STORAGE_CATALOG, "allowedRolesAndUsers", "KeywordIndex"),
-    # Ids of parent containers and current
-    (SENAITE_STORAGE_CATALOG, "get_all_ids", "KeywordIndex"),
-    # Keeps the sample uids stored in each sample container
-    (SENAITE_STORAGE_CATALOG, "get_samples_uids", "KeywordIndex"),
-    # For searches, made of get_all_ids + Title
-    (SENAITE_STORAGE_CATALOG, "listing_searchable_text", "TextIndexNG3"),
-    # Index used in searches to filter sample containers with available slots
-    (SENAITE_STORAGE_CATALOG, "Title", "FieldIndex"),
-    (SENAITE_STORAGE_CATALOG, "UID", "UUIDIndex"),
-    (SENAITE_STORAGE_CATALOG, "getId", "FieldIndex"),
-    (SENAITE_STORAGE_CATALOG, "is_full", "BooleanIndex"),
-    (SENAITE_STORAGE_CATALOG, "object_provides", "KeywordIndex"),
-    (SENAITE_STORAGE_CATALOG, "path", "ExtendedPathIndex"),
-    (SENAITE_STORAGE_CATALOG, "portal_type", "FieldIndex"),
-    (SENAITE_STORAGE_CATALOG, "review_state", "FieldIndex"),
-    (SENAITE_STORAGE_CATALOG, "sortable_title", "FieldIndex"),
     # Index used in ARs view to sort items by date stored by default
-    (CATALOG_ANALYSIS_REQUEST_LISTING, "getDateStored", "DateIndex"),
+    (SAMPLE_CATALOG, "getDateStored", "", "DateIndex"),
 ]
 
+# Tuples of (catalog, column name)
 COLUMNS = [
-    # Tuples of (catalog, column name)
-    (SENAITE_STORAGE_CATALOG, "Title"),
-    (SENAITE_STORAGE_CATALOG, "Description"),
-    (SENAITE_STORAGE_CATALOG, "id"),
-    # To get the UID of the selected container in searches (reference widget)
-    (SENAITE_STORAGE_CATALOG, "UID"),
     # To display the column Date Stored in AR listings
-    (CATALOG_ANALYSIS_REQUEST_LISTING, "getDateStored"),
+    (SAMPLE_CATALOG, "getDateStored"),
     # To display the Container where the Sample is located in listings
-    (CATALOG_ANALYSIS_REQUEST_LISTING, "getSamplesContainerURL"),
-    (CATALOG_ANALYSIS_REQUEST_LISTING, "getSamplesContainerID")
+    (SAMPLE_CATALOG, "getSamplesContainerURL"),
+    (SAMPLE_CATALOG, "getSamplesContainerID")
 ]
 
 WORKFLOWS_TO_UPDATE = {
@@ -274,78 +253,18 @@ def post_uninstall(portal_setup):
     # uninstall storage workflow settings
     uninstall_workflows(portal)
 
+    # uninstall storage catalog
+    uninstall_storage_catalog(portal)
+
     logger.info("{} uninstall handler [DONE]".format(PRODUCT_NAME.upper()))
 
 
 def setup_catalogs(portal):
-    """Setup Plone catalogs
+    """Setup storage catalogs
     """
-    logger.info("Setup Catalogs ...")
-
-    # Setup catalogs by type
-    for type_name, catalogs in CATALOGS_BY_TYPE:
-        at = api.get_tool("archetype_tool")
-        # get the current registered catalogs
-        current_catalogs = at.getCatalogsByType(type_name)
-        # get the desired catalogs this type should be in
-        desired_catalogs = map(api.get_tool, catalogs)
-        # check if the catalogs changed for this portal_type
-        if set(desired_catalogs).difference(current_catalogs):
-            # fetch the brains to reindex
-            brains = api.search({"portal_type": type_name})
-            # updated the catalogs
-            at.setCatalogsByType(type_name, catalogs)
-            logger.info("Assign '%s' type to Catalogs %s" %
-                        (type_name, catalogs))
-            for brain in brains:
-                obj = api.get_object(brain)
-                logger.info("Reindexing '%s'" % repr(obj))
-                obj.reindexObject()
-
-    # Setup catalog indexes
-    to_index = []
-    for catalog, name, meta_type in INDEXES:
-        c = api.get_tool(catalog)
-        indexes = c.indexes()
-        if name in indexes:
-            logger.info("Index '%s' already in Catalog [SKIP]" % name)
-            continue
-
-        logger.info("Adding Index '%s' for field '%s' to catalog '%s"
-                    % (meta_type, name, catalog))
-        if meta_type == "ZCTextIndex":
-            addZCTextIndex(c, name)
-        elif meta_type == "TextIndexNG3":
-            c.addIndex(name, meta_type)
-            index = c._catalog.getIndex(name)
-            index.index.default_encoding = "utf-8"
-            index.index.query_parser = "txng.parsers.en"
-            index.index.autoexpand = "always"
-            index.index.autoexpand_limit = 3
-        else:
-            c.addIndex(name, meta_type)
-        to_index.append((c, name))
-        logger.info("Added Index '%s' for field '%s' to catalog [DONE]"
-                    % (meta_type, name))
-
-    for catalog, name in to_index:
-        logger.info("Indexing new index '%s' ..." % name)
-        catalog.manage_reindexIndex(name)
-        logger.info("Indexing new index '%s' [DONE]" % name)
-
-    # Setup catalog metadata columns
-    for catalog, name in COLUMNS:
-        c = api.get_tool(catalog)
-        if name not in c.schema():
-            logger.info("Adding Column '%s' to catalog '%s' ..."
-                        % (name, catalog))
-            c.addColumn(name)
-            logger.info("Added Column '%s' to catalog '%s' [DONE]"
-                        % (name, catalog))
-        else:
-            logger.info("Column '%s' already in catalog '%s'  [SKIP]"
-                        % (name, catalog))
-            continue
+    setup_core_catalogs(portal, catalog_classes=CATALOGS)
+    setup_other_catalogs(portal, indexes=INDEXES, columns=COLUMNS)
+    setup_catalog_mappings(portal, catalog_mappings=CATALOG_MAPPINGS)
 
 
 def hide_actions(portal):
@@ -646,21 +565,22 @@ def recover_samples(portal):
     """recover all stored samples
     """
     logger.info("*** Recovering all stored samples ***")
-    catalog = api.get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
+    catalog = api.get_tool(SAMPLE_CATALOG)
     query = {"review_state": "stored"}
     brains = catalog(query)
     total = len(brains)
     logger.info("Recovering {} samples ... ".format(total))
     for num, brain in enumerate(brains):
-        api.do_transition_for(brain, "recover")
+        obj = api.get_object(brain)
+        api.do_transition_for(obj, "recover")
         logger.info("Recovering sample {}/{}: {}".format(
-            num + 1, total, api.get_id(brain)))
+            num + 1, total, api.get_id(obj)))
 
 
 def uninstall_workflows(portal):
     """Uninstall injected WFs
     """
-    logger.info("Uninstall storage workflows ...")
+    logger.info("*** Uninstall storage workflows ...")
     wf_tool = api.get_tool("portal_workflow")
 
     workflow = wf_tool.getWorkflowById(SAMPLE_WORKFLOW)
@@ -678,3 +598,11 @@ def uninstall_workflows(portal):
         transitions = filter(
             lambda t: t not in DELETE_TRANSITIONS, state.transitions)
         state.transitions = tuple(transitions)
+
+
+def uninstall_storage_catalog(portal):
+    """Uninstall storage catalog
+    """
+    logger.info("*** Uninstall storage catalog ...")
+    if STORAGE_CATALOG in portal.objectIds():
+        portal.manage_delObjects([STORAGE_CATALOG])

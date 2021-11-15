@@ -19,21 +19,59 @@
 # Some rights reserved, see README and LICENSE.
 
 from App.class_init import InitializeClass
-from bika.lims.catalog.base import BaseCatalog
+from bika.lims.catalog.base import BaseCatalog as OldBaseCatalog
+from senaite.core.catalog.base_catalog import COLUMNS as BASE_COLUMNS
+from senaite.core.catalog.base_catalog import INDEXES as BASE_INDEXES
+from senaite.core.catalog.base_catalog import BaseCatalog
 from senaite.storage.interfaces import ISenaiteStorageCatalog
 from zope.interface import implements
 
-SENAITE_STORAGE_CATALOG = "senaite_storage_catalog"
+CATALOG_ID = "senaite_catalog_storage"
+STORAGE_CATALOG = CATALOG_ID  # for imports
+CATALOG_TITLE = "Senaite Storage Catalog"
+
+INDEXES = BASE_INDEXES + [
+    # id, indexed attribute, type
+
+    # Ids of parent containers and current
+    ("get_all_ids", "", "KeywordIndex"),
+    # Keeps the sample uids stored in each sample container
+    ("get_samples_uids", "", "KeywordIndex"),
+    # For searches, made of get_all_ids + Title
+    ("listing_searchable_text", "", "ZCTextIndex"),
+    # Index used in searches to filter sample containers with available slots
+    ("Title", "", "FieldIndex"),
+    ("is_full", "", "BooleanIndex"),
+    ("sortable_title", "", "FieldIndex"),
+]
+
+COLUMNS = BASE_COLUMNS + [
+    # attribute name
+    "id",
+    "Title",
+    "Description",
+]
+
+TYPES = [
+    # portal_type name
+    "StorageFacility",
+    "StoragePosition",
+    "StorageContainer",
+    "StorageSamplesContainer",
+]
 
 
-class SenaiteStorageCatalog(BaseCatalog):
+class StorageCatalog(BaseCatalog):
     implements(ISenaiteStorageCatalog)
 
     def __init__(self):
-        BaseCatalog.__init__(self,
-                             id=SENAITE_STORAGE_CATALOG,
-                             title="Senaite storage catalog",
-                             portal_meta_type="SenaiteStorageCatalog")
+        BaseCatalog.__init__(self, CATALOG_ID, title=CATALOG_TITLE)
 
 
+class SenaiteStorageCatalog(OldBaseCatalog):
+    """BBB: Remove after 2.1.0 migration
+    """
+
+
+InitializeClass(StorageCatalog)
 InitializeClass(SenaiteStorageCatalog)

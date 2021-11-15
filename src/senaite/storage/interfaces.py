@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims.interfaces import IBikaLIMS
+from senaite.core.interfaces import ISenaiteCatalogObject
 from senaite.lims.interfaces import ISenaiteLIMS
 from zope.interface import Interface
 from zope.viewlet.interfaces import IViewletManager
@@ -32,7 +33,7 @@ class ISenaiteStorageLayer(IBikaLIMS, ISenaiteLIMS):
     """
 
 
-class ISenaiteStorageCatalog(Interface):
+class ISenaiteStorageCatalog(ISenaiteCatalogObject):
     """Marker interface for senaite_storage_catalog CatalogTool
     """
 
