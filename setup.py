@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-#
-# This file is part of SENAITE.STORAGE
-#
-# Copyright 2019 by it's authors
 
 from setuptools import setup, find_packages
 
@@ -34,7 +30,7 @@ setup(
     zip_safe=False,
     install_requires=[
         "setuptools",
-        "senaite.lims>2.0.0",
+        "senaite.lims>=2.0.0",
     ],
     extras_require={
         "test": [
