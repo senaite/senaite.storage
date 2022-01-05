@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2020-08-11 10:04+0000\n"
+"POT-Creation-Date: 2022-01-05 15:22+0000\n"
 "PO-Revision-Date: 2019-03-31 21:21+0000\n"
 "Last-Translator: A. Migulo, 2019\n"
 "Language-Team: German (https://www.transifex.com/senaite/teams/97702/de/)\n"
@@ -21,37 +21,43 @@ msgstr ""
 "Domain: senaite.storage\n"
 "Language: de\n"
 
-#: senaite/storage/browser/templates/store_samples.pt:32
+#: senaite/storage/browser/container/templates/move_container.pt:23
+#: senaite/storage/browser/container/templates/store_samples.pt:25
 msgid "${back_link}"
 msgstr "${back_link}"
 
-#: senaite/storage/browser/storagelisting.py:49
+#: senaite/storage/browser/facility/view.py:76
+#: senaite/storage/browser/storage/listing.py:60
 msgid "% Samples"
 msgstr "% Proben"
 
-#: senaite/storage/browser/templates/store_samples.pt:32
+#: senaite/storage/browser/container/templates/move_container.pt:23
+#: senaite/storage/browser/container/templates/store_samples.pt:25
 msgid "&larr; Back"
 msgstr "&larr; Back"
 
-#: senaite/storage/browser/containers.py:70
-#: senaite/storage/browser/storagelisting.py:60
-#: senaite/storage/browser/storagerootfolder.py:67
+#: senaite/storage/profiles/default/workflows/senaite_storage_default_workflow/definition.xml
+msgid "Activate"
+msgstr ""
+
+#: senaite/storage/profiles/default/workflows/senaite_storage_default_workflow/definition.xml
 msgid "Active"
 msgstr "Aktiv"
 
-#: senaite/storage/browser/storagerootfolder.py:74
+#: senaite/storage/browser/storage/view.py:50
 msgid "Add Facility"
 msgstr "Lagerort hinzufügen"
 
-#: senaite/storage/browser/templates/store_container.pt:117
+#: senaite/storage/browser/container/templates/store_container.pt:115
 msgid "Add Sample"
 msgstr "Probe hinzufügen"
 
-#: senaite/storage/browser/samples.py:102
+#: senaite/storage/browser/container/samples.py:56
 msgid "Add Samples"
 msgstr "Proben hinzufügen"
 
-#: senaite/storage/browser/containers.py:84
+#: senaite/storage/browser/container/view.py:53
+#: senaite/storage/browser/facility/view.py:62
 msgid "Add container"
 msgstr "Behälter hnzufügen"
 
@@ -59,108 +65,174 @@ msgstr "Behälter hnzufügen"
 msgid "Add samples"
 msgstr "Proben hinzufügen"
 
-#: senaite/storage/browser/containers.py:89
+#: senaite/storage/browser/container/view.py:59
 msgid "Add samples container"
 msgstr "Probenbehälter hinzufügen"
 
-#: senaite/storage/content/storagefacility.py:53
+#: senaite/storage/browser/facility/view.py:57
+msgid "Add storage position"
+msgstr ""
+
+#: senaite/storage/content/storagefacility.py:55
 msgid "Address"
 msgstr "Adresse"
 
-#: senaite/storage/content/storagelayoutcontainer.py:47
+#: senaite/storage/content/storagelayoutcontainer.py:49
 msgid "Alphabet letters will be used to represent a row within the container"
 msgstr "Buchstaben werden verwendet, um Zeilen innerhalb eines Behälters zu kennzeichnen"
 
-#: senaite/storage/browser/templates/store_container.pt:34
-msgid "Available positions:"
-msgstr "Verfügbare Positionen"
-
-#: senaite/storage/browser/templates/store_container.pt:124
-#: senaite/storage/browser/templates/store_samples.pt:152
+#: senaite/storage/browser/container/templates/move_container.pt:81
+#: senaite/storage/browser/container/templates/store_container.pt:122
+#: senaite/storage/browser/container/templates/store_samples.pt:147
 msgid "Cancel"
 msgstr "Abbruch"
 
-#: senaite/storage/browser/store_container.py:150
+#: senaite/storage/browser/container/store_container.py:179
 msgid "Cannot store samples. Samples container {} is full"
 msgstr "Proben können nicht eingelagert werden, Probenbehälter {} ist voll."
 
-#: senaite/storage/content/storagelayoutcontainer.py:60
+#: senaite/storage/browser/container/templates/move_container.pt:63
+msgid "Choose container destination..."
+msgstr ""
+
+#: senaite/storage/browser/container/view.py:70
+#: senaite/storage/browser/facility/view.py:88
+#: senaite/storage/browser/position/view.py:52
+msgid "Collapsed"
+msgstr ""
+
+#: senaite/storage/content/storagelayoutcontainer.py:62
 msgid "Columns"
 msgstr "Spalte"
 
-#: senaite/storage/browser/containers.py:62
-#: senaite/storage/browser/storagelisting.py:53
-#: senaite/storage/browser/storagerootfolder.py:56
+#: senaite/storage/browser/container/samples.py:117
+msgid "Container is full"
+msgstr ""
+
+#: senaite/storage/browser/container/move_container.py:68
+msgid "Container moving cancelled"
+msgstr ""
+
+#: senaite/storage/browser/container/samples.py:123
+msgid "Container utilization {} / {}"
+msgstr ""
+
+#: senaite/storage/browser/container/move_container.py:98
+msgid "Container {} is already located in destination path!"
+msgstr ""
+
+#: senaite/storage/browser/storage/listing.py:64
 msgid "Containers"
 msgstr "Behälter"
 
-#: senaite/storage/browser/containers.py:64
-msgid "Containers usage"
-msgstr "Verwendung des Behälters"
-
-#: senaite/storage/browser/analysisrequests.py:90
+#: senaite/storage/adapters/listing.py:101
 msgid "Date stored"
 msgstr "Einlagerungsdatum"
 
-#: senaite/storage/browser/storagerootfolder.py:60
-msgid "Email"
-msgstr "Email"
+#: senaite/storage/profiles/default/workflows/senaite_storage_default_workflow/definition.xml
+msgid "Deactivate"
+msgstr ""
 
-#: senaite/storage/content/storagefacility.py:45
+#: senaite/storage/browser/facility/view.py:80
+#: senaite/storage/browser/storage/view.py:70
+msgid "Description"
+msgstr ""
+
+#: senaite/storage/content/storage_position.py:40
+msgid "Description of the storage position that is shown in listings"
+msgstr ""
+
+#: senaite/storage/content/storagefacility.py:47
 msgid "Email Address"
 msgstr "Email Adresse"
 
-#: senaite/storage/content/storagecontainer.py:37
+#: senaite/storage/browser/container/view.py:76
+#: senaite/storage/browser/facility/view.py:94
+#: senaite/storage/browser/position/view.py:58
+msgid "Expanded"
+msgstr ""
+
+#: senaite/storage/content/storagecontainer.py:38
 msgid "Expected temperature"
 msgstr "Erwartete Temperatur"
 
-#: senaite/storage/content/storagecontainer.py:38
+#: senaite/storage/content/storagecontainer.py:39
 msgid "Expected temperature of this container"
 msgstr "Erwartete Temperatur dieses Behälters"
 
-#: senaite/storage/browser/containers.py:54
-#: senaite/storage/browser/storagelisting.py:47
+#: senaite/storage/content/storagecontainer.py:61
+msgid "Expected temperature: {} Â°C"
+msgstr ""
+
+#: senaite/storage/browser/facility/view.py:74
+#: senaite/storage/browser/storage/listing.py:58
 msgid "ID"
 msgstr "ID"
 
-#: senaite/storage/browser/viewlets/templates/sample_container_viewlet.pt:18
+#: senaite/storage/browser/container/view.py:88
+#: senaite/storage/browser/facility/view.py:106
+#: senaite/storage/browser/position/view.py:70
+msgid "Inactive"
+msgstr ""
+
+#: senaite/storage/content/storagelayoutcontainer.py:135
+msgid "Layout: {} x {}"
+msgstr ""
+
+#: senaite/storage/browser/viewlets/templates/sample_container_viewlet.pt:19
 msgid "Location:"
 msgstr ""
 
-#: senaite/storage/browser/containers.py:51
-#: senaite/storage/browser/storagelisting.py:44
-#: senaite/storage/browser/storagerootfolder.py:49
+#: senaite/storage/content/storagefacility.py:92
+msgid "Mail: {}"
+msgstr ""
+
+#: senaite/storage/browser/container/templates/move_container.pt:15
+msgid "Move Containers"
+msgstr ""
+
+#: senaite/storage/profiles/default/workflows/senaite_storage_default_workflow/definition.xml
+msgid "Move container"
+msgstr ""
+
+#: senaite/storage/browser/container/move_container.py:105
+msgid "Moved container {} â {}"
+msgstr ""
+
+#: senaite/storage/browser/facility/view.py:71
+#: senaite/storage/browser/storage/listing.py:55
+#: senaite/storage/browser/storage/view.py:58
 msgid "Name"
 msgstr "Name"
 
-#: senaite/storage/browser/templates/store_container.pt:133
+#: senaite/storage/browser/container/templates/store_container.pt:134
 msgid "Next container:"
 msgstr "Nächster Behälter"
 
-#: senaite/storage/browser/store_samples.py:53
+#: senaite/storage/browser/container/move_container.py:56
+#: senaite/storage/browser/container/store_samples.py:56
 msgid "No items selected"
 msgstr "Nichts ausgewählt"
 
-#: senaite/storage/browser/store_container.py:159
+#: senaite/storage/browser/container/store_container.py:188
 msgid "No position or not valid sample selected"
 msgstr "Keine Position oder keine passende Probe ausgewählt"
 
-#: senaite/storage/content/storagelayoutcontainer.py:61
+#: senaite/storage/content/storagelayoutcontainer.py:63
 msgid "Number of positions per row. Numbers will be used to represent a column within a row"
 msgstr "Anzahl der Positionen pro Reihe. Zahlen werden verwendet um eine Spalte innerhalb einer Reihe zu kennzeichnen."
 
-#: senaite/storage/browser/storagerootfolder.py:58
-#: senaite/storage/content/storagefacility.py:38
+#: senaite/storage/content/storagefacility.py:40
 msgid "Phone"
 msgstr "Telefon"
 
-#: senaite/storage/browser/samples.py:53
-#: senaite/storage/browser/templates/store_container.pt:105
-#: senaite/storage/browser/templates/store_samples.pt:130
+#: senaite/storage/browser/container/samples.py:64
+#: senaite/storage/browser/container/templates/store_container.pt:102
+#: senaite/storage/browser/container/templates/store_samples.pt:125
 msgid "Position"
 msgstr "Position"
 
-#: senaite/storage/browser/analysisrequests.py:67
+#: senaite/storage/adapters/listing.py:77
 msgid "Print stickers"
 msgstr "Aufkleber drucken"
 
@@ -168,33 +240,41 @@ msgstr "Aufkleber drucken"
 msgid "Recover samples"
 msgstr "Probe wieder herstellen"
 
-#: senaite/storage/content/storagelayoutcontainer.py:46
+#: senaite/storage/content/storagelayoutcontainer.py:48
 msgid "Rows"
 msgstr "Zeilen"
 
-#: senaite/storage/configure.zcml:41
+#: senaite/storage/configure.zcml:40
 msgid "SENAITE STORAGE"
 msgstr "SENAITE Lagerverwaltung"
 
-#: senaite/storage/browser/templates/store_container.pt:63
+#: senaite/storage/configure.zcml:49
+msgid "SENAITE STORAGE (uninstall)"
+msgstr ""
+
+#: senaite/storage/browser/container/templates/store_container.pt:62
 msgid "Sample"
 msgstr "Probe"
 
-#: senaite/storage/configure.zcml:41
+#: senaite/storage/browser/storage/view.py:67
+msgid "Sample Containers"
+msgstr ""
+
+#: senaite/storage/configure.zcml:40
 msgid "Sample storage module for SENAITE"
 msgstr "Lagerverwaltungsmodul für SENAITE"
 
-#: senaite/storage/browser/store_container.py:178
+#: senaite/storage/browser/container/store_container.py:207
 msgid "Sample storing canceled"
 msgstr "Einlagerung abgebrochen"
 
-#: senaite/storage/browser/containers.py:58
-#: senaite/storage/browser/storagelisting.py:51
-#: senaite/storage/browser/storagerootfolder.py:52
+#: senaite/storage/browser/facility/view.py:78
+#: senaite/storage/browser/storage/listing.py:62
+#: senaite/storage/browser/storage/view.py:61
 msgid "Samples"
 msgstr "Proben"
 
-#: senaite/storage/browser/templates/store_samples.pt:86
+#: senaite/storage/browser/container/templates/store_samples.pt:80
 msgid "Samples container"
 msgstr "Probenbehälter"
 
@@ -202,18 +282,20 @@ msgstr "Probenbehälter"
 msgid "Samples container for storage"
 msgstr "Probenbehälter für Einlagerung"
 
-#: senaite/storage/browser/storagerootfolder.py:36
-#: senaite/storage/profiles/default/controlpanel.xml
+#: senaite/storage/browser/storage/view.py:37
 #: senaite/storage/profiles/default/types/StorageRootFolder.xml
 msgid "Samples storage"
 msgstr "Probeneinlagerung"
 
-#: senaite/storage/browser/containers.py:60
-#: senaite/storage/browser/storagerootfolder.py:54
+#: senaite/storage/browser/storage/view.py:64
 msgid "Samples usage"
 msgstr "Verwendung der Proben"
 
-#: senaite/storage/browser/analysisrequests.py:100
+#: senaite/storage/browser/container/templates/store_container.pt:196
+msgid "Status"
+msgstr ""
+
+#: senaite/storage/adapters/listing.py:111
 msgid "Storage"
 msgstr "Einlagerung"
 
@@ -225,26 +307,46 @@ msgstr "Lagerort"
 msgid "Storage container"
 msgstr "Lagerbehälter"
 
-#: senaite/storage/browser/templates/store_samples.pt:146
+#: senaite/storage/profiles/default/types/StoragePosition.xml
+msgid "StoragePosition"
+msgstr ""
+
+#: senaite/storage/browser/container/templates/store_samples.pt:141
 msgid "Store Samples"
 msgstr "Proben einlagern"
 
-#: senaite/storage/browser/templates/store_samples.pt:24
+#: senaite/storage/browser/container/templates/store_samples.pt:17
 msgid "Store samples"
 msgstr "Proben einlagern"
 
-#: senaite/storage/browser/analysisrequests.py:74
+#: senaite/storage/adapters/listing.py:84
 msgid "Stored"
 msgstr "Eingelagert"
 
-#: senaite/storage/browser/viewlets/templates/sample_container_viewlet.pt:12
+#: senaite/storage/browser/viewlets/templates/sample_container_viewlet.pt:13
 msgid "Stored sample"
 msgstr ""
 
-#: senaite/storage/browser/store_container.py:169
+#: senaite/storage/browser/container/store_container.py:198
 msgid "Stored sample {} at position {}"
 msgstr "Probe {} auf Position {} eingelagert"
 
-#: senaite/storage/browser/containers.py:56
-msgid "Temperature"
-msgstr "Temperatur"
+#: senaite/storage/content/storagefacility.py:89
+msgid "Tel: {}"
+msgstr ""
+
+#: senaite/storage/content/storage_position.py:34
+msgid "The name of the storage position, e.g. Room 12/3"
+msgstr ""
+
+#: senaite/storage/profiles/default/types/StoragePosition.xml
+msgid "The storage position inside a facility"
+msgstr ""
+
+#: senaite/storage/configure.zcml:49
+msgid "Uninstalls SENAITE STORAGE"
+msgstr ""
+
+#: senaite/storage/browser/container/templates/store_container.pt:32
+msgid "Used positions:"
+msgstr ""
