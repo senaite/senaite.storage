@@ -68,7 +68,7 @@
                        class="custom-select blurrable firstToFocus referencewidget"
                        base_query='{"sort_on": "getId", "sort_order": "ascending", "limit": "30"}'
                        search_query='{}'
-                       catalog_name="bika_catalog_analysisrequest_listing"
+                       catalog_name="senaite_catalog_sample"
                        combogrid_options='{"colModel": [
                                               {"columnName": "getId", "align": "left", "label": "Id", "width": "15"},
                                               {"columnName": "getClientSampleID", "align": "left", "label": "CSID", "width": "15"},
@@ -76,7 +76,7 @@
                                               {"columnName": "UID", "hidden": true}
                                           ],
                                           "search_fields": ["listing_searchable_text"],
-                                          "catalog_name": "bika_catalog_analysisrequest_listing",
+                                          "catalog_name": "senaite_catalog_sample",
                                           "url": "referencewidget_search",
                                           "discard_empty": [],
                                           "showOn": true,
