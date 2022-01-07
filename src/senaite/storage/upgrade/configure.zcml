@@ -4,10 +4,10 @@
     i18n_domain="senaite.storage">
 
 <genericsetup:upgradeStep
-        title="Upgrade to SENAITE STORAGE 2.2.0"
+        title="Upgrade to SENAITE STORAGE 2.1.1"
         source="2.1.0"
-        destination="2.2.0"
-        handler="senaite.storage.upgrade.v02_02_000.upgrade"
+        destination="2.1.1"
+        handler="senaite.storage.upgrade.v02_01_100.upgrade"
         profile="senaite.storage:default"/>
 
 <genericsetup:upgradeStep
