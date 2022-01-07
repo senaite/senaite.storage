@@ -23,7 +23,7 @@ from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.storage import PRODUCT_NAME
 from senaite.storage import logger
 
-version = "2.2.0"
+version = "2.1.1"
 
 
 @upgradestep(PRODUCT_NAME, version)

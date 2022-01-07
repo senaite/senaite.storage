@@ -95,14 +95,14 @@
                               "limit": "30"
                             }'
                             search_query='{}'
-                            catalog_name="senaite_storage_catalog"
+                            catalog_name="senaite_catalog_storage"
                             combogrid_options='{
                               "colModel": [
                                 {"columnName": "id", "align": "left", "label": "Id", "width": "10"},
                                 {"columnName": "get_full_title", "align": "left", "label": "Container full path", "width": "90"},
                                 {"columnName": "UID", "hidden": true}],
                               "search_fields": ["listing_searchable_text"],
-                              "catalog_name": "senaite_storage_catalog",
+                              "catalog_name": "senaite_catalog_storage",
                               "url": "referencewidget_search",
                               "discard_empty": [],
                               "showOn": true,

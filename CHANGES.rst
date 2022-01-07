@@ -1,10 +1,10 @@
 Changelog
 =========
 
-2.2.0 (unreleased)
+2.1.1 (unreleased)
 ------------------
 
-- no changes yet
+- #32 Fixed catalogs in page templates
 
 
 2.1.0 (2022-01-05)
