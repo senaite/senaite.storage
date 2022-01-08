@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2022-01-08 08:56+0000\n"
+"POT-Creation-Date: 2022-01-08 09:56+0000\n"
 "PO-Revision-Date: 2019-03-31 21:21+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2022\n"
 "Language-Team: German (https://www.transifex.com/senaite/teams/97702/de/)\n"
@@ -326,7 +326,7 @@ msgstr "Tel: {}"
 
 #: senaite/storage/content/storage_position.py:34
 msgid "The name of the storage position, e.g. Room 12/3"
-msgstr "Der Name des Lagerraums, z.B, Raum 12/3"
+msgstr "Der Name des Lagerraums, z.B. Raum 12/3"
 
 #: senaite/storage/profiles/default/types/StoragePosition.xml
 msgid "The storage position inside a facility"
