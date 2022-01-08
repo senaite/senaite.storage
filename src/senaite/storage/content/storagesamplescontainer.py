@@ -18,12 +18,12 @@
 # Copyright 2019-2022 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from Products.Archetypes.Schema import Schema
-from Products.Archetypes.atapi import registerType
 from bika.lims import api
 from bika.lims import workflow as wf
-from senaite.core.catalog import SAMPLE_CATALOG
 from bika.lims.interfaces import IAnalysisRequest
+from Products.Archetypes.atapi import registerType
+from Products.Archetypes.Schema import Schema
+from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.storage import PRODUCT_NAME
 from senaite.storage.content.storagelayoutcontainer import \
     StorageLayoutContainer
@@ -60,8 +60,8 @@ class StorageSamplesContainer(StorageLayoutContainer):
             return False
 
         sample = api.get_object(object_brain_uid)
-        stored = super(StorageSamplesContainer, self).add_object_at(sample,
-                                                                    row, column)
+        stored = super(StorageSamplesContainer, self).add_object_at(
+            sample, row, column)
         if not stored:
             return False
 

@@ -28,11 +28,13 @@ from zope.interface import implements
 
 schema = BikaFolderSchema.copy()
 
+
 class StorageRootFolder(ATFolder):
     """Storage module root object
     """
     implements(IStorageRootFolder, IHideActionsMenu)
     displayContentsTab = False
     schema = schema
+
 
 registerType(StorageRootFolder, PRODUCT_NAME)

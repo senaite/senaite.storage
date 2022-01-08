@@ -58,7 +58,7 @@ class StorageContainer(StorageLayoutContainer):
 
     def Description(self):
         temperature = self.getTemperature() or "-"
-        return _(u"Expected temperature: {} °C".format(temperature))
+        return _(u"Expected temperature: %s °C" % temperature)
 
     def is_object_allowed(self, object_brain_uid):
         """Returns whether the type of object can be stored or not in this
