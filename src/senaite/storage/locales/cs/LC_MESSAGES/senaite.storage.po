@@ -2,14 +2,14 @@
 # SOME DESCRIPTIVE TITLE.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # Translators:
-# trendspotter <jirka.p@volny.cz>, 2021
+# trendspotter <jirka.p@volny.cz>, 2020
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2022-01-05 15:22+0000\n"
+"POT-Creation-Date: 2022-01-08 08:56+0000\n"
 "PO-Revision-Date: 2019-03-31 21:21+0000\n"
-"Last-Translator: trendspotter <jirka.p@volny.cz>, 2021\n"
+"Last-Translator: trendspotter <jirka.p@volny.cz>, 2020\n"
 "Language-Team: Czech (https://www.transifex.com/senaite/teams/97702/cs/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -161,7 +161,7 @@ msgid "Expected temperature of this container"
 msgstr "Očekávaná teplota tohoto kontejneru"
 
 #: senaite/storage/content/storagecontainer.py:61
-msgid "Expected temperature: {} Â°C"
+msgid "Expected temperature: %s Â°C"
 msgstr ""
 
 #: senaite/storage/browser/facility/view.py:74
@@ -244,14 +244,6 @@ msgstr "Obnovit vzorky"
 msgid "Rows"
 msgstr "Řádky"
 
-#: senaite/storage/configure.zcml:40
-msgid "SENAITE STORAGE"
-msgstr "ÚLOŽIŠTĚ SENAITE"
-
-#: senaite/storage/configure.zcml:49
-msgid "SENAITE STORAGE (uninstall)"
-msgstr "SENAITE STORAGE (odinstalovat)"
-
 #: senaite/storage/browser/container/templates/store_container.pt:62
 msgid "Sample"
 msgstr "Vzorek"
@@ -259,10 +251,6 @@ msgstr "Vzorek"
 #: senaite/storage/browser/storage/view.py:67
 msgid "Sample Containers"
 msgstr ""
-
-#: senaite/storage/configure.zcml:40
-msgid "Sample storage module for SENAITE"
-msgstr "Modul úložiště vzorků pro SENAITE"
 
 #: senaite/storage/browser/container/store_container.py:207
 msgid "Sample storing canceled"
@@ -303,13 +291,13 @@ msgstr "Úložiště"
 msgid "Storage Facility"
 msgstr "Zařízení úložiště"
 
+#: senaite/storage/profiles/default/types/StoragePosition.xml
+msgid "Storage Position"
+msgstr ""
+
 #: senaite/storage/profiles/default/types/StorageContainer.xml
 msgid "Storage container"
 msgstr "Úložný kontejner"
-
-#: senaite/storage/profiles/default/types/StoragePosition.xml
-msgid "StoragePosition"
-msgstr ""
 
 #: senaite/storage/browser/container/templates/store_samples.pt:141
 msgid "Store Samples"
@@ -341,10 +329,6 @@ msgstr ""
 
 #: senaite/storage/profiles/default/types/StoragePosition.xml
 msgid "The storage position inside a facility"
-msgstr ""
-
-#: senaite/storage/configure.zcml:49
-msgid "Uninstalls SENAITE STORAGE"
 msgstr ""
 
 #: senaite/storage/browser/container/templates/store_container.pt:32

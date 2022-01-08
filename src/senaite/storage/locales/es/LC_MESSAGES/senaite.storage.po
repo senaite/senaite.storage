@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2022-01-05 15:22+0000\n"
+"POT-Creation-Date: 2022-01-08 08:56+0000\n"
 "PO-Revision-Date: 2019-03-31 21:21+0000\n"
 "Last-Translator: Pau Soliva <psoliva@naralabs.com>, 2019\n"
 "Language-Team: Spanish (https://www.transifex.com/senaite/teams/97702/es/)\n"
@@ -162,7 +162,7 @@ msgid "Expected temperature of this container"
 msgstr "Temperatura prevista del contenedor"
 
 #: senaite/storage/content/storagecontainer.py:61
-msgid "Expected temperature: {} Â°C"
+msgid "Expected temperature: %s Â°C"
 msgstr ""
 
 #: senaite/storage/browser/facility/view.py:74
@@ -245,14 +245,6 @@ msgstr "Recuperar muestras"
 msgid "Rows"
 msgstr "Filas"
 
-#: senaite/storage/configure.zcml:40
-msgid "SENAITE STORAGE"
-msgstr "SENAITE STORAGE"
-
-#: senaite/storage/configure.zcml:49
-msgid "SENAITE STORAGE (uninstall)"
-msgstr ""
-
 #: senaite/storage/browser/container/templates/store_container.pt:62
 msgid "Sample"
 msgstr "Muestra"
@@ -260,10 +252,6 @@ msgstr "Muestra"
 #: senaite/storage/browser/storage/view.py:67
 msgid "Sample Containers"
 msgstr ""
-
-#: senaite/storage/configure.zcml:40
-msgid "Sample storage module for SENAITE"
-msgstr "Módulo de almacenaje de muestras para SENAITE"
 
 #: senaite/storage/browser/container/store_container.py:207
 msgid "Sample storing canceled"
@@ -304,13 +292,13 @@ msgstr "Almacén"
 msgid "Storage Facility"
 msgstr "Puesto de almacenamiento"
 
+#: senaite/storage/profiles/default/types/StoragePosition.xml
+msgid "Storage Position"
+msgstr ""
+
 #: senaite/storage/profiles/default/types/StorageContainer.xml
 msgid "Storage container"
 msgstr "Contenedor para el almacenaje"
-
-#: senaite/storage/profiles/default/types/StoragePosition.xml
-msgid "StoragePosition"
-msgstr ""
 
 #: senaite/storage/browser/container/templates/store_samples.pt:141
 msgid "Store Samples"
@@ -342,10 +330,6 @@ msgstr ""
 
 #: senaite/storage/profiles/default/types/StoragePosition.xml
 msgid "The storage position inside a facility"
-msgstr ""
-
-#: senaite/storage/configure.zcml:49
-msgid "Uninstalls SENAITE STORAGE"
 msgstr ""
 
 #: senaite/storage/browser/container/templates/store_container.pt:32

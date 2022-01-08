@@ -5,7 +5,7 @@
 
   <!-- Title and Description -->
   <property name="title"
-            i18n:translate="">StoragePosition</property>
+            i18n:translate="">Storage Position</property>
   <property name="description"
             i18n:translate="">The storage position inside a facility</property>
 

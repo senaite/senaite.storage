@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2022-01-05 15:22+0000\n"
+"POT-Creation-Date: 2022-01-08 08:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -154,7 +154,7 @@ msgid "Expected temperature of this container"
 msgstr ""
 
 #: senaite/storage/content/storagecontainer.py:61
-msgid "Expected temperature: {} Â°C"
+msgid "Expected temperature: %s Â°C"
 msgstr ""
 
 #: senaite/storage/browser/facility/view.py:74
@@ -237,24 +237,12 @@ msgstr ""
 msgid "Rows"
 msgstr ""
 
-#: senaite/storage/configure.zcml:40
-msgid "SENAITE STORAGE"
-msgstr ""
-
-#: senaite/storage/configure.zcml:49
-msgid "SENAITE STORAGE (uninstall)"
-msgstr ""
-
 #: senaite/storage/browser/container/templates/store_container.pt:62
 msgid "Sample"
 msgstr ""
 
 #: senaite/storage/browser/storage/view.py:67
 msgid "Sample Containers"
-msgstr ""
-
-#: senaite/storage/configure.zcml:40
-msgid "Sample storage module for SENAITE"
 msgstr ""
 
 #: senaite/storage/browser/container/store_container.py:207
@@ -296,12 +284,12 @@ msgstr ""
 msgid "Storage Facility"
 msgstr ""
 
-#: senaite/storage/profiles/default/types/StorageContainer.xml
-msgid "Storage container"
+#: senaite/storage/profiles/default/types/StoragePosition.xml
+msgid "Storage Position"
 msgstr ""
 
-#: senaite/storage/profiles/default/types/StoragePosition.xml
-msgid "StoragePosition"
+#: senaite/storage/profiles/default/types/StorageContainer.xml
+msgid "Storage container"
 msgstr ""
 
 #: senaite/storage/browser/container/templates/store_samples.pt:141
@@ -334,10 +322,6 @@ msgstr ""
 
 #: senaite/storage/profiles/default/types/StoragePosition.xml
 msgid "The storage position inside a facility"
-msgstr ""
-
-#: senaite/storage/configure.zcml:49
-msgid "Uninstalls SENAITE STORAGE"
 msgstr ""
 
 #: senaite/storage/browser/container/templates/store_container.pt:32
