@@ -5,7 +5,7 @@ Changelog
 2.2.0 (unreleased)
 ------------------
 
-- no changes yet
+- #34 Fix non-lab users can access to storage
 
 
 2.1.1 (2022-01-08)
