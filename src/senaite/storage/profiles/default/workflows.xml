@@ -3,8 +3,12 @@
   <property name="title" purge="False">
     Workflow definitions for senaite.storage
   </property>
+  <object name="senaite_storage_folder_workflow" meta_type="Workflow"/>
   <object name="senaite_storage_default_workflow" meta_type="Workflow"/>
   <bindings>
+    <type type_id="StorageRootFolder">
+      <bound-workflow workflow_id="senaite_storage_folder_workflow"/>
+    </type>
     <type type_id="StorageContainer">
       <bound-workflow workflow_id="senaite_storage_default_workflow"/>
     </type>
@@ -12,9 +16,6 @@
       <bound-workflow workflow_id="senaite_storage_default_workflow"/>
     </type>
     <type type_id="StoragePosition">
-      <bound-workflow workflow_id="senaite_storage_default_workflow"/>
-    </type>
-    <type type_id="StorageRootFolder">
       <bound-workflow workflow_id="senaite_storage_default_workflow"/>
     </type>
     <type type_id="StorageSamplesContainer">

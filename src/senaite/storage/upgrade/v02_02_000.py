@@ -18,12 +18,14 @@
 # Copyright 2019-2022 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims import api
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
-from senaite.storage import PRODUCT_NAME
 from senaite.storage import logger
+from senaite.storage import PRODUCT_NAME
 
 version = "2.2.0"
+profile = "profile-{0}:default".format(PRODUCT_NAME)
 
 
 @upgradestep(PRODUCT_NAME, version)
@@ -42,6 +44,21 @@ def upgrade(tool):
                                                    version))
 
     # -------- ADD YOUR STUFF BELOW --------
+    setup.runImportStepFromProfile(profile, "workflow")
+    update_storage_role_mappings(portal)
 
     logger.info("{0} upgraded to version {1}".format(PRODUCT_NAME, version))
     return True
+
+
+def update_storage_role_mappings(portal):
+    """Update the role mappings of senaite storage's root folder
+    """
+    logger.info("Fixing permissions for storage's root folder ...")
+    wf_tool = api.get_tool("portal_workflow")
+    wf_id = "senaite_storage_folder_workflow"
+    workflow = wf_tool.getWorkflowById(wf_id)
+    storage_root = portal.senaite_storage
+    workflow.updateRoleMappingsFor(storage_root)
+    storage_root.reindexObjectSecurity()
+    logger.info("Fixing permissions for storage's root folder [DONE]")
