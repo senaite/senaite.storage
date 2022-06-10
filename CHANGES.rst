@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-2.2.0 (unreleased)
+2.2.0 (2022-06-10)
 ------------------
 
 - #34 Fix non-lab users can access to storage

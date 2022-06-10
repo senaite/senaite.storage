@@ -8,14 +8,14 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2022-01-08 09:56+0000\n"
+"POT-Creation-Date: 2022-06-10 21:46+0000\n"
 "PO-Revision-Date: 2019-03-31 21:21+0000\n"
 "Last-Translator: Pau Soliva <psoliva@naralabs.com>, 2019\n"
 "Language-Team: Spanish (https://www.transifex.com/senaite/teams/97702/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 "Language-Code: en\n"
 "Language-Name: English\n"
 "Preferred-Encodings: utf-8 latin1\n"
@@ -42,6 +42,7 @@ msgid "Activate"
 msgstr ""
 
 #: senaite/storage/profiles/default/workflows/senaite_storage_default_workflow/definition.xml
+#: senaite/storage/profiles/default/workflows/senaite_storage_folder_workflow/definition.xml
 msgid "Active"
 msgstr "Activo"
 

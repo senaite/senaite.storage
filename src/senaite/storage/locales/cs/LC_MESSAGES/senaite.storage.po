@@ -2,14 +2,14 @@
 # SOME DESCRIPTIVE TITLE.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # Translators:
-# trendspotter <jirka.p@volny.cz>, 2020
+# trendspotter <jirka.p@volny.cz>, 2022
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2022-01-08 09:56+0000\n"
+"POT-Creation-Date: 2022-06-10 21:46+0000\n"
 "PO-Revision-Date: 2019-03-31 21:21+0000\n"
-"Last-Translator: trendspotter <jirka.p@volny.cz>, 2020\n"
+"Last-Translator: trendspotter <jirka.p@volny.cz>, 2022\n"
 "Language-Team: Czech (https://www.transifex.com/senaite/teams/97702/cs/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -38,9 +38,10 @@ msgstr "&larr; Zpět"
 
 #: senaite/storage/profiles/default/workflows/senaite_storage_default_workflow/definition.xml
 msgid "Activate"
-msgstr ""
+msgstr "Aktivovat"
 
 #: senaite/storage/profiles/default/workflows/senaite_storage_default_workflow/definition.xml
+#: senaite/storage/profiles/default/workflows/senaite_storage_folder_workflow/definition.xml
 msgid "Active"
 msgstr "Aktivní"
 
@@ -71,7 +72,7 @@ msgstr "Přidat kontejner vzorků"
 
 #: senaite/storage/browser/facility/view.py:57
 msgid "Add storage position"
-msgstr ""
+msgstr "Přidat pozici úložiště"
 
 #: senaite/storage/content/storagefacility.py:55
 msgid "Address"
@@ -93,13 +94,13 @@ msgstr "Nelze ukládat vzorky. Kontejner na vzorky {} je plný"
 
 #: senaite/storage/browser/container/templates/move_container.pt:63
 msgid "Choose container destination..."
-msgstr ""
+msgstr "Vyberte cíl kontejneru..."
 
 #: senaite/storage/browser/container/view.py:70
 #: senaite/storage/browser/facility/view.py:88
 #: senaite/storage/browser/position/view.py:52
 msgid "Collapsed"
-msgstr ""
+msgstr "Sbaleno"
 
 #: senaite/storage/content/storagelayoutcontainer.py:62
 msgid "Columns"
@@ -107,19 +108,19 @@ msgstr "Sloupce"
 
 #: senaite/storage/browser/container/samples.py:117
 msgid "Container is full"
-msgstr ""
+msgstr "Kontejner je plný"
 
 #: senaite/storage/browser/container/move_container.py:68
 msgid "Container moving cancelled"
-msgstr ""
+msgstr "Přesun kontejneru zrušen"
 
 #: senaite/storage/browser/container/samples.py:123
 msgid "Container utilization {} / {}"
-msgstr ""
+msgstr "Využití kontejneru {} / {}"
 
 #: senaite/storage/browser/container/move_container.py:98
 msgid "Container {} is already located in destination path!"
-msgstr ""
+msgstr "Kontejner {} se již nachází na cílové cestě!"
 
 #: senaite/storage/browser/storage/listing.py:64
 msgid "Containers"
@@ -131,16 +132,16 @@ msgstr "Datum uloženo"
 
 #: senaite/storage/profiles/default/workflows/senaite_storage_default_workflow/definition.xml
 msgid "Deactivate"
-msgstr ""
+msgstr "Deaktivovat"
 
 #: senaite/storage/browser/facility/view.py:80
 #: senaite/storage/browser/storage/view.py:70
 msgid "Description"
-msgstr ""
+msgstr "Popis"
 
 #: senaite/storage/content/storage_position.py:40
 msgid "Description of the storage position that is shown in listings"
-msgstr ""
+msgstr "Popis skladové pozice, která se zobrazuje ve výpisech"
 
 #: senaite/storage/content/storagefacility.py:47
 msgid "Email Address"
@@ -150,7 +151,7 @@ msgstr "e-mailová adresa"
 #: senaite/storage/browser/facility/view.py:94
 #: senaite/storage/browser/position/view.py:58
 msgid "Expanded"
-msgstr ""
+msgstr "Rozbaleno"
 
 #: senaite/storage/content/storagecontainer.py:38
 msgid "Expected temperature"
@@ -162,7 +163,7 @@ msgstr "Očekávaná teplota tohoto kontejneru"
 
 #: senaite/storage/content/storagecontainer.py:61
 msgid "Expected temperature: %s Â°C"
-msgstr ""
+msgstr "Očekávaná teplota: %s °C"
 
 #: senaite/storage/browser/facility/view.py:74
 #: senaite/storage/browser/storage/listing.py:58
@@ -173,11 +174,11 @@ msgstr "ID"
 #: senaite/storage/browser/facility/view.py:106
 #: senaite/storage/browser/position/view.py:70
 msgid "Inactive"
-msgstr ""
+msgstr "Neaktivní"
 
 #: senaite/storage/content/storagelayoutcontainer.py:135
 msgid "Layout: {} x {}"
-msgstr ""
+msgstr "Rozložení: {} x {}"
 
 #: senaite/storage/browser/viewlets/templates/sample_container_viewlet.pt:19
 msgid "Location:"
@@ -185,19 +186,19 @@ msgstr "Umístění:"
 
 #: senaite/storage/content/storagefacility.py:92
 msgid "Mail: {}"
-msgstr ""
+msgstr "E-mail: {}"
 
 #: senaite/storage/browser/container/templates/move_container.pt:15
 msgid "Move Containers"
-msgstr ""
+msgstr "Přesunout kontejnery"
 
 #: senaite/storage/profiles/default/workflows/senaite_storage_default_workflow/definition.xml
 msgid "Move container"
-msgstr ""
+msgstr "Přesunout kontejner"
 
 #: senaite/storage/browser/container/move_container.py:105
 msgid "Moved container {} â {}"
-msgstr ""
+msgstr "Přesunutý kontejner {} â {}"
 
 #: senaite/storage/browser/facility/view.py:71
 #: senaite/storage/browser/storage/listing.py:55
@@ -250,7 +251,7 @@ msgstr "Vzorek"
 
 #: senaite/storage/browser/storage/view.py:67
 msgid "Sample Containers"
-msgstr ""
+msgstr "Kontejnery na vzorky"
 
 #: senaite/storage/browser/container/store_container.py:207
 msgid "Sample storing canceled"
@@ -281,7 +282,7 @@ msgstr "Použití vzorků"
 
 #: senaite/storage/browser/container/templates/store_container.pt:196
 msgid "Status"
-msgstr ""
+msgstr "Stav"
 
 #: senaite/storage/adapters/listing.py:111
 msgid "Storage"
@@ -293,7 +294,7 @@ msgstr "Zařízení úložiště"
 
 #: senaite/storage/profiles/default/types/StoragePosition.xml
 msgid "Storage Position"
-msgstr ""
+msgstr "Pozice úložiště"
 
 #: senaite/storage/profiles/default/types/StorageContainer.xml
 msgid "Storage container"
@@ -321,16 +322,16 @@ msgstr "Uložený vzorek {} na pozici {}"
 
 #: senaite/storage/content/storagefacility.py:89
 msgid "Tel: {}"
-msgstr ""
+msgstr "Tel: {}"
 
 #: senaite/storage/content/storage_position.py:34
 msgid "The name of the storage position, e.g. Room 12/3"
-msgstr ""
+msgstr "Název skladovací pozice, např. místnost 12/3."
 
 #: senaite/storage/profiles/default/types/StoragePosition.xml
 msgid "The storage position inside a facility"
-msgstr ""
+msgstr "Skladovací pozice uvnitř zařízení"
 
 #: senaite/storage/browser/container/templates/store_container.pt:32
 msgid "Used positions:"
-msgstr ""
+msgstr "Použité pozice:"

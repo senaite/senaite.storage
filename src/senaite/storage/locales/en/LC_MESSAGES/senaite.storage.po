@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2022-01-08 09:56+0000\n"
+"POT-Creation-Date: 2022-06-10 21:46+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,6 +34,7 @@ msgid "Activate"
 msgstr ""
 
 #: senaite/storage/profiles/default/workflows/senaite_storage_default_workflow/definition.xml
+#: senaite/storage/profiles/default/workflows/senaite_storage_folder_workflow/definition.xml
 msgid "Active"
 msgstr ""
 
