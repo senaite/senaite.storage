@@ -3,6 +3,12 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     i18n_domain="senaite.storage">
 
+<genericsetup:upgradeStep
+        title="Upgrade to SENAITE STORAGE 2.3.0"
+        source="2.2.0"
+        destination="2.3.0"
+        handler="senaite.storage.upgrade.v02_03_000.upgrade"
+        profile="senaite.storage:default"/>
 
 <genericsetup:upgradeStep
         title="Upgrade to SENAITE STORAGE 2.2.0"
