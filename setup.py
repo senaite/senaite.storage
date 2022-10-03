@@ -30,7 +30,7 @@ setup(
     zip_safe=False,
     install_requires=[
         "setuptools",
-        "senaite.lims>=2.0.0",
+        "senaite.lims>=2.3.0",
     ],
     extras_require={
         "test": [
