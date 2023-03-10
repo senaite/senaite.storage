@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2019-2022 by it's authors.
+# Copyright 2019-2023 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import re
@@ -169,7 +169,7 @@ class StorageLayoutContainer(ATFolder):
         """Returns the alpha part for the passed in row
         """
         alphabet = string.ascii_uppercase
-        num, idx = divmod(row, len(alphabet))
+        num, idx = divmod(int(row), len(alphabet))
         if num:
             return self.get_alpha_column(num - 1) + alphabet[idx]
         return alphabet[idx]
@@ -179,7 +179,7 @@ class StorageLayoutContainer(ATFolder):
         """
         alpha_part = self.get_alpha_row(row)
         lead_zeros = len(str(self.getColumns())) - 1
-        num_part = "%0{}d".format(lead_zeros) % (column + 1)
+        num_part = "%0{}d".format(lead_zeros) % (int(column) + 1)
         return "{}{}".format(alpha_part, num_part)
 
     def alpha_to_position(self, alpha):
