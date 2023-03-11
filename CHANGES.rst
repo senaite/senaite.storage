@@ -1,10 +1,17 @@
 Changelog
 =========
 
-2.5.0 (2023-03-10)
+
+2.5.0 (unreleased)
 ------------------
 
-- Unreleased
+- no changes yet
+
+
+2.4.1 (2023-03-11)
+------------------
+
+- #36 Remove code headers from Script (Python)
 
 
 2.4.0 (2023-03-10)
