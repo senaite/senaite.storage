@@ -2,7 +2,8 @@
 
 from setuptools import setup, find_packages
 
-version = "2.4.1"
+version = "2.5.0"
+
 
 setup(
     name="senaite.storage",
