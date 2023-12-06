@@ -31,8 +31,8 @@ module.exports = {
     ],
   },
   output: {
-    filename: `[name]-${gitHash}.js`,
-    filename: gitHash ? `[name]-${gitHash}.js` : "[name].js",
+    // filename: devMode ? "[name].js" : `[name]-${gitHash}.js`,
+    filename: "[name].js",
     path: path.resolve(staticPath, "bundles"),
     publicPath: "/++plone++senaite.storage.static/bundles"
   },
