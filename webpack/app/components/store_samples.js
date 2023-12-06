@@ -33,7 +33,7 @@ StoreSamplesController = (function() {
     this.debug("StoreSamplesController::bind_eventhandler");
     $("body").on("select", ".senaite-uidreference-widget-input textarea", this.on_container_change);
     $("body").on("deselect", ".senaite-uidreference-widget-input textarea", this.on_container_change);
-    return $("body").on("change", "select[name='samples\\.container_position:records']", this.on_container_position_change);
+    return $("body").on("change", "select[container_uid]", this.on_container_position_change);
   };
 
   StoreSamplesController.prototype.on_container_change = function(event) {
@@ -42,13 +42,13 @@ StoreSamplesController = (function() {
      * Fills the select element next to the container input with the positions
      * that are available for storage
      */
-    var $el, $parent, container_uid, sample_uid, select;
+    var container_uid, el, parent, sample_uid, select;
     this.debug("StoreSamplesController::on_container_change");
-    $el = $(event.currentTarget);
-    $parent = $el.closest("div.senaite-uidreference-widget-input");
+    el = $(event.currentTarget);
+    parent = el.closest("div.senaite-uidreference-widget-input");
     container_uid = event.detail.value;
-    sample_uid = $parent.attr("sample_uid");
-    select = $("#container_position\\." + sample_uid + "_uid")[0];
+    sample_uid = parent.attr("sample_uid");
+    select = $("select#sample_container_position_" + sample_uid)[0];
     this.fill_container_positions(container_uid, select);
   };
 
@@ -130,10 +130,8 @@ StoreSamplesController = (function() {
      * Returns all DOM select elements for layout position selection that are
      * bound to the container passed in
      */
-    var selects_name;
     this.debug("StoreSamplesController::get_container_position_selects:container_uid=" + container_uid);
-    selects_name = "samples\\.container_position:records";
-    return $("select[name='" + selects_name + "'][container_uid='" + container_uid + "']");
+    return $("select[container_uid='" + container_uid + "']");
   };
 
   StoreSamplesController.prototype.fill_container_positions = function(container_uid, select) {

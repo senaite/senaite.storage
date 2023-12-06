@@ -78,7 +78,6 @@ class BaseView(BrowserView):
         url = api.get_url(obj)
 
         attributes = {
-            "data-id": name,
             "data-name": name,
             "data-values": [],
             "data-records": {},

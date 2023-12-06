@@ -41,8 +41,6 @@
             <input tal:replace="structure context/@@authenticator/authenticator"/>
 
             <tal:samples repeat="sample view/get_samples_data">
-              <!-- Remember the initial UIDs coming in -->
-              <input type="hidden" name="uids:list" tal:attributes="value sample/uid"/>
 
               <table class="table table-bordered" style="margin-bottom:1.5em;">
                 <thead>
@@ -55,10 +53,6 @@
                           <!-- Additional Sample information -->
                           <small tal:content="sample/sample_type"/>
                         </h2>
-                        <input name="sample.uid:record"
-                               type="hidden"
-                               tal:attributes="value sample/uid;
-                                               name string:sample.${sample/uid}:record"/>
                       </div>
                     </th>
                   </tr>
@@ -66,15 +60,14 @@
 
                 <tbody>
                   <tr>
-                    <td style="background-color: #fff">
+                    <td tal:define="obj python:sample.get('obj');
+                                    uid python:sample.get('uid');">
                       <div class="col">
                         <!-- Storage container -->
-                        <input type="hidden" name="samples.uid:records" tal:attributes="value sample/uid"/>
                         <div class="senaite-uidreference-widget-input"
-                             tal:define="obj python:sample.get('obj');
-                                         uid python:sample.get('uid');"
-                             tal:attributes="python:view.get_reference_widget_attributes('samples.container_uid:records', obj);
-                                             sample_uid string:${uid};">
+                             tal:attributes="python:view.get_reference_widget_attributes('sample_container.%s:record' % uid, obj);
+                                             id string:sample_container_${uid};
+                                             sample_uid uid">
                           <!-- ReactJS controlled widget -->
                         </div>
                       </div>
@@ -85,11 +78,12 @@
                           </div>
                           <select class="form-control form-control-sm"
                                   style="max-width:fit-content;"
-                                  name="samples.container_position:records"
-                                  tal:attributes="id string:container_position.${sample/uid}_uid">
+                                  tal:attributes="id string:sample_container_position_${uid};
+                                                  name string:sample_container_position.${uid}:record">
                           </select>
                         </div>
                       </div>
+
                     </td>
                   </tr>
                 </tbody>
