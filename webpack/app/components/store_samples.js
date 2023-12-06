@@ -31,7 +31,8 @@ StoreSamplesController = (function() {
 
   StoreSamplesController.prototype.bind_eventhandler = function() {
     this.debug("StoreSamplesController::bind_eventhandler");
-    $("body").on("selected", ".ArchetypesReferenceWidget input", this.on_container_change);
+    $("body").on("select", ".senaite-uidreference-widget-input textarea", this.on_container_change);
+    $("body").on("deselect", ".senaite-uidreference-widget-input textarea", this.on_container_change);
     return $("body").on("change", "select[name='samples\\.container_position:records']", this.on_container_position_change);
   };
 
@@ -41,11 +42,12 @@ StoreSamplesController = (function() {
      * Fills the select element next to the container input with the positions
      * that are available for storage
      */
-    var $container, container_uid, sample_uid, select;
+    var $el, $parent, container_uid, sample_uid, select;
     this.debug("StoreSamplesController::on_container_change");
-    $container = $(event.currentTarget);
-    container_uid = $container.attr("uid");
-    sample_uid = $container.attr("sample_uid");
+    $el = $(event.currentTarget);
+    $parent = $el.closest("div.senaite-uidreference-widget-input");
+    container_uid = event.detail.value;
+    sample_uid = $parent.attr("sample_uid");
     select = $("#container_position\\." + sample_uid + "_uid")[0];
     this.fill_container_positions(container_uid, select);
   };

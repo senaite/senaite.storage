@@ -12,10 +12,17 @@ let gitHash = childProcess.execSync(gitCmd).toString().substring(0, 7);
 
 const staticPath = path.resolve(__dirname, "../src/senaite/storage/browser/static");
 
-const devMode = process.env.NODE_ENV !== 'production';
+const devMode = process.env.mode == "development";
+const prodMode = process.env.mode == "production";
+const mode = process.env.mode;
+console.log(`RUNNING WEBPACK IN '${mode}' MODE`);
 
 
 module.exports = {
+  // https://webpack.js.org/configuration/devtool
+  devtool: devMode ? "eval" : "source-map",
+  // https://webpack.js.org/configuration/mode/#usage
+  mode: mode,
   context: path.resolve(__dirname, "app"),
   entry: {
     "senaite.storage": [
@@ -54,9 +61,6 @@ module.exports = {
           {
             // https://webpack.js.org/plugins/mini-css-extract-plugin/
             loader: MiniCssExtractPlugin.loader,
-            options: {
-              hmr: process.env.NODE_ENV === "development"
-            },
           },
           {
             // https://webpack.js.org/loaders/css-loader/
@@ -86,7 +90,12 @@ module.exports = {
   },
   plugins: [
     // https://github.com/johnagan/clean-webpack-plugin
-    new CleanWebpackPlugin(),
+    new CleanWebpackPlugin({
+      verbose: false,
+      // Workaround in `watch` mode when trying to remove the `resources.pt` in the parent folder:
+      // Error: clean-webpack-plugin: Cannot delete files/folders outside the current working directory.
+      cleanAfterEveryBuildPatterns: ["!../*"],
+    }),
     // https://webpack.js.org/plugins/html-webpack-plugin/
     new HtmlWebpackPlugin({
       inject: false,
@@ -95,8 +104,7 @@ module.exports = {
     }),
     // https://webpack.js.org/plugins/mini-css-extract-plugin/
     new MiniCssExtractPlugin({
-      filename: devMode ? "[name].css" : "[name].[hash].css",
-      chunkFilename: devMode ? "[id].css" : "[id].[hash].css",
+      filename: "[name].css"
     }),
     // https://webpack.js.org/plugins/copy-webpack-plugin/
     // new CopyPlugin({
