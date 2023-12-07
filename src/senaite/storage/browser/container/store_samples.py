@@ -18,12 +18,17 @@
 # Copyright 2019-2023 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import json
+
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.storage import logger
 from senaite.storage import senaiteMessageFactory as _s
 from senaite.storage.browser import BaseView
+from senaite.storage.catalog import STORAGE_CATALOG
+
+DISPLAY_TEMPLATE = "<a href='${url}' _target='blank'>${get_full_title}</a>"
 
 
 class StoreSamplesView(BaseView):
@@ -108,3 +113,50 @@ class StoreSamplesView(BaseView):
                 "url": api.get_url(obj),
                 "sample_type": api.get_title(obj.getSampleType())
             }
+
+    def get_reference_widget_attributes(self, name, obj):
+        """Return input widget attributes for the ReactJS component
+        """
+        url = api.get_url(obj)
+
+        attributes = {
+            "data-name": name,
+            "data-values": [],
+            "data-records": {},
+            "data-value_key": "uid",
+            "data-value_query_index": "UID",
+            "data-api_url": "%s/referencewidget_search" % url,
+            "data-query": {
+                "portal_type": ["StorageSamplesContainer"],
+                "is_full": False,
+                "review_state": "active",
+                "sort_on": "getId",
+                "sort_order": "ascending",
+            },
+            "data-catalog": STORAGE_CATALOG,
+            "data-search_index": "listing_searchable_text",
+            "data-search_wildcard": True,
+            "data-allow_user_value": False,
+            "data-columns": [{
+                "name": "id",
+                "label": _("Id"),
+                "width": 10,
+            }, {
+                "name": "get_full_title",
+                "label": _("Container path"),
+                "width": 90,
+            }],
+            "data-display_template": DISPLAY_TEMPLATE,
+            "data-limit": 5,
+            "data-multi_valued": False,
+            "data-disabled": False,
+            "data-readonly": False,
+            "data-required": False,
+            "data-clear_results_after_select": False,
+        }
+
+        for key, value in attributes.items():
+            # convert all attributes to JSON
+            attributes[key] = json.dumps(value)
+
+        return attributes
