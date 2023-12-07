@@ -114,9 +114,11 @@ class StoreSamplesView(BaseView):
                 "sample_type": api.get_title(obj.getSampleType())
             }
 
-    def get_reference_widget_attributes(self, name, obj):
+    def get_reference_widget_attributes(self, name, obj=None):
         """Return input widget attributes for the ReactJS component
         """
+        if obj is None:
+            obj = self.context
         url = api.get_url(obj)
 
         attributes = {
