@@ -28,6 +28,9 @@ from senaite.storage import logger
 from senaite.storage import senaiteMessageFactory as _
 from senaite.storage.browser import BaseView
 from senaite.storage.interfaces import IStorageSamplesContainer
+from senaite.core.catalog import SAMPLE_CATALOG
+
+DISPLAY_TEMPLATE = "<a href='${url}' _target='blank'>${getId}</a>"
 
 
 class StoreContainerView(BaseView):
@@ -183,7 +186,7 @@ class StoreContainerView(BaseView):
         # Handle store
         if form_submitted and form_store:
             alpha_position = form.get("position")
-            sample_uid = form.get("sample_uid")
+            sample_uid = form.get("sample")
             if not alpha_position or not api.is_uid(sample_uid):
                 message = _("No position or not valid sample selected")
                 return self.redirect(message=message)
@@ -207,3 +210,68 @@ class StoreContainerView(BaseView):
             return self.redirect(message=_("Sample storing canceled"))
 
         return self.template()
+
+    def get_reference_widget_attributes(self, name, obj=None):
+        """Return input widget attributes for the ReactJS component
+        """
+        if obj is None:
+            obj = self.context
+        url = api.get_url(obj)
+
+        attributes = {
+            "data-name": name,
+            "data-values": [],
+            "data-records": {},
+            "data-value_key": "uid",
+            "data-value_query_index": "UID",
+            "data-api_url": "%s/referencewidget_search" % url,
+            "data-query": {
+                "portal_type": ["AnalysisRequest"],
+                "review_state": [
+                    "received",
+                    "to_be_verified",
+                    "verified",
+                    "published",
+                ],
+                "sort_on": "sortable_title",
+                "sort_order": "ascending",
+            },
+            "data-catalog": SAMPLE_CATALOG,
+            "data-search_index": "listing_searchable_text",
+            "data-search_wildcard": True,
+            "data-allow_user_value": False,
+            "data-columns": [{
+                "name": "getId",
+                "label": _("Sample ID"),
+                "width": "15",
+            }, {
+                "name": "getClientSampleID",
+                "label": _("CSID"),
+                "width": "15",
+            }, {
+                "name": "getClientID",
+                "label": _("Client ID"),
+                "width": "35",
+            }, {
+                "name": "getSampleTypeTitle",
+                "label": _("Sample Type"),
+                "width": "25",
+            }, {
+                "name": "review_state",
+                "label": _("State"),
+                "width": "10",
+            }],
+            "data-display_template": DISPLAY_TEMPLATE,
+            "data-limit": 5,
+            "data-multi_valued": False,
+            "data-disabled": False,
+            "data-readonly": False,
+            "data-required": False,
+            "data-clear_results_after_select": False,
+        }
+
+        for key, value in attributes.items():
+            # convert all attributes to JSON
+            attributes[key] = json.dumps(value)
+
+        return attributes
