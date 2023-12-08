@@ -5,7 +5,7 @@ Changelog
 2.5.0 (unreleased)
 ------------------
 
-- no changes yet
+- #37 Migrate Sample/Container Reference Fields to new Widget
 
 
 2.4.1 (2023-03-11)

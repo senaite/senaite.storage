@@ -15,8 +15,9 @@ class StoreSamplesController
 
   bind_eventhandler: =>
     @debug "StoreSamplesController::bind_eventhandler"
-    $("body").on "selected", ".ArchetypesReferenceWidget input", @on_container_change
-    $("body").on "change", "select[name='samples\\.container_position:records']", @on_container_position_change
+    $("body").on "select", ".senaite-uidreference-widget-input textarea", @on_container_change
+    $("body").on "deselect", ".senaite-uidreference-widget-input textarea", @on_container_change
+    $("body").on "change", "select[container_uid]", @on_container_position_change
 
   on_container_change: (event) =>
     ###
@@ -24,10 +25,11 @@ class StoreSamplesController
      * that are available for storage
     ###
     @debug "StoreSamplesController::on_container_change"
-    $container = $(event.currentTarget)
-    container_uid = $container.attr "uid"
-    sample_uid = $container.attr "sample_uid"
-    select = $("#container_position\\."+sample_uid+"_uid")[0]
+    el = $(event.currentTarget)
+    parent = el.closest("div.senaite-uidreference-widget-input")
+    container_uid = event.detail.value
+    sample_uid = parent.attr "sample_uid"
+    select = $("select#sample_container_position_#{sample_uid}")[0]
     @fill_container_positions(container_uid, select)
     return
 
@@ -93,8 +95,7 @@ class StoreSamplesController
      * bound to the container passed in
     ###
     @debug "StoreSamplesController::get_container_position_selects:container_uid=#{container_uid}"
-    selects_name = "samples\\.container_position:records"
-    $("select[name='"+selects_name+"'][container_uid='"+container_uid+"']")
+    return $("select[container_uid='#{container_uid}']")
 
   fill_container_positions: (container_uid, select) =>
     ###

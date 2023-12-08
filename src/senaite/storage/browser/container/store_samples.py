@@ -18,12 +18,17 @@
 # Copyright 2019-2023 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import json
+
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.storage import logger
 from senaite.storage import senaiteMessageFactory as _s
 from senaite.storage.browser import BaseView
+from senaite.storage.catalog import STORAGE_CATALOG
+
+DISPLAY_TEMPLATE = "<a href='${url}' _target='blank'>${get_full_title}</a>"
 
 
 class StoreSamplesView(BaseView):
@@ -49,37 +54,43 @@ class StoreSamplesView(BaseView):
         form_store = form.get("button_store", False)
         form_cancel = form.get("button_cancel", False)
 
-        objs = self.get_objects_from_request()
+        samples = self.get_objects_from_request()
+        stored_samples = []
 
         # No items selected
-        if not objs:
+        if not samples:
             return self.redirect(message=_("No items selected"),
                                  level="warning")
 
         # Handle store
         if form_submitted and form_store:
-            samples = []
-            for sample in form.get("samples", []):
-                sample_uid = sample.get("uid")
-                container_uid = sample.get("container_uid")
-                alpha_position = sample.get("container_position")
-                if not sample_uid or not container_uid or not alpha_position:
-                    continue
 
+            # extract relevant data
+            container_mapping = form.get("sample_container", {})
+            container_position_mapping = form.get("sample_container_position", {})
+
+            for sample in samples:
+                sample_uid = api.get_uid(sample)
+                container_uid = container_mapping.get(sample_uid)
+                alpha_position = container_position_mapping.get(sample_uid)
+                if not all([container_uid, alpha_position]):
+                    continue
                 sample_obj = self.get_object_by_uid(sample_uid)
                 container = self.get_object_by_uid(container_uid)
-                logger.info("Storing sample {} in {}".format(sample_obj.getId(),
-                                                             container.getId()))
+                logger.info("Storing sample {} in {}"
+                            .format(sample.getId(), container.getId()))
                 # Store
                 position = container.alpha_to_position(alpha_position)
                 stored = container.add_object_at(sample_obj, position[0],
                                                  position[1])
                 if stored:
                     stored = container.get_object_at(position[0], position[1])
-                    samples.append(stored)
+                    stored_samples.append(stored)
 
             message = _s("Stored {} samples: {}".format(
-                len(samples), ", ".join(map(api.get_title, samples))))
+                len(stored_samples), ", ".join(
+                    map(api.get_title, stored_samples))))
+
             return self.redirect(message=message)
 
         # Handle cancel
@@ -102,3 +113,52 @@ class StoreSamplesView(BaseView):
                 "url": api.get_url(obj),
                 "sample_type": api.get_title(obj.getSampleType())
             }
+
+    def get_reference_widget_attributes(self, name, obj=None):
+        """Return input widget attributes for the ReactJS component
+        """
+        if obj is None:
+            obj = self.context
+        url = api.get_url(obj)
+
+        attributes = {
+            "data-name": name,
+            "data-values": [],
+            "data-records": {},
+            "data-value_key": "uid",
+            "data-value_query_index": "UID",
+            "data-api_url": "%s/referencewidget_search" % url,
+            "data-query": {
+                "portal_type": ["StorageSamplesContainer"],
+                "is_full": False,
+                "review_state": "active",
+                "sort_on": "getId",
+                "sort_order": "ascending",
+            },
+            "data-catalog": STORAGE_CATALOG,
+            "data-search_index": "listing_searchable_text",
+            "data-search_wildcard": True,
+            "data-allow_user_value": False,
+            "data-columns": [{
+                "name": "id",
+                "label": _("Id"),
+                "width": 10,
+            }, {
+                "name": "get_full_title",
+                "label": _("Container path"),
+                "width": 90,
+            }],
+            "data-display_template": DISPLAY_TEMPLATE,
+            "data-limit": 5,
+            "data-multi_valued": False,
+            "data-disabled": False,
+            "data-readonly": False,
+            "data-required": False,
+            "data-clear_results_after_select": False,
+        }
+
+        for key, value in attributes.items():
+            # convert all attributes to JSON
+            attributes[key] = json.dumps(value)
+
+        return attributes
