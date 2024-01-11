@@ -1,55 +1,58 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
-    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
-    i18n_domain="senaite.storage">
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
-<genericsetup:upgradeStep
-        title="Upgrade to SENAITE STORAGE 2.5.0"
-        source="2400"
-        destination="2500"
-        handler="senaite.storage.upgrade.v02_05_000.upgrade"
-        profile="senaite.storage:default"/>
+  <!-- 2.6.0 -->
+  <include file="v02_06_000.zcml"/>
 
-<genericsetup:upgradeStep
-        title="Upgrade to SENAITE STORAGE 2.4.0"
-        source="2300"
-        destination="2400"
-        handler="senaite.storage.upgrade.v02_04_000.upgrade"
-        profile="senaite.storage:default"/>
+  <!-- 2.5.0 -->
+  <genericsetup:upgradeStep
+      title="Upgrade to SENAITE STORAGE 2.5.0"
+      source="2400"
+      destination="2500"
+      handler="senaite.storage.upgrade.v02_05_000.upgrade"
+      profile="senaite.storage:default"/>
 
-<genericsetup:upgradeStep
-        title="Upgrade to SENAITE STORAGE 2.3.0"
-        source="2.2.0"
-        destination="2300"
-        handler="senaite.storage.upgrade.v02_03_000.upgrade"
-        profile="senaite.storage:default"/>
+  <genericsetup:upgradeStep
+      title="Upgrade to SENAITE STORAGE 2.4.0"
+      source="2300"
+      destination="2400"
+      handler="senaite.storage.upgrade.v02_04_000.upgrade"
+      profile="senaite.storage:default"/>
 
-<genericsetup:upgradeStep
-        title="Upgrade to SENAITE STORAGE 2.2.0"
-        source="2.1.1"
-        destination="2.2.0"
-        handler="senaite.storage.upgrade.v02_02_000.upgrade"
-        profile="senaite.storage:default"/>
+  <genericsetup:upgradeStep
+      title="Upgrade to SENAITE STORAGE 2.3.0"
+      source="2.2.0"
+      destination="2300"
+      handler="senaite.storage.upgrade.v02_03_000.upgrade"
+      profile="senaite.storage:default"/>
 
-<genericsetup:upgradeStep
-        title="Upgrade to SENAITE STORAGE 2.1.1"
-        source="2.1.0"
-        destination="2.1.1"
-        handler="senaite.storage.upgrade.v02_01_100.upgrade"
-        profile="senaite.storage:default"/>
+  <genericsetup:upgradeStep
+      title="Upgrade to SENAITE STORAGE 2.2.0"
+      source="2.1.1"
+      destination="2.2.0"
+      handler="senaite.storage.upgrade.v02_02_000.upgrade"
+      profile="senaite.storage:default"/>
 
-<genericsetup:upgradeStep
-        title="Upgrade to SENAITE STORAGE 2.1.0"
-        source="2.0.0"
-        destination="2.1.0"
-        handler="senaite.storage.upgrade.v02_01_000.upgrade"
-        profile="senaite.storage:default"/>
+  <genericsetup:upgradeStep
+      title="Upgrade to SENAITE STORAGE 2.1.1"
+      source="2.1.0"
+      destination="2.1.1"
+      handler="senaite.storage.upgrade.v02_01_100.upgrade"
+      profile="senaite.storage:default"/>
 
-<genericsetup:upgradeStep
-        title="Upgrade to SENAITE STORAGE 2.0.0"
-        source="*"
-        destination="2.0.0"
-        handler="senaite.storage.upgrade.v02_00_000.upgrade"
-        profile="senaite.storage:default"/>
+  <genericsetup:upgradeStep
+      title="Upgrade to SENAITE STORAGE 2.1.0"
+      source="2.0.0"
+      destination="2.1.0"
+      handler="senaite.storage.upgrade.v02_01_000.upgrade"
+      profile="senaite.storage:default"/>
+
+  <genericsetup:upgradeStep
+      title="Upgrade to SENAITE STORAGE 2.0.0"
+      source="*"
+      destination="2.0.0"
+      handler="senaite.storage.upgrade.v02_00_000.upgrade"
+      profile="senaite.storage:default"/>
 
 </configure>
