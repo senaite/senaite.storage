@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2023-03-10 16:20+0000\n"
+"POT-Creation-Date: 2024-01-11 15:58+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Domain: DOMAIN\n"
 
 #: senaite/storage/browser/container/templates/move_container.pt:23
-#: senaite/storage/browser/container/templates/store_samples.pt:25
+#: senaite/storage/browser/container/templates/store_samples.pt:18
 msgid "${back_link}"
 msgstr ""
 
@@ -25,7 +25,7 @@ msgid "% Samples"
 msgstr ""
 
 #: senaite/storage/browser/container/templates/move_container.pt:23
-#: senaite/storage/browser/container/templates/store_samples.pt:25
+#: senaite/storage/browser/container/templates/store_samples.pt:18
 msgid "&larr; Back"
 msgstr ""
 
@@ -42,7 +42,7 @@ msgstr ""
 msgid "Add Facility"
 msgstr ""
 
-#: senaite/storage/browser/container/templates/store_container.pt:115
+#: senaite/storage/browser/container/templates/store_container.pt:75
 msgid "Add Sample"
 msgstr ""
 
@@ -75,18 +75,26 @@ msgstr ""
 msgid "Alphabet letters will be used to represent a row within the container"
 msgstr ""
 
+#: senaite/storage/browser/container/store_container.py:249
+msgid "CSID"
+msgstr ""
+
 #: senaite/storage/browser/container/templates/move_container.pt:81
-#: senaite/storage/browser/container/templates/store_container.pt:122
-#: senaite/storage/browser/container/templates/store_samples.pt:147
+#: senaite/storage/browser/container/templates/store_container.pt:82
+#: senaite/storage/browser/container/templates/store_samples.pt:102
 msgid "Cancel"
 msgstr ""
 
-#: senaite/storage/browser/container/store_container.py:179
+#: senaite/storage/browser/container/store_container.py:182
 msgid "Cannot store samples. Samples container {} is full"
 msgstr ""
 
 #: senaite/storage/browser/container/templates/move_container.pt:63
 msgid "Choose container destination..."
+msgstr ""
+
+#: senaite/storage/browser/container/store_container.py:253
+msgid "Client ID"
 msgstr ""
 
 #: senaite/storage/browser/container/view.py:70
@@ -105,6 +113,10 @@ msgstr ""
 
 #: senaite/storage/browser/container/move_container.py:68
 msgid "Container moving cancelled"
+msgstr ""
+
+#: senaite/storage/browser/container/store_samples.py:148
+msgid "Container path"
 msgstr ""
 
 #: senaite/storage/browser/container/samples.py:123
@@ -163,6 +175,10 @@ msgstr ""
 msgid "ID"
 msgstr ""
 
+#: senaite/storage/browser/container/store_samples.py:144
+msgid "Id"
+msgstr ""
+
 #: senaite/storage/browser/container/view.py:88
 #: senaite/storage/browser/facility/view.py:106
 #: senaite/storage/browser/position/view.py:70
@@ -199,16 +215,16 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
-#: senaite/storage/browser/container/templates/store_container.pt:134
+#: senaite/storage/browser/container/templates/store_container.pt:94
 msgid "Next container:"
 msgstr ""
 
 #: senaite/storage/browser/container/move_container.py:56
-#: senaite/storage/browser/container/store_samples.py:56
+#: senaite/storage/browser/container/store_samples.py:62
 msgid "No items selected"
 msgstr ""
 
-#: senaite/storage/browser/container/store_container.py:188
+#: senaite/storage/browser/container/store_container.py:191
 msgid "No position or not valid sample selected"
 msgstr ""
 
@@ -221,8 +237,8 @@ msgid "Phone"
 msgstr ""
 
 #: senaite/storage/browser/container/samples.py:64
-#: senaite/storage/browser/container/templates/store_container.pt:102
-#: senaite/storage/browser/container/templates/store_samples.pt:125
+#: senaite/storage/browser/container/templates/store_container.pt:60
+#: senaite/storage/browser/container/templates/store_samples.pt:77
 msgid "Position"
 msgstr ""
 
@@ -238,15 +254,19 @@ msgstr ""
 msgid "Rows"
 msgstr ""
 
-#: senaite/storage/browser/container/templates/store_container.pt:62
-msgid "Sample"
-msgstr ""
-
 #: senaite/storage/browser/storage/view.py:67
 msgid "Sample Containers"
 msgstr ""
 
-#: senaite/storage/browser/container/store_container.py:207
+#: senaite/storage/browser/container/store_container.py:245
+msgid "Sample ID"
+msgstr ""
+
+#: senaite/storage/browser/container/store_container.py:257
+msgid "Sample Type"
+msgstr ""
+
+#: senaite/storage/browser/container/store_container.py:210
 msgid "Sample storing canceled"
 msgstr ""
 
@@ -254,10 +274,6 @@ msgstr ""
 #: senaite/storage/browser/storage/listing.py:62
 #: senaite/storage/browser/storage/view.py:61
 msgid "Samples"
-msgstr ""
-
-#: senaite/storage/browser/container/templates/store_samples.pt:80
-msgid "Samples container"
 msgstr ""
 
 #: senaite/storage/profiles/default/types/StorageSamplesContainer.xml
@@ -273,7 +289,11 @@ msgstr ""
 msgid "Samples usage"
 msgstr ""
 
-#: senaite/storage/browser/container/templates/store_container.pt:196
+#: senaite/storage/browser/container/store_container.py:261
+msgid "State"
+msgstr ""
+
+#: senaite/storage/browser/container/templates/store_container.pt:156
 msgid "Status"
 msgstr ""
 
@@ -293,11 +313,11 @@ msgstr ""
 msgid "Storage container"
 msgstr ""
 
-#: senaite/storage/browser/container/templates/store_samples.pt:141
+#: senaite/storage/browser/container/templates/store_samples.pt:96
 msgid "Store Samples"
 msgstr ""
 
-#: senaite/storage/browser/container/templates/store_samples.pt:17
+#: senaite/storage/browser/container/templates/store_samples.pt:10
 msgid "Store samples"
 msgstr ""
 
@@ -309,7 +329,7 @@ msgstr ""
 msgid "Stored sample"
 msgstr ""
 
-#: senaite/storage/browser/container/store_container.py:198
+#: senaite/storage/browser/container/store_container.py:201
 msgid "Stored sample {} at position {}"
 msgstr ""
 
@@ -325,6 +345,6 @@ msgstr ""
 msgid "The storage position inside a facility"
 msgstr ""
 
-#: senaite/storage/browser/container/templates/store_container.pt:32
+#: senaite/storage/browser/container/templates/store_container.pt:22
 msgid "Used positions:"
 msgstr ""
