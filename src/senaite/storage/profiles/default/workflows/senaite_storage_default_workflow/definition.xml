@@ -107,7 +107,7 @@
     <action url="%(content_url)s/storage_store_container" category="workflow" icon="">Add samples</action>
     <guard>
       <guard-permission>senaite.storage: Transition: Add Samples</guard-permission>
-      <guard-expression>python:here.guard_add_samples()</guard-expression>
+      <guard-expression>python:here.guard_handler("add_samples")</guard-expression>
     </guard>
   </transition>
 

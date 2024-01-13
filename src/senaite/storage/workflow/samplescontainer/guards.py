@@ -18,25 +18,28 @@
 # Copyright 2019-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from AccessControl.SecurityInfo import ModuleSecurityInfo
 from senaite.storage.interfaces import IStorageSamplesContainer
+from senaite.storage.workflow.guard import GuardAdapter
 
-security = ModuleSecurityInfo(__name__)
 
-
-@security.public
-def guard_add_samples(samples_container):
-    """Guard for adding samples to this container
+class SamplesContainerGuardAdapter(GuardAdapter):
+    """Guards adapter for SamplesContainer
     """
-    if not IStorageSamplesContainer.providedBy(samples_container):
-        return False
-    return not samples_container.is_full()
 
+    def guard_add_samples(self):
+        """Guard for adding samples to this container
+        """
+        samples_container = self.context
+        # TODO Create a workflow specific for StorageSamplesContainer
+        if not IStorageSamplesContainer.providedBy(samples_container):
+            return False
+        return not samples_container.is_full()
 
-@security.public
-def guard_recover_samples(samples_container):
-    """Guard for recover all samples from this container
-    """
-    if not IStorageSamplesContainer.providedBy(samples_container):
-        return False
-    return samples_container.has_samples()
+    def guard_recover_samples(self):
+        """Guard for recover all samples from this container
+        """
+        samples_container = self.context
+        # TODO Create a workflow specific for StorageSamplesContainer
+        if not IStorageSamplesContainer.providedBy(samples_container):
+            return False
+        return samples_container.has_samples()
