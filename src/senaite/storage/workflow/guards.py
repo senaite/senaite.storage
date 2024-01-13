@@ -18,12 +18,15 @@
 # Copyright 2019-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims import api
 from bika.lims.interfaces import IGuardAdapter
+from senaite.storage.interfaces import IStorageContainer
+from senaite.storage.interfaces import IStorageSamplesContainer
 from zope.interface import implementer
 
 
 @implementer(IGuardAdapter)
-class GuardAdapter(object):
+class GuardsAdapter(object):
     """Baseline class for guard adapters
     """
 
@@ -34,7 +37,32 @@ class GuardAdapter(object):
         func_name = "guard_{}".format(action)
         func = getattr(self, func_name, None)
         if func:
-            return func()
+            return func(self.context)
 
         # No guard intercept here
         return True
+
+    def guard_add_samples(self, context):
+        """Guard for adding samples to this container
+        """
+        if not IStorageSamplesContainer.providedBy(context):
+            return False
+        return not context.is_full()
+
+    def guard_recover_samples(self, context):
+        """Guard for recover all samples from this container
+        """
+        if not IStorageSamplesContainer.providedBy(context):
+            return False
+        return context.has_samples()
+
+    def guard_move_container(self, context):
+        """Guard for move container
+        """
+        if not api.is_active(context):
+            return False
+        if IStorageContainer.providedBy(context):
+            return True
+        if IStorageSamplesContainer.providedBy(context):
+            return True
+        return False
