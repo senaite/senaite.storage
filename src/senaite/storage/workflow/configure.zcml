@@ -2,6 +2,13 @@
     xmlns="http://namespaces.zope.org/zope"
     i18n_domain="senaite.storage">
 
+  <!-- Guards adapter -->
+  <adapter
+      for="senaite.storage.interfaces.IStorageContent"
+      provides="bika.lims.interfaces.IGuardAdapter"
+      factory=".guards.GuardsAdapter"
+      name="senaite.storage.adapter.guards" />
+
   <!-- Sample *before transition* event handler -->
   <subscriber
       for="bika.lims.interfaces.IAnalysisRequest

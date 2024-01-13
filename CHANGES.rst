@@ -4,6 +4,8 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #38 Remove Script (Python) for guards in favour of guard_handler
+
 
 2.5.0 (2024-01-11)
 ------------------
