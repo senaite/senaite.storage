@@ -30,7 +30,6 @@ class SamplesContainerGuardAdapter(GuardAdapter):
         """Guard for adding samples to this container
         """
         samples_container = self.context
-        # TODO Create a workflow specific for StorageSamplesContainer
         if not IStorageSamplesContainer.providedBy(samples_container):
             return False
         return not samples_container.is_full()
@@ -39,7 +38,6 @@ class SamplesContainerGuardAdapter(GuardAdapter):
         """Guard for recover all samples from this container
         """
         samples_container = self.context
-        # TODO Create a workflow specific for StorageSamplesContainer
         if not IStorageSamplesContainer.providedBy(samples_container):
             return False
         return samples_container.has_samples()
