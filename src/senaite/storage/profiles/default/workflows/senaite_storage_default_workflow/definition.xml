@@ -129,7 +129,7 @@
     <action url="%(content_url)s/storage_move_container" category="workflow" icon="">Move container</action>
     <guard>
       <guard-permission>senaite.storage: Transition: Move Container</guard-permission>
-      <guard-expression>python:here.guard_move_container()</guard-expression>
+      <guard-expression>python:here.guard_handler("move_container")</guard-expression>
     </guard>
   </transition>
 

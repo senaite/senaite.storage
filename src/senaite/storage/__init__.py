@@ -20,7 +20,6 @@
 
 import logging
 
-from AccessControl import allow_module
 from bika.lims.api import get_request
 from Products.Archetypes.atapi import listTypes
 from Products.Archetypes.atapi import process_types
@@ -30,16 +29,6 @@ from senaite.storage import permissions
 from senaite.storage.config import PRODUCT_NAME
 from senaite.storage.interfaces import ISenaiteStorageLayer
 from zope.i18nmessageid import MessageFactory
-
-# Make senaite.storage modules importable by through-the-web
-# https://docs.plone.org/develop/plone/security/sandboxing.html
-# https://docs.zope.org/zope2/zdgbook/Security.html
-# This allows Script python (e.g. guards from skins) to access to these
-# modules. To provide access to a module inside of a package, we need to
-# provide security declarations for all of the the packages and sub-packages
-# along the path used to access the module. Thus, all the modules from the path
-# passed in to `allow_module` will be available.
-allow_module("senaite.storage.workflow.storage.guards")
 
 # Defining a Message Factory for when this product is internationalized.
 senaiteMessageFactory = MessageFactory(PRODUCT_NAME)
