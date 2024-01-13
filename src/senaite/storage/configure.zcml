@@ -7,9 +7,6 @@
 
   <five:registerPackage package="." initialize=".initialize"/>
 
-  <!-- Filesystem directory view for through-the-web Zope scripts -->
-  <cmf:registerDirectory name="zope_scripts" directory="zope_scripts"/>
-
   <!-- Register Translations -->
   <i18n:registerTranslations directory="locales" />
 
