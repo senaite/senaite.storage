@@ -34,7 +34,7 @@ class GuardAdapter(object):
         func_name = "guard_{}".format(action)
         func = getattr(self, func_name, None)
         if func:
-            return func(self.context)
+            return func()
 
         # No guard intercept here
         return True
