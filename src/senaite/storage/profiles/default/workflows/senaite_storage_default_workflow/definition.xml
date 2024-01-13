@@ -118,7 +118,7 @@
     <action url="" category="workflow" icon="">Recover samples</action>
     <guard>
       <guard-permission>senaite.storage: Transition: Recover Samples</guard-permission>
-      <guard-expression>python:here.guard_recover_samples()</guard-expression>
+      <guard-expression>python:here.guard_handler("recover_samples")</guard-expression>
     </guard>
   </transition>
 
