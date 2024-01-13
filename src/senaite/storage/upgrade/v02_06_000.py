@@ -22,6 +22,7 @@ from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.storage import logger
 from senaite.storage import PRODUCT_NAME
+from senaite.storage.setuphandlers import setup_workflows
 
 version = "2.6.0"
 profile = "profile-{0}:default".format(PRODUCT_NAME)
@@ -46,3 +47,16 @@ def upgrade(tool):
 
     logger.info("{0} upgraded to version {1}".format(PRODUCT_NAME, version))
     return True
+
+
+def remove_guard_scripts(tool):
+    """Removes the guard zope scripts in favour of the generic guard_handler
+    """
+    portal = tool.aq_inner.aq_parent
+
+    # re-import our own workflows
+    setup = portal.portal_setup
+    setup.runImportStepFromProfile(profile, "workflow")
+
+    # Setup the custom workflows
+    setup_workflows(portal)
