@@ -43,16 +43,16 @@ class IStorageControlPanel(Interface):
         ),
     )
 
-    restore_primary = schema.Bool(
+    recover_primary = schema.Bool(
         title=_(
-            u"label_storage_settings_restore_primary",
-            default=u"Auto-restore primary sample"
+            u"label_storage_settings_recover_primary",
+            default=u"Auto-recover primary sample"
         ),
         description=_(
-            u"description_storage_settings_restore_primary",
-            default=u"Select this option to automatically restore the primary "
-                    u"sample when at least one of its partitions is restored "
-                    u"from storage."
+            u"description_storage_settings_recover_primary",
+            default=u"Select this option to automatically transition back the "
+                    u"primary from 'stored' to its preceding status when all "
+                    u"its partitions are recovered."
         ),
     )
 
