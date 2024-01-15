@@ -21,6 +21,7 @@
 from bika.lims import api
 from bika.lims.api.snapshot import pause_snapshots_for
 from bika.lims.api.snapshot import resume_snapshots_for
+from bika.lims.interfaces import IAnalysis
 from bika.lims.utils import changeWorkflowState
 from bika.lims.workflow import doActionFor as do_action_for
 from senaite.core.workflow import SAMPLE_WORKFLOW
@@ -62,6 +63,11 @@ def after_store(sample):
     # auto-store the primary sample if all its partitions are stored
     primary = sample.getParentAnalysisRequest()
     if not primary:
+        return
+
+    # Do not store primary if it has it's own analyses assigned
+    analyses = filter(IAnalysis.providedBy, primary.objectValues())
+    if len(analyses) > 0:
         return
 
     # Store primary sample if its partitions have been stored
