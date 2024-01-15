@@ -41,6 +41,7 @@ class IStorageControlPanel(Interface):
                     u"primary sample to 'stored' status when all its "
                     u"partitions are stored."
         ),
+        default=True,
     )
 
     recover_primary = schema.Bool(
@@ -54,6 +55,7 @@ class IStorageControlPanel(Interface):
                     u"primary from 'stored' to its preceding status when all "
                     u"its partitions are recovered."
         ),
+        default=True,
     )
 
 

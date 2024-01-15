@@ -24,7 +24,24 @@ from bika.lims.api.snapshot import resume_snapshots_for
 from bika.lims.utils import changeWorkflowState
 from bika.lims.workflow import doActionFor as do_action_for
 from senaite.core.workflow import SAMPLE_WORKFLOW
+from senaite.storage.config import PRODUCT_NAME
 from senaite.storage import api as _api
+
+
+def is_store_primary_enabled():
+    """Returns whether the transition 'store' must be automatically triggered
+    for primary sample when all its partitions have been stored
+    """
+    key = "{}.store_primary".format(PRODUCT_NAME)
+    return api.get_registry_record(key, default=True)
+
+
+def is_recover_primary_enabled():
+    """Returns whether the transition 'recover' must be automatically triggered
+    for primary sample when all its partitions have been recovered
+    """
+    key = "{}.recover_primary".format(PRODUCT_NAME)
+    return api.get_registry_record(key, default=True)
 
 
 def before_dispatch(sample):
@@ -39,6 +56,10 @@ def before_dispatch(sample):
 def after_store(sample):
     """Event triggered after "store" transition takes place for a given sample
     """
+    if not is_store_primary_enabled():
+        return
+
+    # auto-store the primary sample if all its partitions are stored
     primary = sample.getParentAnalysisRequest()
     if not primary:
         return
@@ -70,6 +91,10 @@ def after_recover(sample):
 
     # Reindex the sample
     sample.reindexObject()
+
+    if not is_recover_primary_enabled():
+        # Do not auto-recover the primary, if any
+        return
 
     # If the sample is a partition, try to promote to the primary
     primary = sample.getParentAnalysisRequest()
