@@ -38,7 +38,7 @@ class IStorageControlPanel(Interface):
         description=_(
             u"description_storage_settings_store_primary",
             default=u"Select this option to automatically transition the "
-                    u"primary sample to 'stored' status when it does not have"
+                    u"primary sample to 'stored' status when it does not have "
                     u"analyses assigned and all its partitions are stored."
         ),
         default=True,
