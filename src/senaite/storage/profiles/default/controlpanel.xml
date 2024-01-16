@@ -1,0 +1,19 @@
+<object
+  name="portal_controlpanel"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+
+  <configlet
+    title="Storage settings"
+    action_id="senaite.storage"
+    appId="senaite.storage"
+    category="Products"
+    condition_expr=""
+    icon_expr="senaite_theme/icon/storage"
+    url_expr="string:${portal_url}/@@storage-controlpanel"
+    visible="True"
+    i18n:domain="senaite.storage"
+    i18n:attributes="title">
+    <permission>senaite.core: Manage Bika</permission>
+  </configlet>
+
+</object>

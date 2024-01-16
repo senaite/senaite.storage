@@ -33,6 +33,8 @@ from zope.i18nmessageid import MessageFactory
 # Defining a Message Factory for when this product is internationalized.
 senaiteMessageFactory = MessageFactory(PRODUCT_NAME)
 
+_ = senaiteMessageFactory
+
 logger = logging.getLogger(PRODUCT_NAME)
 
 

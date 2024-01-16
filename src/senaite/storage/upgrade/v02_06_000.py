@@ -70,3 +70,12 @@ def remove_guard_scripts(tool):
         del selections[scripts_id]
     if scripts_id in skins_tool:
         del skins_tool[scripts_id]
+
+
+def setup_storage_controlpanel(tool):
+    """Setup the storage control panel
+    """
+    portal = tool.aq_inner.aq_parent
+    setup = portal.portal_setup
+    setup.runImportStepFromProfile(profile, "plone.app.registry")
+    setup.runImportStepFromProfile(profile, "controlpanel")
