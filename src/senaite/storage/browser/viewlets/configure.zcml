@@ -2,6 +2,16 @@
            xmlns:browser="http://namespaces.zope.org/browser"
            i18n_domain="senaite.storage">
 
+  <!-- Sample discarded viewlet -->
+  <browser:viewlet
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="senaite.storage.sample_discarded_viewlet"
+      class=".sample_discarded.SampleDiscardedViewlet"
+      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+      template="templates/sample_discarded_viewlet.pt"
+      permission="zope2.View"
+      layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
+
   <!-- Storage container viewlet displayed in samples -->
   <browser:viewlet
       for="bika.lims.interfaces.IAnalysisRequest"
