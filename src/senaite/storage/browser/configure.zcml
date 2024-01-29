@@ -7,6 +7,7 @@
   <include package=".container"/>
   <include package=".facility"/>
   <include package=".position"/>
+  <include package=".samples"/>
   <include package=".storage"/>
   <include package=".theme"/>
   <include package=".viewlets"/>

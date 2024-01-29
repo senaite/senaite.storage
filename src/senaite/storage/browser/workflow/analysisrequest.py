@@ -35,3 +35,16 @@ class WorkflowActionStoreAdapter(RequestContextAware):
         url = "{}/storage_store_samples?uids={}".format(
             api.get_url(self.context), ",".join(uids))
         return self.redirect(redirect_url=url)
+
+
+@implementer(IWorkflowActionUIDsAdapter)
+class WorkflowActionDiscardAdapter(RequestContextAware):
+    """Adapter in charge of the Sample's 'discard' action
+    """
+
+    def __call__(self, action, uids):
+        """Redirects the user to the Storage container selector view
+        """
+        url = "{}/storage_discard_samples?uids={}".format(
+            api.get_url(self.context), ",".join(uids))
+        return self.redirect(redirect_url=url)

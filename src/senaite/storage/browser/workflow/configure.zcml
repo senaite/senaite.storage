@@ -14,6 +14,18 @@
     provides="bika.lims.interfaces.IWorkflowActionAdapter"
     permission="zope.Public" />
 
+  <!-- Workflow action "store"
+  Note this applies wide, cause at the moment, this action only exists
+  for Samples and we always want this adapter to be in charge, regardless of
+  the context (Analysis Requests listing, Client folder, etc.) -->
+  <adapter
+      name="workflow_action_discard"
+      for="*
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory=".analysisrequest.WorkflowActionDiscardAdapter"
+      provides="bika.lims.interfaces.IWorkflowActionAdapter"
+      permission="zope.Public" />
+
   <!-- Workflow action "add_samples" -->
   <adapter
     name="workflow_action_add_samples"

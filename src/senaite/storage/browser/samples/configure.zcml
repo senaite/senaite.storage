@@ -1,0 +1,13 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser">
+
+  <!-- Discard samples view, with a pre-defined set of reasons -->
+  <browser:page
+      for="*"
+      name="storage_discard_samples"
+      class=".discard_samples.DiscardSamplesView"
+      permission="senaite.core.permissions.ManageAnalysisRequests"
+      layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
+
+</configure>
