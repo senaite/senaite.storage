@@ -78,7 +78,7 @@ class AnalysisRequestsListingViewAdapter(object):
             "url": "workflow_action?action=print_stickers"
         }
 
-        # "stored" review state
+        # "stored" and "discarded review states
         stored = {
             "id": "stored",
             "title": _("Stored"),
@@ -95,6 +95,18 @@ class AnalysisRequestsListingViewAdapter(object):
 
         # Add the review state
         utils.add_review_state(self.listing, stored, after="published")
+
+        discarded = {
+            "id": "discarded",
+            "title": _("Discarded"),
+            "contentFilter": {
+                "review_state": ("discarded",),
+                "sort_on": "created",
+                "sort_order": "descending",
+            },
+            "columns": columns,
+        }
+        utils.add_review_state(self.listing, discarded, after="stored")
 
         # Add the column "DateStored" to "stored" review_state
         column_values = {
