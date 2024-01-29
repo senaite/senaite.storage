@@ -1,6 +1,6 @@
 <div tal:omit-tag=""
      tal:condition="python: view.is_discarded()"
-     i18n:domain="senaite.strorage">
+     i18n:domain="senaite.storage">
 
   <div id="portal-alert"
        tal:define="info python:view.get_state_info()">

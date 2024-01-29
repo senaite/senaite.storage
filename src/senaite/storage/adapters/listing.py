@@ -78,7 +78,7 @@ class AnalysisRequestsListingViewAdapter(object):
             "url": "workflow_action?action=print_stickers"
         }
 
-        # "stored" and "discarded review states
+        # "stored" review state
         stored = {
             "id": "stored",
             "title": _("Stored"),
