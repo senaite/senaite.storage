@@ -35,6 +35,7 @@ from senaite.storage.catalog import STORAGE_CATALOG
 from senaite.storage.catalog import StorageCatalog
 from senaite.storage.config import PRODUCT_NAME
 from senaite.storage.config import PROFILE_ID
+from senaite.storage.permissions import TransitionDiscardSample
 
 ACTIONS_TO_HIDE = [
     # Tuples of (id, folder_id)
@@ -131,7 +132,7 @@ WORKFLOWS_TO_UPDATE = {
             "stored": {
                 "title": "Stored",
                 "description": "Sample is stored",
-                "transitions": ("recover", "detach", "dispatch", ),
+                "transitions": ("recover", "detach", "dispatch", "discard"),
                 # Copy permissions from sample_received first
                 "permissions_copy_from": "sample_received",
                 # Override permissions
@@ -149,6 +150,12 @@ WORKFLOWS_TO_UPDATE = {
                     permissions.TransitionScheduleSampling: (),
                     ModifyPortalContent: (),
                 }
+            },
+            "discarded": {
+                "title": "Discarded",
+                "description": "Sample is discarded",
+                # discarded is an end-non-writable-state, like rejected
+                "permissions_copy_from": "rejected",
             },
         },
         "transitions": {
@@ -174,6 +181,16 @@ WORKFLOWS_TO_UPDATE = {
                     "guard_expr": "python:here.guard_handler('recover')",
                 }
             },
+            "discard": {
+                "title": "Discard",
+                "new_state": "discarded",
+                "action": "Discard sample",
+                "guard": {
+                    "guard_permissions": TransitionDiscardSample,
+                    "guard_roles": "",
+                    "guard_expr": "python:here.guard_handler('discard')",
+                }
+            }
         }
     }
 }

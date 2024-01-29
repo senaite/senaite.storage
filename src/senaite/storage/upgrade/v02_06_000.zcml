@@ -3,6 +3,14 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.STORAGE 2.6.0: Setup discard action for stored samples"
+      description="Setup discard action for stored samples"
+      source="2602"
+      destination="2603"
+      handler=".v02_06_000.setup_discard_transition"
+      profile="senaite.storage:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.STORAGE 2.6.0: Setup Storage's control panel"
       description="Setup Storage's control panel"
       source="2601"

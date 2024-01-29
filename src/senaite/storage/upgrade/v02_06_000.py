@@ -24,6 +24,8 @@ from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.storage import logger
 from senaite.storage import PRODUCT_NAME
 from senaite.storage.setuphandlers import setup_workflows
+from senaite.core.catalog import SAMPLE_CATALOG
+from senaite.core.workflow import SAMPLE_WORKFLOW
 
 version = "2.6.0"
 profile = "profile-{0}:default".format(PRODUCT_NAME)
@@ -79,3 +81,37 @@ def setup_storage_controlpanel(tool):
     setup = portal.portal_setup
     setup.runImportStepFromProfile(profile, "plone.app.registry")
     setup.runImportStepFromProfile(profile, "controlpanel")
+
+
+def setup_discard_transition(tool):
+    """Setup discard action for stored samples
+    """
+    portal = tool.aq_inner.aq_parent
+    setup = portal.portal_setup
+    wf_tool = api.get_tool("portal_workflow")
+    wf = wf_tool.getWorkflowById(SAMPLE_WORKFLOW)
+
+    # re-import rolemap for new permisisons to become effective
+    setup.runImportStepFromProfile(profile, "rolemap")
+
+    # setup storage-specific workflow for new actions and statuses to apply
+    setup_workflows(portal)
+
+    # search samples in stored status and update role mappings
+    logger.info("Update role mappings of stored samples ...")
+    query = {"portal_type": "AnalysisRequest", "review_state": "stored"}
+    brains = api.search(query, SAMPLE_CATALOG)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num and num % 1000 == 0:
+            logger.info("Processed objects: {}/{}".format(num, total))
+
+        obj = api.get_object(brain)
+
+        # Update the role mappings
+        wf.updateRoleMappingsFor(obj)
+
+        # Flush the object from memory
+        obj._p_deactivate()
+
+    logger.info("Update role mappings of stored samples [DONE]")

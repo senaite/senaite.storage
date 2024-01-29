@@ -27,6 +27,7 @@ AddStoragePosition = "senaite.storage: Add Storage Position"
 # Permissions when context is a sample
 TransitionStoreSample = "senaite.storage: Transition: Store Sample"
 TransitionRecoverSample = "senaite.storage: Transition: Recover Sample"
+TransitionDiscardSample = "senaite.storage: Transition: Discard Sample"
 
 # Permissions when context is a storage samples container
 TransitionAddSamples = "senaite.storage: Transition: Add Samples"

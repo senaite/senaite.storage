@@ -43,6 +43,11 @@
       <role name="LabManager"/>
       <role name="Manager"/>
     </permission>
+    <permission name="senaite.storage: Transition: Discard Sample" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
 
     <!-- Add/Recover Samples Transition Permissions (storage listings) -->
     <permission name="senaite.storage: Transition: Add Samples" acquire="False">
