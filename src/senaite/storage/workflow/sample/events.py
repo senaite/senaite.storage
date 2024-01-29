@@ -45,6 +45,13 @@ def is_recover_primary_enabled():
     return api.get_registry_record(key, default=True)
 
 
+def after_discard(sample):
+    """Event triggered after "discard" action takes place for a given sample
+    """
+    # remove the sample from the container
+    _api.remove_sample_from_container(sample)
+
+
 def before_dispatch(sample):
     """Event triggered before "dispatch" transition takes place for a given sample
     """
