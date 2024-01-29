@@ -162,7 +162,7 @@ WORKFLOWS_TO_UPDATE = {
             "store": {
                 "title": "Store",
                 "new_state": "stored",
-                "action": "Store sample",
+                "action": "Store",
                 "guard": {
                     "guard_permissions": "senaite.storage: Transition: Store Sample",  # noqa
                     "guard_roles": "",
@@ -174,7 +174,7 @@ WORKFLOWS_TO_UPDATE = {
                 # We set same new_state here because system will transition the
                 # sample to the state before when was stored. See events
                 "new_state": "stored",
-                "action": "Recover sample",
+                "action": "Recover",
                 "guard": {
                     "guard_permissions": "senaite.storage: Transition: Recover Sample",  # noqa
                     "guard_roles": "",
@@ -184,7 +184,7 @@ WORKFLOWS_TO_UPDATE = {
             "discard": {
                 "title": "Discard",
                 "new_state": "discarded",
-                "action": "Discard sample",
+                "action": "Discard",
                 "guard": {
                     "guard_permissions": TransitionDiscardSample,
                     "guard_roles": "",
