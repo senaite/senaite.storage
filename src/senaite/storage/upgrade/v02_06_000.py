@@ -91,7 +91,11 @@ def setup_discard_transition(tool):
     wf_tool = api.get_tool("portal_workflow")
     wf = wf_tool.getWorkflowById(SAMPLE_WORKFLOW)
 
-    # re-import rolemap for new permisisons to become effective
+    # re-import storage registry to add predefined options for discard action
+    setup.runImportStepFromProfile(profile, "controlpanel")
+    setup.runImportStepFromProfile(profile, "plone.app.registry")
+
+    # re-import rolemap for new permissions to become effective
     setup.runImportStepFromProfile(profile, "rolemap")
 
     # setup storage-specific workflow for new actions and statuses to apply

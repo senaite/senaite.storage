@@ -58,6 +58,23 @@ class IStorageControlPanel(Interface):
         default=True,
     )
 
+    discard_reasons = schema.List(
+        title=_(
+            u"label_storage_settings_discard_reasons",
+            default=u"Discard reasons"
+        ),
+        description=_(
+            u"description_storage_settings_discard_reasons",
+            default=u"Pre-defined reasons to be displayed for selection when "
+                    u"discarding samples from storage."
+        ),
+        value_type=schema.ASCIILine(),
+        default=[
+            _("Exceeded storage time"),
+        ],
+        required=False,
+    )
+
 
 class StorageControlPanelForm(RegistryEditForm):
     schema = IStorageControlPanel
