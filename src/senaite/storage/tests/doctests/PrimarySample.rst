@@ -61,7 +61,7 @@ Create some baseline objects for the test:
     >>> contact = api.create(client, "Contact", Firstname="Rita", Lastname="Mohale")
     >>> sampletype = api.create(setup.bika_sampletypes, "SampleType", title="Water", Prefix="W")
     >>> labcontact = api.create(setup.bika_labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
-    >>> department = api.create(setup.bika_departments, "Department", title="Chemistry", Manager=labcontact)
+    >>> department = api.create(portal.setup.departments, "Department", title="Chemistry", Manager=labcontact)
     >>> category = api.create(setup.bika_analysiscategories, "AnalysisCategory", title="Metals", Department=department)
     >>> Cu = api.create(setup.bika_analysisservices, "AnalysisService", title="Copper", Keyword="Cu", Price="15", Category=category.UID(), Accredited=True)
     >>> Fe = api.create(setup.bika_analysisservices, "AnalysisService", title="Iron", Keyword="Fe", Price="10", Category=category.UID())
