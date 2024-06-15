@@ -4,7 +4,8 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
-- #42 Compatibility with core#2471
+- #44 Compatibility with core#2567 (AnalysisCategory to DX)
+- #42 Compatibility with core#2471 (Department to DX)
 - #39 Add storage settings for auto-store/recover of primary sample
 - #38 Remove Script (Python) for guards in favour of guard_handler
 
