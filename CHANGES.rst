@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #46 Compatibility with core#2584 (SampleType to DX)
 - #44 Compatibility with core#2567 (AnalysisCategory to DX)
 - #42 Compatibility with core#2471 (Department to DX)
 - #39 Add storage settings for auto-store/recover of primary sample
