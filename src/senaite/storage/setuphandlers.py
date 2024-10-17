@@ -20,11 +20,11 @@
 
 from Acquisition import aq_base
 from bika.lims import api
-from bika.lims import permissions
 from plone import api as ploneapi
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFPlone.utils import _createObjectByType
 from Products.DCWorkflow.Guard import Guard
+from senaite.core import permissions
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.setuphandlers import setup_catalog_mappings
 from senaite.core.setuphandlers import setup_core_catalogs
