@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #47 Update permissions imports
 - #44 Compatibility with core#2567 (AnalysisCategory to DX)
 - #42 Compatibility with core#2471 (Department to DX)
 - #39 Add storage settings for auto-store/recover of primary sample
