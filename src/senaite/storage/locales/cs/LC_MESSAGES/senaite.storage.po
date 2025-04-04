@@ -2,14 +2,14 @@
 # SOME DESCRIPTIVE TITLE.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # Translators:
-# Jiří Podhorecký, 2022
+# Jiří Podhorecký <jirka.p@volny.cz>, 2022
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2024-01-11 15:58+0000\n"
+"POT-Creation-Date: 2025-04-04 10:05+0000\n"
 "PO-Revision-Date: 2019-03-31 21:21+0000\n"
-"Last-Translator: Jiří Podhorecký, 2022\n"
+"Last-Translator: Jiří Podhorecký <jirka.p@volny.cz>, 2022\n"
 "Language-Team: Czech (https://app.transifex.com/senaite/teams/97702/cs/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -320,6 +320,10 @@ msgstr "Pozice úložiště"
 msgid "Storage container"
 msgstr "Úložný kontejner"
 
+#: senaite/storage/profiles/default/controlpanel.xml
+msgid "Storage settings"
+msgstr ""
+
 #: senaite/storage/browser/container/templates/store_samples.pt:96
 msgid "Store Samples"
 msgstr "Ukládání vzorků"
@@ -355,3 +359,28 @@ msgstr "Skladovací pozice uvnitř zařízení"
 #: senaite/storage/browser/container/templates/store_container.pt:22
 msgid "Used positions:"
 msgstr "Použité pozice:"
+
+#. Default: "Select this option to automatically transition back the primary from 'stored' to its preceding status when all its partitions are recovered."
+#: senaite/storage/browser/controlpanel.py:52
+msgid "description_storage_settings_recover_primary"
+msgstr ""
+
+#. Default: "Select this option to automatically transition the primary sample to 'stored' status when it does not have analyses assigned and all its partitions are stored."
+#: senaite/storage/browser/controlpanel.py:38
+msgid "description_storage_settings_store_primary"
+msgstr ""
+
+#. Default: "Storage Settings"
+#: senaite/storage/browser/controlpanel.py:65
+msgid "header_storage_settings"
+msgstr ""
+
+#. Default: "Auto-recover primary sample"
+#: senaite/storage/browser/controlpanel.py:48
+msgid "label_storage_settings_recover_primary"
+msgstr ""
+
+#. Default: "Auto-store primary sample"
+#: senaite/storage/browser/controlpanel.py:34
+msgid "label_storage_settings_store_primary"
+msgstr ""
