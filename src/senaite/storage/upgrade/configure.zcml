@@ -2,6 +2,9 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
+  <!-- 2.7.0 -->
+  <include file="v02_07_000.zcml"/>
+
   <!-- 2.6.0 -->
   <include file="v02_06_000.zcml"/>
 

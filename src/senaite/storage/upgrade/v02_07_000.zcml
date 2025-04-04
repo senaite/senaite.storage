@@ -1,0 +1,12 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
+
+  <genericsetup:upgradeStep
+      title="Upgrade to SENAITE.STORAGE 2.7.0"
+      source="2600"
+      destination="2700"
+      handler=".v02_07_000.upgrade"
+      profile="senaite.storage:default"/>
+
+</configure>
