@@ -16,7 +16,6 @@ from senaite.core.interfaces import IHideActionsMenu
 from senaite.core.schema import AddressField
 from senaite.core.schema import PhoneField
 from senaite.core.schema.addressfield import PHYSICAL_ADDRESS
-from senaite.core.schema.addressfield import POSTAL_ADDRESS
 from senaite.core.z3cform.widgets.phone import PhoneWidgetFactory
 from senaite.storage import senaiteMessageFactory as _
 from senaite.storage.catalog import STORAGE_CATALOG
@@ -27,7 +26,7 @@ from zope.interface import Invalid
 from zope.interface import implementer
 from zope.interface import invariant
 
-POSSIBLE_ADDRESSES = [PHYSICAL_ADDRESS, POSTAL_ADDRESS]
+POSSIBLE_ADDRESSES = [PHYSICAL_ADDRESS]
 
 INFO_TEMPLATE = Template(u"""<address>
   $address<br/>
@@ -95,7 +94,6 @@ class IStorageFacilitySchema(model.Schema):
         title=_("Address"),
         address_types=[
             PHYSICAL_ADDRESS,
-            POSTAL_ADDRESS,
         ]
     )
 
