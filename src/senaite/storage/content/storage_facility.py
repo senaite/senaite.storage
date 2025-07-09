@@ -59,7 +59,7 @@ class IStorageFacilitySchema(model.Schema):
         required=True,
     )
 
-    directives.mode(IEditForm, description="hidden")
+    directives.omitted(IEditForm, "description")
     description = schema.Text(
         title=_(
             u"title_storage_facility_description",
