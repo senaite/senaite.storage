@@ -13,7 +13,8 @@
 <object name="portal_types">
   <object name="StorageRootFolder" meta_type="Factory-based Type Information with dynamic views"/>
   <object name="StorageContainer" meta_type="Factory-based Type Information with dynamic views"/>
-  <object name="StorageFacility" meta_type="Factory-based Type Information with dynamic views"/>
   <object name="StorageSamplesContainer" meta_type="Factory-based Type Information with dynamic views"/>
+
+  <object name="StorageFacility" meta_type="Dexterity FTI" />
   <object name="StoragePosition" meta_type="Dexterity FTI" />
 </object>
