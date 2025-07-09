@@ -64,7 +64,6 @@ def initialize(context):
 
     from .content.storagerootfolder import StorageRootFolder  # noqa
     from .content.storagecontainer import StorageContainer  # noqa
-    from .content.storagefacility import StorageFacility  # noqa
     from .content.storagesamplescontainer import StorageSamplesContainer  # noqa
 
     types = listTypes(PRODUCT_NAME)
