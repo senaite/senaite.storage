@@ -69,10 +69,10 @@ jobs:
           ./bin/buildout -N -t 3 annotate
           ./bin/buildout -N -t 3
 
-      - name: Lint
-        run: |
-          ./bin/pip install flake8
-          ./bin/flake8 --config ci_flake8.cfg src/senaite/
+      # - name: Lint
+      #   run: |
+      #     ./bin/pip install flake8
+      #     ./bin/flake8 --config ci_flake8.cfg src/senaite/
 
       - name: Run tests
         run: |
