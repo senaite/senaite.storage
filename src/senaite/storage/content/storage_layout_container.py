@@ -78,7 +78,6 @@ class IStorageLayoutContainerSchema(model.Schema):
         default=[],
     )
 
-    # XXX: Where is this used?
     directives.widget("available_positions", TextLinesFieldWidget)
     available_positions = schema.List(
         title=_("Available Positions"),
@@ -120,8 +119,9 @@ class IStorageLayoutContainerSchema(model.Schema):
 class StorageLayoutContainer(Container):
     """A storage layout container
     """
-
     security = ClassSecurityInfo()
+
+    default_samples_capacity = 1
 
     @security.protected(permissions.View)
     def Description(self):
@@ -175,10 +175,9 @@ class StorageLayoutContainer(Container):
         return accessor(self)
 
     @security.protected(permissions.ModifyPortalContent)
-    def setPositionsLayout(self, values):
-        mutator = self.mutator("positions_layout")
+    def setAvailablePositions(self, values):
+        mutator = self.mutator("available_positions")
         mutator(self, values)
-        self.rebuild_layout()
 
     # BBB: AT schema field property
     PositionsLayout = property(getPositionsLayout, setPositionsLayout)
@@ -254,7 +253,8 @@ class StorageLayoutContainer(Container):
                 item = self.get_item_at(num_row, num_col)
                 new_item = item and item.copy() or new_item
                 new_layout.append(new_item)
-        self.getField("PositionsLayout").set(self, new_layout)
+        # bypass setter
+        self.positions_layout = new_layout
         available = map(lambda el: self.position_to_alpha(el[0], el[1]),
                         self.get_available_positions())
         self.setAvailablePositions(available)
@@ -342,7 +342,7 @@ class StorageLayoutContainer(Container):
                      self.getPositionsLayout())
         if not els:
             return None
-        return (api.to_int(els[0]['row']), api.to_int(els[0]['column']))
+        return (api.to_int(els[0]["row"]), api.to_int(els[0]["column"]))
 
     def has_object(self, object_brain_uid):
         """Returns if the container contains the object passed in
@@ -379,8 +379,8 @@ class StorageLayoutContainer(Container):
         container can have without removing any of the objects it contains
         """
         els = filter(self.is_taken, self.getPositionsLayout())
-        rows = map(lambda el: api.to_int(el['row']), els) or [0]
-        cols = map(lambda el: api.to_int(el['column']), els) or [0]
+        rows = map(lambda el: api.to_int(el["row"]), els) or [0]
+        cols = map(lambda el: api.to_int(el["column"]), els) or [0]
         return (max(rows)+1, max(cols)+1)
 
     def get_capacity(self):
