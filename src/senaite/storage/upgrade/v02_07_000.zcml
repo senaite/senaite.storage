@@ -3,6 +3,14 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.STORAGE 2.7.0: Migrate Storage Containers to DX"
+      description="Migrate all AT Storage Containers to Dexterity"
+      source="2701"
+      destination="2702"
+      handler=".v02_07_000.migrate_storage_containers_to_dx"
+      profile="senaite.storage:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.STORAGE 2.7.0: Migrate Storage Facilities to DX"
       description="Migrate all AT Storage Facilities to Dexterity"
       source="2700"
