@@ -48,7 +48,7 @@ class StorageListingView(StorageListing):
 
         # Add Facility action
         self.context_actions[_("Add Facility")] = {
-            "url": "createObject?type_name=StorageFacility",
+            "url": "++add++StorageFacility",
             "permission": AddStorageFacility,
             "icon": "{}/{}".format(self.icon_path, "storage-facility")
         }
