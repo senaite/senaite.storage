@@ -5,16 +5,37 @@ from bika.lims import workflow as wf
 from bika.lims.interfaces import IAnalysisRequest
 from plone.autoform import directives
 from senaite.core.catalog import SAMPLE_CATALOG
+from senaite.storage import senaiteMessageFactory as _
 from senaite.storage.catalog import STORAGE_CATALOG
 from senaite.storage.content.storage_layout_container import \
     IStorageLayoutContainerSchema
 from senaite.storage.content.storage_layout_container import \
     StorageLayoutContainer
 from senaite.storage.interfaces import IStorageSamplesContainer
+from zope import schema
 from zope.interface import implementer
 
 
 class IStorageSamplesContainerSchema(IStorageLayoutContainerSchema):
+
+    title = schema.TextLine(
+        title=_(
+            u"title_storage_samples_container_title",
+            default=u"Name"
+        ),
+        required=True,
+    )
+
+    description = schema.Text(
+        title=_(
+            u"title_storage_samples_container_description",
+            default=u"Description"
+        ),
+        required=False,
+    )
+
+    directives.order_after(rows="description")
+    directives.order_after(columns="rows")
 
     # hide internal fields
     directives.omitted("positions_layout")

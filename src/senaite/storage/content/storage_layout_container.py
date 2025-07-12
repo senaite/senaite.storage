@@ -140,6 +140,7 @@ class StorageLayoutContainer(Container):
     def setRows(self, value):
         mutator = self.mutator("rows")
         mutator(self, value)
+        # NOTE: we call the method also by a modified event subscriber
         self.rebuild_layout()
 
     # BBB: AT schema field property
@@ -154,6 +155,7 @@ class StorageLayoutContainer(Container):
     def setColumns(self, value):
         mutator = self.mutator("columns")
         mutator(self, value)
+        # NOTE: we call the method also by a modified event subscriber
         self.rebuild_layout()
 
     # BBB: AT schema field property
