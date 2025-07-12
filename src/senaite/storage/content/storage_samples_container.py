@@ -21,7 +21,6 @@ class IStorageSamplesContainerSchema(IStorageLayoutContainerSchema):
     directives.omitted("available_positions")
 
 
-
 @implementer(IStorageSamplesContainer, IStorageSamplesContainerSchema)
 class StorageSamplesContainer(StorageLayoutContainer):
     """Container for the storage of samples
