@@ -77,3 +77,12 @@ class StorageContainer(StorageLayoutContainer):
 
     # BBB: AT schema field property
     Temperature = property(getTemperature, setTemperature)
+
+    def is_object_allowed(self, object_brain_uid):
+        """Returns whether the type of object can be stored or not in this
+        container. This function returns true if the object is allowed, even
+        if the container already contains the object
+        """
+        # Only children from this container are allowed
+        obj = api.get_object(object_brain_uid)
+        return api.get_uid(api.get_parent(obj)) == api.get_uid(self)

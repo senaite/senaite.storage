@@ -23,6 +23,12 @@ from senaite.storage import logger
 from senaite.storage.interfaces import IStorageLayoutContainer
 
 
+def StorageContentAddedEventHandler(container, event):
+    """Event handler when a new layout container was added
+    """
+    container.rebuild_layout()
+
+
 def StorageContentModifiedEventHandler(container, event):
     """Adds the object to the parent's layout (if the parent is a container)
     We use a ObjectModifiedEvent from zope.lifecycleevent here instead of
@@ -33,18 +39,22 @@ def StorageContentModifiedEventHandler(container, event):
        need the values from "PositionsLayout" field for the parent to get
        updated in accordance, we cannot use this event.
 
-    b) InitializedEvent from Products.Archetypes is called as soon as the object
-       is created (with values) after the edit form submission, but this event
-       is not called by senaite.core's api. Hence, this cannot be used because
-       the event will not be fired if the object is created manually unless we
-       do a explicit call to processForm() on creation (which is not always the
-       case).
+    b) InitializedEvent from Products.Archetypes is called as soon as the
+       object is created (with values) after the edit form submission, but this
+       event is not called by senaite.core's api. Hence, this cannot be used
+       because the event will not be fired if the object is created manually
+       unless we do a explicit call to processForm() on creation (which is not
+       always the case).
 
-    Caveats: Note that we assume the object is at least created by using Plone's
-    default edit form or by using senaite.core's api, but if the object is
-    created manually (e.g. using _createObjectByType), this event will not be
-    fired.
+    Caveats: Note that we assume the object is at least created by using
+    Plone's default edit form or by using senaite.core's api, but if the object
+    is created manually (e.g. using _createObjectByType), this event will not
+    be fired.
     """
+    modified = [d.attributes[0] for d in event.descriptions if d.attributes]
+    if "rows" in modified or "columns" in modified:
+        container.rebuild_layout()
+
     parent = api.get_parent(container)
     if not IStorageLayoutContainer.providedBy(parent):
         # Parent doesn't care about the changes in his children

@@ -95,6 +95,8 @@ class IStorageLayoutContainerSchema(model.Schema):
         if not data.rows > 0:
             raise Invalid(_("At least one row must be defined"))
         context = data.__context__
+        if not context:
+            return
         min_size = context.get_minimum_size()
         min_rows = min_size[0]
         if min_rows > data.rows:
@@ -109,6 +111,8 @@ class IStorageLayoutContainerSchema(model.Schema):
         if not data.columns > 0:
             raise Invalid(_("At least one column must be defined"))
         context = data.__context__
+        if not context:
+            return
         min_size = context.get_minimum_size()
         min_cols = min_size[1]
         if min_cols > data.columns:
@@ -136,6 +140,7 @@ class StorageLayoutContainer(Container):
     def setRows(self, value):
         mutator = self.mutator("rows")
         mutator(self, value)
+        # NOTE: we call the method also by a modified event subscriber
         self.rebuild_layout()
 
     # BBB: AT schema field property
@@ -150,6 +155,7 @@ class StorageLayoutContainer(Container):
     def setColumns(self, value):
         mutator = self.mutator("columns")
         mutator(self, value)
+        # NOTE: we call the method also by a modified event subscriber
         self.rebuild_layout()
 
     # BBB: AT schema field property

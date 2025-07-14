@@ -57,7 +57,7 @@ class ContainerListingView(FacilityListingView):
                     self.icon_path, "storage-container"),
             }),
             (_("Add samples container"), {
-                "url": "createObject?type_name=StorageSamplesContainer",
+                "url": "++add++StorageSamplesContainer",
                 "permission": AddStorageSamplesContainer,
                 "icon": "{}/{}".format(
                     self.icon_path, "storage-sample-container")

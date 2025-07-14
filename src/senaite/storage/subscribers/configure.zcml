@@ -8,6 +8,13 @@
     handler="senaite.storage.subscribers.upgrade.afterUpgradeStepHandler"
   />
 
+  <!-- Added a container. Rebuild layou -->
+  <subscriber
+    for="senaite.storage.interfaces.IStorageLayoutContainer
+         zope.lifecycleevent.interfaces.IObjectAddedEvent"
+    handler="senaite.storage.subscribers.StorageContentAddedEventHandler"
+  />
+
   <!-- Modified a container. Updates capacity and usage to parent -->
   <subscriber
     for="senaite.storage.interfaces.IStorageLayoutContainer
