@@ -7,7 +7,6 @@
 -->
 <metadata>
   <version>2703</version>
-
   <!-- Be sure to install the following dependencies if not yet installed -->
   <dependencies>
     <dependency>profile-senaite.lims:default</dependency>
