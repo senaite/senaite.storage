@@ -179,7 +179,7 @@ StoreSamplesController = class StoreSamplesController {
      */
     var deferred, field_name;
     deferred = $.Deferred();
-    field_name = "AvailablePositions";
+    field_name = "available_positions";
     this.ajax_submit({
       url: this.get_portal_url() + "/@@API/read",
       data: {
