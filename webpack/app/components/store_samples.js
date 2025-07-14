@@ -1,6 +1,3 @@
-/* Please use this command to compile this file into the proper folder:
-    coffee --no-header -w -o ../ -c store_samples.coffee
-*/
 var StoreSamplesController;
 
 StoreSamplesController = class StoreSamplesController {
