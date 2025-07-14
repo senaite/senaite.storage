@@ -28,6 +28,7 @@ from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.storage import PRODUCT_NAME
 from senaite.storage import logger
+from senaite.storage.catalog import STORAGE_CATALOG
 from zope.component import getMultiAdapter
 
 version = "2.7.0"
@@ -35,6 +36,7 @@ profile = "profile-{0}:default".format(PRODUCT_NAME)
 
 REMOVE_AT_TYPES = [
     "StorageFacility",
+    "StorageContainer",
 ]
 
 
@@ -132,6 +134,89 @@ def migrate_storage_facility_to_dx(src, destination):
     address = dict(src.getAddress())
     address["type"] = PHYSICAL_ADDRESS
     target.setAddress(address)
+
+    cb = src.manage_copyObjects(ids=src.objectIds())
+    target.manage_pasteObjects(cb)
+
+    # Migrate the contents from AT to DX
+    migrator = getMultiAdapter(
+        (src, target), interface=IContentMigrator)
+
+    # copy all (raw) attributes from the source object to the target
+    migrator.copy_attributes(src, target)
+
+    # copy the UID
+    migrator.copy_uid(src, target)
+
+    # copy auditlog
+    migrator.copy_snapshots(src, target)
+
+    # copy creators
+    migrator.copy_creators(src, target)
+
+    # copy workflow history
+    migrator.copy_workflow_history(src, target)
+
+    # copy marker interfaces
+    migrator.copy_marker_interfaces(src, target)
+
+    # copy dates
+    migrator.copy_dates(src, target)
+
+    # uncatalog the source object
+    migrator.uncatalog_object(src)
+
+    # delete the old object
+    migrator.delete_object(src)
+
+    # change the ID *after* the original object was removed
+    migrator.copy_id(src, target)
+
+
+def migrate_storage_containers_to_dx(tool):
+    """Converts existing storage containers to DX
+    """
+    logger.info("Convert Storage Containers to Dexterity ...")
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
+
+    query = {
+        "portal_type": "StorageContainer",
+    }
+    results = api.search(query, STORAGE_CATALOG)
+
+    for brain in results:
+        obj = api.get_object(brain)
+        if not api.is_at_content(obj):
+            continue
+        logger.info("Migrating storage container '%s'" % obj.Title())
+        destination = api.get_parent(obj)
+        migrate_storage_container_to_dx(obj, destination)
+        logger.info("Migrating storage container '%s' [DONE]" % obj.Title())
+
+    logger.info("Convert Storage Containers to Dexterity [DONE]")
+
+
+def migrate_storage_container_to_dx(src, destination):
+    """Migrate a single storage facility
+    """
+    target_id = tmpID()
+    portal_type = "StorageContainer"
+
+    # cretate the new facility
+    target = createContent(portal_type, id=target_id)
+    destination._setObject(target_id, target)
+    target = destination._getOb(target_id)
+
+    # Manually set the fields
+    # NOTE: always convert string values to unicode for dexterity fields!
+    target.title = api.safe_unicode(src.Title() or "")
+    target.temperature = src.getTemperature() or 0.0
 
     cb = src.manage_copyObjects(ids=src.objectIds())
     target.manage_pasteObjects(cb)

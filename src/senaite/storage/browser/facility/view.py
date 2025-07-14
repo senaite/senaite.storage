@@ -60,7 +60,7 @@ class FacilityListingView(StorageListing):
                 "icon": "{}/{}".format(self.icon_path, "storage-position"),
             }),
             (_("Add container"), {
-                "url": "createObject?type_name=StorageContainer",
+                "url": "++add++StorageContainer",
                 "permission": AddStorageContainer,
                 "icon": "{}/{}".format(self.icon_path, "storage-container"),
             }),

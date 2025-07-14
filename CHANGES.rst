@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #49 Migrate storage container to DX
 - #48 Migrate Storage Facility to DX
 
 
