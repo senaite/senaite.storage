@@ -39,13 +39,13 @@ from senaite.storage.config import PROFILE_ID
 ACTIONS_TO_HIDE = [
     # Tuples of (id, folder_id)
     # If folder_id is None, assume folder_id is portal
-    ("bika_storagelocations", "bika_setup")
+    ("storagelocations", "setup")
 ]
 
 SITE_STRUCTURE = [
     # Tuples of (portal_type, obj_id, obj_title, parent_path, display_type)
     # If parent_path is None, assume folder_id is portal
-    ("StorageRootFolder", "senaite_storage", "Samples storage", None, True)
+    ("StorageRootFolder", "senaite_storage", "Sample storage", None, True)
 ]
 
 ID_FORMATTING = [
@@ -491,9 +491,7 @@ def setup_site_structure(portal):
                         .format(api.get_path(parent), obj_id))
             obj = parent._getOb(obj_id)
         else:
-            obj = _createObjectByType(portal_type, parent, obj_id)
-            obj.edit(title=obj_title)
-            obj.unmarkCreationFlag()
+            obj = api.create(parent, portal_type, id=obj_id, title=obj_title)
 
         if display:
             # Display the object in the nav bar
