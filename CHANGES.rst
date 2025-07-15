@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #52 Migrate Storage Root Folder to DX
 - #51 JS->DX compatibility
 - #50 Migrate storage samples container to DX
 - #49 Migrate storage container to DX

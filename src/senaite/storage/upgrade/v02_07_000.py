@@ -38,6 +38,7 @@ REMOVE_AT_TYPES = [
     "StorageFacility",
     "StorageContainer",
     "StorageSamplesContainer",
+    "StorageRootFolder",
 ]
 
 
@@ -343,3 +344,74 @@ def migrate_storage_samples_container_to_dx(src, destination):
 
     # change the ID *after* the original object was removed
     migrator.copy_id(src, target)
+
+
+def migrate_storage_root_folder_to_dx(tool):
+    """Migrate the storage root folder to DX
+    """
+    logger.info("Convert Storage Root Folder to Dexterity ...")
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    target_id = tmpID()
+    portal_type = "StorageRootFolder"
+    portal = tool.aq_inner.aq_parent
+
+    src = portal._getOb("senaite_storage")
+    if api.is_dexterity_content(src):
+        logger.info("Storage Root Folder is already a Dexterity type, exiting")
+        return
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
+
+    # cretate the new facility
+    target = createContent(portal_type, id=target_id)
+    portal._setObject(target_id, target)
+    target = portal._getOb(target_id)
+
+    # Manually set the fields
+    # NOTE: always convert string values to unicode for dexterity fields!
+    target.title = api.safe_unicode(src.Title() or u"")
+    target.description = api.safe_unicode(src.Description() or u"")
+
+    cb = src.manage_copyObjects(ids=src.objectIds())
+    target.manage_pasteObjects(cb)
+
+    # Migrate the contents from AT to DX
+    migrator = getMultiAdapter(
+        (src, target), interface=IContentMigrator)
+
+    # copy all (raw) attributes from the source object to the target
+    migrator.copy_attributes(src, target)
+
+    # copy the UID
+    migrator.copy_uid(src, target)
+
+    # copy auditlog
+    migrator.copy_snapshots(src, target)
+
+    # copy creators
+    migrator.copy_creators(src, target)
+
+    # copy workflow history
+    migrator.copy_workflow_history(src, target)
+
+    # copy marker interfaces
+    migrator.copy_marker_interfaces(src, target)
+
+    # copy dates
+    migrator.copy_dates(src, target)
+
+    # uncatalog the source object
+    migrator.uncatalog_object(src)
+
+    # delete the old object
+    migrator.delete_object(src)
+
+    # change the ID *after* the original object was removed
+    migrator.copy_id(src, target)
+
+    logger.info("Convert Storage Root Folder to Dexterity [DONE]")

@@ -21,8 +21,8 @@
 from Acquisition import aq_base
 from bika.lims import api
 from plone import api as ploneapi
+from plone.app.dexterity.behaviors.exclfromnav import IExcludeFromNavigation
 from Products.CMFCore.permissions import ModifyPortalContent
-from Products.CMFPlone.utils import _createObjectByType
 from Products.DCWorkflow.Guard import Guard
 from senaite.core import permissions
 from senaite.core.catalog import SAMPLE_CATALOG
@@ -36,16 +36,11 @@ from senaite.storage.catalog import StorageCatalog
 from senaite.storage.config import PRODUCT_NAME
 from senaite.storage.config import PROFILE_ID
 
-ACTIONS_TO_HIDE = [
-    # Tuples of (id, folder_id)
-    # If folder_id is None, assume folder_id is portal
-    ("bika_storagelocations", "bika_setup")
-]
 
 SITE_STRUCTURE = [
     # Tuples of (portal_type, obj_id, obj_title, parent_path, display_type)
     # If parent_path is None, assume folder_id is portal
-    ("StorageRootFolder", "senaite_storage", "Samples storage", None, True)
+    ("StorageRootFolder", "senaite_storage", "Sample storage", None, True)
 ]
 
 ID_FORMATTING = [
@@ -215,12 +210,6 @@ def post_install(portal_setup):
     # Setup ID Formatting for Storage content types
     setup_id_formatting(portal)
 
-    # Hide actions
-    hide_actions(portal)
-
-    # Migrate "classic" storage locations
-    migrate_storage_locations(portal)
-
     # Injects "store" and "recover" transitions into senaite's workflow
     setup_workflows(portal)
 
@@ -265,67 +254,6 @@ def setup_catalogs(portal):
     setup_core_catalogs(portal, catalog_classes=CATALOGS)
     setup_other_catalogs(portal, indexes=INDEXES, columns=COLUMNS)
     setup_catalog_mappings(portal, catalog_mappings=CATALOG_MAPPINGS)
-
-
-def hide_actions(portal):
-    """Excludes actions from both navigation portlet and from control_panel
-    """
-    logger.info("Hiding actions ...")
-    for action_id, folder_id in ACTIONS_TO_HIDE:
-        if folder_id and folder_id not in portal:
-            logger.info("{} not found in portal [SKIP]".format(folder_id))
-            continue
-        folder = folder_id and portal[folder_id] or portal
-        hide_action(folder, action_id)
-
-
-def hide_action(folder, action_id):
-    logger.info("Hiding {} from {} ...".format(action_id, folder.id))
-    if action_id not in folder:
-        logger.info("{} not found in {} [SKIP]".format(action_id, folder.id))
-        return
-
-    item = folder[action_id]
-    logger.info("Hide {} ({}) from nav bar".format(action_id, item.Title()))
-    item.setExcludeFromNav(True)
-
-    def get_action_index(action_id):
-        for n, action in enumerate(cp.listActions()):
-            if action.getId() == action_id:
-                return n
-        return -1
-
-    logger.info("Hide {} from control_panel".format(action_id))
-    cp = api.get_tool("portal_controlpanel")
-    action_index = get_action_index(action_id)
-    if (action_index == -1):
-        logger.info("{}  not found in control_panel [SKIP]".format(cp.id))
-        return
-
-    actions = cp._cloneActions()
-    del actions[action_index]
-    cp._actions = tuple(actions)
-    cp._p_changed = 1
-
-
-def migrate_storage_locations(portal):
-    """Migrates classic StorageLocation objects to StorageSamplesContainer
-    """
-    logger.info("Migrating classic Storage Locations ...")
-    query = dict(portal_type="StorageLocation")
-    brains = api.search(query, "portal_catalog")
-    if not brains:
-        logger.info("No Storage Locations found [SKIP]")
-        return
-
-    total = len(brains)
-    for num, brain in enumerate(brains):
-        if num % 100 == 0:
-            logger.info(
-                "Migrating Storage Locations: {}/{}".format(num, total))
-        object = api.get_object(brain)  # noqa
-        # XXX: Do we still need this?
-        # TODO: Migrate old storage locations
 
 
 def setup_workflows(portal):
@@ -491,9 +419,7 @@ def setup_site_structure(portal):
                         .format(api.get_path(parent), obj_id))
             obj = parent._getOb(obj_id)
         else:
-            obj = _createObjectByType(portal_type, parent, obj_id)
-            obj.edit(title=obj_title)
-            obj.unmarkCreationFlag()
+            obj = api.create(parent, portal_type, id=obj_id, title=obj_title)
 
         if display:
             # Display the object in the nav bar
@@ -513,8 +439,10 @@ def display_in_nav(obj):
         to_display = to_display + (portal_type, )
         ploneapi.portal.set_registry_record(registry_id, to_display)
 
-    obj.setExcludeFromNav(False)
-    obj.reindexObject()
+    nav_exclude = IExcludeFromNavigation(obj, None)
+    if nav_exclude:
+        nav_exclude.exclude_from_nav = False
+        obj.reindexObject(idxs=["exclude_from_nav"])
 
 
 def reindex_storage_structure(portal):
