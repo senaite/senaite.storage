@@ -7,20 +7,18 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
-const gitCmd = "git rev-list -1 HEAD -- `pwd`";
-let gitHash = childProcess.execSync(gitCmd).toString().substring(0, 7);
 
+const mode = process.env.mode;
+const isDev = mode === "development";
+const isProd = mode === "production";
 const staticPath = path.resolve(__dirname, "../src/senaite/storage/browser/static");
 
-const devMode = process.env.mode == "development";
-const prodMode = process.env.mode == "production";
-const mode = process.env.mode;
 console.log(`RUNNING WEBPACK IN '${mode}' MODE`);
 
 
 module.exports = {
   // https://webpack.js.org/configuration/devtool
-  devtool: devMode ? "eval" : "source-map",
+  devtool: isDev ? "eval" : "source-map",
   // https://webpack.js.org/configuration/mode/#usage
   mode: mode,
   context: path.resolve(__dirname, "app"),
@@ -31,8 +29,7 @@ module.exports = {
     ],
   },
   output: {
-    // filename: devMode ? "[name].js" : `[name]-${gitHash}.js`,
-    filename: "[name].js",
+    filename: isDev ? "[name].js" : `[name].[contenthash].js`,
     path: path.resolve(staticPath, "bundles"),
     publicPath: "/++plone++senaite.storage.static/bundles"
   },
@@ -119,8 +116,6 @@ module.exports = {
   ],
   externals: {
     // https://webpack.js.org/configuration/externals
-    react: "React",
-    "react-dom": "ReactDOM",
     $: "jQuery",
     jquery: "jQuery",
     bootstrap: "bootstrap",
