@@ -21,8 +21,8 @@
 from Acquisition import aq_base
 from bika.lims import api
 from plone import api as ploneapi
+from plone.app.dexterity.behaviors.exclfromnav import IExcludeFromNavigation
 from Products.CMFCore.permissions import ModifyPortalContent
-from Products.CMFPlone.utils import _createObjectByType
 from Products.DCWorkflow.Guard import Guard
 from senaite.core import permissions
 from senaite.core.catalog import SAMPLE_CATALOG
@@ -287,7 +287,10 @@ def hide_action(folder, action_id):
 
     item = folder[action_id]
     logger.info("Hide {} ({}) from nav bar".format(action_id, item.Title()))
-    item.setExcludeFromNav(True)
+    nav_exclude = IExcludeFromNavigation(item, None)
+    if nav_exclude:
+        nav_exclude.exclude_from_nav = True
+        item.reindexObject(idxs=["exclude_from_nav"])
 
     def get_action_index(action_id):
         for n, action in enumerate(cp.listActions()):
@@ -511,8 +514,10 @@ def display_in_nav(obj):
         to_display = to_display + (portal_type, )
         ploneapi.portal.set_registry_record(registry_id, to_display)
 
-    obj.setExcludeFromNav(False)
-    obj.reindexObject()
+    nav_exclude = IExcludeFromNavigation(obj, None)
+    if nav_exclude:
+        nav_exclude.exclude_from_nav = False
+        obj.reindexObject(idxs=["exclude_from_nav"])
 
 
 def reindex_storage_structure(portal):
