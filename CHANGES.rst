@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #53 Fix AttributeError for containers with more than 25 rows
 - #52 Migrate Storage Root Folder to DX
 - #51 JS->DX compatibility
 - #50 Migrate storage samples container to DX
