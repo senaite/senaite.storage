@@ -215,10 +215,21 @@ class StorageLayoutContainer(Container):
         """Returns the alpha part for the passed in row
         """
         alphabet = string.ascii_uppercase
-        num, idx = divmod(int(row), len(alphabet))
-        if num:
-            return self.get_alpha_column(num - 1) + alphabet[idx]
-        return alphabet[idx]
+        def alpha(num):
+            """Converts the given number to alphabetical letter(s).
+            alpha(1) == 'A'
+            alpha(26) == 'Z'
+            alpha(27) == 'AA'
+            alpha(28) == 'AB'
+            """
+            if num == 0:
+                return ""
+            prefix = alpha((num - 1) // len(alphabet))
+            letter = chr((num - 1) % len(alphabet) + ord(alphabet[0]))
+            return "%s%s" % (prefix, letter)
+
+        # row is a position, starting from 0, so we need to add 1
+        return alpha(row + 1)
 
     def position_to_alpha(self, row, column):
         """Returns a position in alphanumeric format (e.g A01)
