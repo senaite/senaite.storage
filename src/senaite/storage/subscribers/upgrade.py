@@ -18,9 +18,12 @@
 # Copyright 2019-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims.api import get_portal
 from senaite.storage import is_installed
 from senaite.storage import logger
-from senaite.storage.setuphandlers import post_install
+from senaite.storage import PRODUCT_NAME
+from senaite.storage.setuphandlers import setup_catalogs
+from senaite.storage.setuphandlers import setup_workflows
 
 
 def afterUpgradeStepHandler(event):
@@ -28,7 +31,20 @@ def afterUpgradeStepHandler(event):
     """
     if not is_installed():
         return
-    logger.info("Run senaite.storage.afterUpgradeStepHandler ...")
-    setup = event.context
-    post_install(setup)
-    logger.info("Run senaite.storage.afterUpgradeStepHandler [DONE]")
+
+    logger.info("Run {}.afterUpgradeStepHandler ...".format(PRODUCT_NAME))
+    portal = get_portal()
+    setup = portal.portal_setup  # noqa
+
+    profile = "profile-{0}:default".format(PRODUCT_NAME)
+    setup.runImportStepFromProfile(profile, "typeinfo")
+    setup.runImportStepFromProfile(profile, "rolemap")
+    setup.runImportStepFromProfile(profile, "workflow")
+
+    # Setup catalogs
+    setup_catalogs(portal)
+
+    # Setup workflows
+    setup_workflows(portal)
+
+    logger.info("Run {}.afterUpgradeStepHandler [DONE]".format(PRODUCT_NAME))
