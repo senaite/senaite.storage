@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #55 Fix Unauthorized error when moving a container across storage
 - #54 Fix all storage containers reindexed when other add-ons are upgraded
 - #53 Fix AttributeError for containers with more than 25 rows
 - #52 Migrate Storage Root Folder to DX

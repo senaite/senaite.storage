@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
+from bika.lims.api import security
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.storage import logger
 from senaite.storage import senaiteMessageFactory as _
@@ -28,6 +29,7 @@ from senaite.storage.catalog import STORAGE_CATALOG
 from senaite.storage.interfaces import IStorageContainer
 from senaite.storage.interfaces import IStorageFacility
 from senaite.storage.interfaces import IStorageSamplesContainer
+from senaite.storage.permissions import TransitionMoveContainer
 
 
 class MoveContainerView(BaseView):
@@ -91,16 +93,23 @@ class MoveContainerView(BaseView):
         """move container from source to destination
         """
         source = api.get_object(src)
+
+        # check if current user can perform the transition
+        if not security.check_permission(TransitionMoveContainer, source):
+            message = _(u"You do not have permission to move this container.")
+            self.add_status_message(message, level="error")
+            return False
+
         destination = api.get_object(dest)
         parent = api.get_parent(source)
-
         if destination == parent:
             message = _(u"Container {} is already located in destination path!"
                         .format(self.get_container_path(source)))
             self.add_status_message(message, level="warning")
             return False
-        cb = parent.manage_cutObjects(ids=[api.get_id(source)])
-        destination.manage_pasteObjects(cb_copy_data=cb)
+
+        # move w/o permission check (better than granting "Delete" wide)
+        api.move_object(source, destination, check_constraints=False)
 
         message = _(u"Moved container {} → {}".format(
             self.get_title(source), self.get_container_path(destination)))
