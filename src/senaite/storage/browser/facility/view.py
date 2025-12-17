@@ -118,6 +118,6 @@ class FacilityListingView(StorageListing):
         obj = api.get_object(obj)
         parents = get_parents(
             obj, predicate=lambda o: IStorageFacility.providedBy(o))
-        item["replace"]["Position"] = " » ".join(
+        item["replace"]["Position"] = " &raquo; ".join(
             map(get_link_for, reversed(parents)))
         return item
