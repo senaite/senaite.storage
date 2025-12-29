@@ -29,6 +29,7 @@ from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.storage import PRODUCT_NAME
 from senaite.storage import logger
 from senaite.storage.catalog import STORAGE_CATALOG
+from senaite.storage.setuphandlers import display_in_nav
 from zope.component import getMultiAdapter
 
 version = "2.7.0"
@@ -415,3 +416,12 @@ def migrate_storage_root_folder_to_dx(tool):
     migrator.copy_id(src, target)
 
     logger.info("Convert Storage Root Folder to Dexterity [DONE]")
+
+
+def display_storage_navbar(tool):
+    """Displays the storage's root folder in the navigation bar
+    """
+    logger.info("Display storage in navigation bar ...")
+    portal = api.get_portal()
+    display_in_nav(portal.senaite_storage)
+    logger.info("Display storage in navigation bar [DONE]")

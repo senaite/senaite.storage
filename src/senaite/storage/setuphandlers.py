@@ -20,8 +20,7 @@
 
 from Acquisition import aq_base
 from bika.lims import api
-from plone import api as ploneapi
-from plone.app.dexterity.behaviors.exclfromnav import IExcludeFromNavigation
+from plone.registry.interfaces import IRegistry
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.DCWorkflow.Guard import Guard
 from senaite.core import permissions
@@ -35,7 +34,7 @@ from senaite.storage.catalog import STORAGE_CATALOG
 from senaite.storage.catalog import StorageCatalog
 from senaite.storage.config import PRODUCT_NAME
 from senaite.storage.config import PROFILE_ID
-
+from zope.component import getUtility
 
 SITE_STRUCTURE = [
     # Tuples of (portal_type, obj_id, obj_title, parent_path, display_type)
@@ -429,20 +428,35 @@ def setup_site_structure(portal):
 
 
 def display_in_nav(obj):
-    """Makes an object to be displayed in the navigation bar
+    """Makes an object and/or objects from the given portal type to be
+    displayed in the navigation bar
     """
-    # Display in navigation
-    registry_id = "plone.displayed_types"
     portal_type = api.get_portal_type(obj)
-    to_display = ploneapi.portal.get_registry_record(registry_id, default=())
-    if portal_type not in to_display:
-        to_display = to_display + (portal_type, )
-        ploneapi.portal.set_registry_record(registry_id, to_display)
 
-    nav_exclude = IExcludeFromNavigation(obj, None)
-    if nav_exclude:
-        nav_exclude.exclude_from_nav = False
-        obj.reindexObject(idxs=["exclude_from_nav"])
+    # add to the plone's registry displayed_types
+    registry = getUtility(IRegistry)
+    key = "plone.displayed_types"
+    displayed = registry.get(key, ())
+    if portal_type not in displayed:
+        displayed += (portal_type,)
+        registry[key] = displayed
+
+    # add to senaite setup's sidebar_displayed_types
+    setup = api.get_senaite_setup()
+    displayed = setup.getSidebarDisplayedTypes()
+    if displayed and portal_type not in displayed:
+        displayed += (portal_type,)
+        setup.setSidebarDisplayedTypes(displayed)
+
+    # if a root folder, add to senaite setup's sidebar_folders
+    setup = api.get_senaite_setup()
+    portal = api.get_portal()
+    if api.get_parent(obj) == portal:
+        obj_id = api.get_id(obj)
+        folders = setup.getSidebarFolders()
+        if obj_id not in folders:
+            folders += (obj_id, )
+            setup.setSidebarFolders(folders)
 
 
 def reindex_storage_structure(portal):
