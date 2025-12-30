@@ -1,0 +1,387 @@
+# --- PLEASE EDIT THE LINES BELOW CORRECTLY ---
+# SOME DESCRIPTIVE TITLE.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Translators:
+# erikking, 2023
+# Jordi Puiggené <jpuiggene@naralabs.com>, 2024
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2025-04-04 10:05+0000\n"
+"PO-Revision-Date: 2019-03-31 21:21+0000\n"
+"Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>, 2024\n"
+"Language-Team: Chinese (https://app.transifex.com/senaite/teams/97702/zh/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Language-Code: en\n"
+"Language-Name: English\n"
+"Preferred-Encodings: utf-8 latin1\n"
+"Domain: senaite.storage\n"
+"Language: zh\n"
+
+#: senaite/storage/browser/container/templates/move_container.pt:23
+#: senaite/storage/browser/container/templates/store_samples.pt:18
+msgid "${back_link}"
+msgstr ""
+
+#: senaite/storage/browser/facility/view.py:76
+#: senaite/storage/browser/storage/listing.py:60
+msgid "% Samples"
+msgstr "% 样本"
+
+#: senaite/storage/browser/container/templates/move_container.pt:23
+#: senaite/storage/browser/container/templates/store_samples.pt:18
+msgid "&larr; Back"
+msgstr ""
+
+#: senaite/storage/profiles/default/workflows/senaite_storage_default_workflow/definition.xml
+msgid "Activate"
+msgstr "正在使用"
+
+#: senaite/storage/profiles/default/workflows/senaite_storage_default_workflow/definition.xml
+#: senaite/storage/profiles/default/workflows/senaite_storage_folder_workflow/definition.xml
+msgid "Active"
+msgstr "启用"
+
+#: senaite/storage/browser/storage/view.py:50
+msgid "Add Facility"
+msgstr "添加设施"
+
+#: senaite/storage/browser/container/templates/store_container.pt:75
+msgid "Add Sample"
+msgstr "添加样本"
+
+#: senaite/storage/browser/container/samples.py:56
+msgid "Add Samples"
+msgstr "添加样本"
+
+#: senaite/storage/browser/container/view.py:53
+#: senaite/storage/browser/facility/view.py:62
+msgid "Add container"
+msgstr "添加冰箱/隔间"
+
+#: senaite/storage/profiles/default/workflows/senaite_storage_default_workflow/definition.xml
+msgid "Add samples"
+msgstr "添加样本"
+
+#: senaite/storage/browser/container/view.py:59
+msgid "Add samples container"
+msgstr "添加样本储存盒"
+
+#: senaite/storage/browser/facility/view.py:57
+msgid "Add storage position"
+msgstr "添加存储位置"
+
+#: senaite/storage/content/storagefacility.py:55
+msgid "Address"
+msgstr "地址"
+
+#: senaite/storage/content/storagelayoutcontainer.py:49
+msgid "Alphabet letters will be used to represent a row within the container"
+msgstr "将使用字母顺序对冰箱/隔间中的行进行排序"
+
+#: senaite/storage/browser/container/store_container.py:249
+msgid "CSID"
+msgstr ""
+
+#: senaite/storage/browser/container/templates/move_container.pt:81
+#: senaite/storage/browser/container/templates/store_container.pt:82
+#: senaite/storage/browser/container/templates/store_samples.pt:102
+msgid "Cancel"
+msgstr "取消"
+
+#: senaite/storage/browser/container/store_container.py:182
+msgid "Cannot store samples. Samples container {} is full"
+msgstr "样本储存盒 {} 装满，不能存储更多样本"
+
+#: senaite/storage/browser/container/templates/move_container.pt:63
+msgid "Choose container destination..."
+msgstr "选择冰箱位置"
+
+#: senaite/storage/browser/container/store_container.py:253
+msgid "Client ID"
+msgstr ""
+
+#: senaite/storage/browser/container/view.py:70
+#: senaite/storage/browser/facility/view.py:88
+#: senaite/storage/browser/position/view.py:52
+msgid "Collapsed"
+msgstr "收起"
+
+#: senaite/storage/content/storagelayoutcontainer.py:62
+msgid "Columns"
+msgstr "列"
+
+#: senaite/storage/browser/container/samples.py:117
+msgid "Container is full"
+msgstr "冰箱已装满"
+
+#: senaite/storage/browser/container/move_container.py:68
+msgid "Container moving cancelled"
+msgstr "冰箱/隔间移动已取消"
+
+#: senaite/storage/browser/container/store_samples.py:148
+msgid "Container path"
+msgstr ""
+
+#: senaite/storage/browser/container/samples.py:123
+msgid "Container utilization {} / {}"
+msgstr "冰箱利用率 {} / {}"
+
+#: senaite/storage/browser/container/move_container.py:98
+msgid "Container {} is already located in destination path!"
+msgstr "冰箱/隔间 {} 已移动至目标位置"
+
+#: senaite/storage/browser/storage/listing.py:64
+msgid "Containers"
+msgstr "冰箱/隔间"
+
+#: senaite/storage/adapters/listing.py:101
+msgid "Date stored"
+msgstr "储存时间"
+
+#: senaite/storage/profiles/default/workflows/senaite_storage_default_workflow/definition.xml
+msgid "Deactivate"
+msgstr "停用"
+
+#: senaite/storage/browser/facility/view.py:80
+#: senaite/storage/browser/storage/view.py:70
+msgid "Description"
+msgstr "描述"
+
+#: senaite/storage/content/storage_position.py:40
+msgid "Description of the storage position that is shown in listings"
+msgstr "存储位置描述已显示在表单中"
+
+#: senaite/storage/content/storagefacility.py:47
+msgid "Email Address"
+msgstr "邮箱地址"
+
+#: senaite/storage/browser/container/view.py:76
+#: senaite/storage/browser/facility/view.py:94
+#: senaite/storage/browser/position/view.py:58
+msgid "Expanded"
+msgstr "展开"
+
+#: senaite/storage/content/storagecontainer.py:38
+msgid "Expected temperature"
+msgstr "存储温度"
+
+#: senaite/storage/content/storagecontainer.py:39
+msgid "Expected temperature of this container"
+msgstr "冰箱/隔间存储温度"
+
+#: senaite/storage/content/storagecontainer.py:61
+msgid "Expected temperature: %s Â°C"
+msgstr "存储温度：%s°C"
+
+#: senaite/storage/browser/facility/view.py:74
+#: senaite/storage/browser/storage/listing.py:58
+msgid "ID"
+msgstr "ID"
+
+#: senaite/storage/browser/container/store_samples.py:144
+msgid "Id"
+msgstr ""
+
+#: senaite/storage/browser/container/view.py:88
+#: senaite/storage/browser/facility/view.py:106
+#: senaite/storage/browser/position/view.py:70
+msgid "Inactive"
+msgstr "无效"
+
+#: senaite/storage/content/storagelayoutcontainer.py:135
+msgid "Layout: {} x {}"
+msgstr "布局：{} x {}"
+
+#: senaite/storage/browser/viewlets/templates/sample_container_viewlet.pt:19
+msgid "Location:"
+msgstr "位置："
+
+#: senaite/storage/content/storagefacility.py:92
+msgid "Mail: {}"
+msgstr "邮箱：{}"
+
+#: senaite/storage/browser/container/templates/move_container.pt:15
+msgid "Move Containers"
+msgstr "移动冰箱/隔间"
+
+#: senaite/storage/profiles/default/workflows/senaite_storage_default_workflow/definition.xml
+msgid "Move container"
+msgstr "移动冰箱/隔间"
+
+#: senaite/storage/browser/container/move_container.py:105
+msgid "Moved container {} â {}"
+msgstr "移动冰箱/隔间 {} → {}"
+
+#: senaite/storage/browser/facility/view.py:71
+#: senaite/storage/browser/storage/listing.py:55
+#: senaite/storage/browser/storage/view.py:58
+msgid "Name"
+msgstr "名字"
+
+#: senaite/storage/browser/container/templates/store_container.pt:94
+msgid "Next container:"
+msgstr "下一个冰箱/隔间"
+
+#: senaite/storage/browser/container/move_container.py:56
+#: senaite/storage/browser/container/store_samples.py:62
+msgid "No items selected"
+msgstr "没有选择任何项目"
+
+#: senaite/storage/browser/container/store_container.py:191
+msgid "No position or not valid sample selected"
+msgstr "没有位置或者没有选择有效样本"
+
+#: senaite/storage/content/storagelayoutcontainer.py:63
+msgid "Number of positions per row. Numbers will be used to represent a column within a row"
+msgstr "每行的位置数，用于表示一行中的一列"
+
+#: senaite/storage/content/storagefacility.py:40
+msgid "Phone"
+msgstr "电话"
+
+#: senaite/storage/browser/container/samples.py:64
+#: senaite/storage/browser/container/templates/store_container.pt:60
+#: senaite/storage/browser/container/templates/store_samples.pt:77
+msgid "Position"
+msgstr "位置"
+
+#: senaite/storage/adapters/listing.py:77
+msgid "Print stickers"
+msgstr "打印标签"
+
+#: senaite/storage/profiles/default/workflows/senaite_storage_default_workflow/definition.xml
+msgid "Recover samples"
+msgstr "取出样本"
+
+#: senaite/storage/content/storagelayoutcontainer.py:48
+msgid "Rows"
+msgstr "行"
+
+#: senaite/storage/browser/storage/view.py:67
+msgid "Sample Containers"
+msgstr "样本储存盒"
+
+#: senaite/storage/browser/container/store_container.py:245
+msgid "Sample ID"
+msgstr ""
+
+#: senaite/storage/browser/container/store_container.py:257
+msgid "Sample Type"
+msgstr ""
+
+#: senaite/storage/browser/container/store_container.py:210
+msgid "Sample storing canceled"
+msgstr "样本存储取消"
+
+#: senaite/storage/browser/facility/view.py:78
+#: senaite/storage/browser/storage/listing.py:62
+#: senaite/storage/browser/storage/view.py:61
+msgid "Samples"
+msgstr "样本"
+
+#: senaite/storage/profiles/default/types/StorageSamplesContainer.xml
+msgid "Samples container for storage"
+msgstr "样本储存盒"
+
+#: senaite/storage/browser/storage/view.py:37
+#: senaite/storage/profiles/default/types/StorageRootFolder.xml
+msgid "Samples storage"
+msgstr "样本存储"
+
+#: senaite/storage/browser/storage/view.py:64
+msgid "Samples usage"
+msgstr "样本使用量"
+
+#: senaite/storage/browser/container/store_container.py:261
+msgid "State"
+msgstr ""
+
+#: senaite/storage/browser/container/templates/store_container.pt:156
+msgid "Status"
+msgstr "状态"
+
+#: senaite/storage/adapters/listing.py:111
+msgid "Storage"
+msgstr "存储"
+
+#: senaite/storage/profiles/default/types/StorageFacility.xml
+msgid "Storage Facility"
+msgstr "存储设施"
+
+#: senaite/storage/profiles/default/types/StoragePosition.xml
+msgid "Storage Position"
+msgstr "存储位置"
+
+#: senaite/storage/profiles/default/types/StorageContainer.xml
+msgid "Storage container"
+msgstr "存储冰箱/隔间"
+
+#: senaite/storage/profiles/default/controlpanel.xml
+msgid "Storage settings"
+msgstr ""
+
+#: senaite/storage/browser/container/templates/store_samples.pt:96
+msgid "Store Samples"
+msgstr "存储样本"
+
+#: senaite/storage/browser/container/templates/store_samples.pt:10
+msgid "Store samples"
+msgstr "存储样本"
+
+#: senaite/storage/adapters/listing.py:84
+msgid "Stored"
+msgstr "已储存"
+
+#: senaite/storage/browser/viewlets/templates/sample_container_viewlet.pt:13
+msgid "Stored sample"
+msgstr "已储存样本"
+
+#: senaite/storage/browser/container/store_container.py:201
+msgid "Stored sample {} at position {}"
+msgstr "样本储存在 {} 位置 {}"
+
+#: senaite/storage/content/storagefacility.py:89
+msgid "Tel: {}"
+msgstr "电话：{}"
+
+#: senaite/storage/content/storage_position.py:34
+msgid "The name of the storage position, e.g. Room 12/3"
+msgstr "存储位置名字，例如，12-3房间"
+
+#: senaite/storage/profiles/default/types/StoragePosition.xml
+msgid "The storage position inside a facility"
+msgstr "设施中的存储位置"
+
+#: senaite/storage/browser/container/templates/store_container.pt:22
+msgid "Used positions:"
+msgstr "已使用位置："
+
+#. Default: "Select this option to automatically transition back the primary from 'stored' to its preceding status when all its partitions are recovered."
+#: senaite/storage/browser/controlpanel.py:52
+msgid "description_storage_settings_recover_primary"
+msgstr ""
+
+#. Default: "Select this option to automatically transition the primary sample to 'stored' status when it does not have analyses assigned and all its partitions are stored."
+#: senaite/storage/browser/controlpanel.py:38
+msgid "description_storage_settings_store_primary"
+msgstr ""
+
+#. Default: "Storage Settings"
+#: senaite/storage/browser/controlpanel.py:65
+msgid "header_storage_settings"
+msgstr ""
+
+#. Default: "Auto-recover primary sample"
+#: senaite/storage/browser/controlpanel.py:48
+msgid "label_storage_settings_recover_primary"
+msgstr ""
+
+#. Default: "Auto-store primary sample"
+#: senaite/storage/browser/controlpanel.py:34
+msgid "label_storage_settings_store_primary"
+msgstr ""

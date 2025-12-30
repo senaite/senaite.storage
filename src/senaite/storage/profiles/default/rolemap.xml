@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<rolemap>
+
+  <permissions>
+
+    <!-- Add permissions -->
+    <permission name="senaite.storage: Add Storage Root Folder" acquire="False">
+      <role name="Manager"/>
+      <role name="LabManager"/>
+    </permission>
+    <permission name="senaite.storage: Add Storage Facility" acquire="False">
+      <role name="Manager"/>
+      <role name="LabManager"/>
+    </permission>
+    <permission name="senaite.storage: Add Storage Container" acquire="False">
+      <role name="Manager"/>
+      <role name="LabManager"/>
+    </permission>
+    <permission name="senaite.storage: Add Storage Samples Container" acquire="False">
+      <role name="Manager"/>
+      <role name="LabManager"/>
+    </permission>
+    <permission name="senaite.storage: Add Storage Position" acquire="False">
+      <role name="Manager"/>
+      <role name="LabManager"/>
+    </permission>
+
+    <!-- Move Container -->
+    <permission name="senaite.storage: Transition: Move Container" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+
+    <!-- Store/Recover Sample Transition Permissions (sample objects) -->
+    <permission name="senaite.storage: Transition: Store Sample" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="senaite.storage: Transition: Recover Sample" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+
+    <!-- Add/Recover Samples Transition Permissions (storage listings) -->
+    <permission name="senaite.storage: Transition: Add Samples" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="senaite.storage: Transition: Recover Samples" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+
+    <!-- Activate/Deactivate Transition Permissions -->
+    <permission name="senaite.storage: Transition: Activate" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="senaite.storage: Transition: Deactivate" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+
+  </permissions>
+
+</rolemap>

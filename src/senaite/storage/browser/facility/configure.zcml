@@ -1,0 +1,16 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    i18n_domain="senaite.storage">
+
+  <!-- Storage Facility Listing View -->
+  <browser:page
+    name="view"
+    for="senaite.storage.interfaces.IStorageFacility"
+    class=".view.FacilityListingView"
+    permission="zope.Public"
+    layer="senaite.storage.interfaces.ISenaiteStorageLayer"
+    />
+
+</configure>

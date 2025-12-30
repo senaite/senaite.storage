@@ -10,6 +10,9 @@
 .. image:: https://img.shields.io/pypi/v/senaite.storage.svg?style=flat-square
    :target: https://pypi.python.org/pypi/senaite.storage
 
+.. image:: https://img.shields.io/github/actions/workflow/status/senaite/senaite.storage/build-and-test.yml?branch=2.x
+   :target: https://github.com/senaite/senaite.storage/actions/workflows/build-and-test.yml?query=branch:2.x
+
 .. image:: https://img.shields.io/github/issues-pr/senaite/senaite.storage.svg?style=flat-square
    :target: https://github.com/senaite/senaite.storage/pulls
 
@@ -105,7 +108,7 @@ Feedback and support
 License
 =======
 
-**SENAITE.STORAGE** Copyright (C) 2019-2020 RIDING BYTES & NARALABS
+**SENAITE.STORAGE** Copyright (C) 2019-2024 RIDING BYTES & NARALABS
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the `GNU General Public License version 2

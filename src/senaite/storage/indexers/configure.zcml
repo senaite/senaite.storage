@@ -1,0 +1,12 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    i18n_domain="senaite.core">
+
+  <adapter name="listing_searchable_text"
+           factory=".storage_layout_container.listing_searchable_text"/>
+  <adapter name="listing_searchable_text"
+           factory=".storage_position.listing_searchable_text"/>
+  <adapter name="listing_searchable_text"
+           factory=".storage_facility.listing_searchable_text"/>
+
+</configure>

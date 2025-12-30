@@ -1,0 +1,44 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
+
+  <genericsetup:upgradeStep
+      title="SENAITE.STORAGE 2.7.0: Migrate Storage Root Folder to DX"
+      description="Migrate the Storage Root Folder to Dexterity"
+      source="2703"
+      destination="2704"
+      handler=".v02_07_000.migrate_storage_root_folder_to_dx"
+      profile="senaite.storage:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.STORAGE 2.7.0: Migrate Storage Sample Containers to DX"
+      description="Migrate all AT Storage Sample Containers to Dexterity"
+      source="2702"
+      destination="2703"
+      handler=".v02_07_000.migrate_storage_sample_containers_to_dx"
+      profile="senaite.storage:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.STORAGE 2.7.0: Migrate Storage Containers to DX"
+      description="Migrate all AT Storage Containers to Dexterity"
+      source="2701"
+      destination="2702"
+      handler=".v02_07_000.migrate_storage_containers_to_dx"
+      profile="senaite.storage:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.STORAGE 2.7.0: Migrate Storage Facilities to DX"
+      description="Migrate all AT Storage Facilities to Dexterity"
+      source="2700"
+      destination="2701"
+      handler=".v02_07_000.migrate_storage_facilities_to_dx"
+      profile="senaite.storage:default"/>
+
+  <genericsetup:upgradeStep
+      title="Upgrade to SENAITE.STORAGE 2.7.0"
+      source="2600"
+      destination="2700"
+      handler=".v02_07_000.upgrade"
+      profile="senaite.storage:default"/>
+
+</configure>

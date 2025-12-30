@@ -1,0 +1,55 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    i18n_domain="senaite.storage">
+
+  <!-- Storage Container Listing View -->
+  <browser:page
+    name="view"
+    for="senaite.storage.interfaces.IStorageContainer"
+    class=".view.ContainerListingView"
+    permission="zope.Public"
+    layer="senaite.storage.interfaces.ISenaiteStorageLayer"
+    />
+
+  <!-- Sample Container Listing View -->
+  <browser:page
+    for="senaite.storage.interfaces.IStorageSamplesContainer"
+    name="view"
+    class=".samples.SampleListingView"
+    permission="zope.Public"
+    layer="senaite.storage.interfaces.ISenaiteStorageLayer"
+    />
+
+  <!--
+      Set containers to preselected samples
+  -->
+  <browser:page
+      for="*"
+      name="storage_store_samples"
+      class=".store_samples.StoreSamplesView"
+      permission="senaite.core.permissions.ManageAnalysisRequests"
+      layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
+
+  <!--
+      Add samples to a preselected container
+  -->
+  <browser:page
+      for="*"
+      name="storage_store_container"
+      class=".store_container.StoreContainerView"
+      permission="senaite.core.permissions.ManageAnalysisRequests"
+      layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
+
+  <!--
+      Move containers
+  -->
+  <browser:page
+      for="*"
+      name="storage_move_container"
+      class=".move_container.MoveContainerView"
+      permission="zope.Public"
+      layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
+
+</configure>

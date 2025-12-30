@@ -1,0 +1,176 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="senaite.storage">
+  <body>
+
+    <!-- Title -->
+    <metal:title fill-slot="content-title">
+      <h1 tal:define="container       python:view.get_container();
+                      container_id    python: container.getId();
+                      container_title python: container.Title();"
+          tal:content="python: '{} ({})'.format(container_title, container_id)"></h1>
+    </metal:title>
+
+    <!-- Description -->
+    <metal:description fill-slot="content-description">
+      <tal:desc define="container python:view.get_container()">
+        <p tal:content="python: container.get_full_title()"
+           tal:condition="python: container != view.context"></p>
+        <p>
+          <span i18n:translate="">Used positions: </span>
+          <span tal:define="used python: container.get_samples_utilization();
+                            total python: container.get_samples_capacity();"
+                tal:content="python: '{}/{}'.format(used, total)"></span>
+        </p>
+        <hr/>
+      </tal:desc>
+    </metal:description>
+
+    <!-- Content -->
+    <metal:core fill-slot="content-core">
+      <div id="viewlet-senaite-storage-js" tal:content="structure provider:senaite.storage.js" />
+      <div id="store-samples-view"
+           tal:define="portal context/@@plone_portal_state/portal;
+               container python:view.get_container();
+               container_uid container/UID;">
+
+        <form class="form"
+              id="store_container_form"
+              name="store_container_form"
+              method="POST">
+
+          <!-- Hidden Fields -->
+          <input type="hidden" name="submitted" value="1"/>
+          <input tal:replace="structure context/@@authenticator/authenticator"/>
+
+          <div class="d-flex flex-row">
+            <!-- Sample select -->
+            <div class="senaite-uidreference-widget-input"
+                 tal:attributes="python:view.get_reference_widget_attributes('sample', container);
+                        id string:sample_container_${container_uid};">
+              <!-- ReactJS controlled widget -->
+            </div>
+
+            <!-- Sample Position -->
+            <div class="mr-2">
+              <div class="input-group input-group-sm">
+                <div class="input-group-prepend">
+                  <div i18n:translate="" class="input-group-text">Position</div>
+                </div>
+                <select name="position" id="position" class="custom-select" style="max-width:fit-content;">
+                  <tal:options repeat="position python: container.get_available_positions()">
+                    <option tal:define="alpha_value python: container.position_to_alpha(position[0], position[1]);"
+                            tal:content="alpha_value"
+                            tal:attributes="value python: alpha_value"></option>
+                  </tal:options>
+                </select>
+              </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="mr-2">
+              <!-- Store samples -->
+              <input class="btn btn-success btn-sm"
+                     type="submit"
+                     id="button_store"
+                     name="button_store"
+                     i18n:attributes="value"
+                     value="Add Sample"/>
+              <!-- Cancel -->
+              <input class="btn btn-secondary btn-sm"
+                     type="submit"
+                     name="button_cancel"
+                     i18n:attributes="value"
+                     value="Cancel"/>
+            </div>
+            <div class="col-sm-2">
+              <a tal:define="container python:view.get_next_container();
+                             last_container python:view.is_last_container()"
+                 tal:condition="python: container and not last_container"
+                 class="btn btn-primary"
+                 tal:attributes="href python: view.get_next_url()">
+                <span i18n:translate="">Next container:</span>&nbsp;
+                <span tal:content="python: container.getId()"></span>&nbsp;
+                <span> ⇶</span>
+              </a>
+            </div>
+          </div>
+
+          <p>&nbsp;</p>
+
+          <div class="row">
+            <!-- Samples container layout view -->
+            <div class="col-sm-12">
+              <table class="table table-bordered container-layout table-responsive"
+                     tal:define="rows python: container.getRows();
+                            columns python: container.getColumns();">
+
+                <!-- Columns header -->
+                <tr>
+                  <th></th>
+                  <th tal:repeat="col python: range(columns)"
+                      tal:content="python: col+1"
+                      class="text-center">
+                  </th>
+                </tr>
+
+                <tr tal:repeat="row python: range(rows)">
+                  <!-- Row header -->
+                  <th class="text-center" tal:content="python:container.get_alpha_row(row)"></th>
+
+                  <tal:cols repeat="col python: range(columns)">
+                    <tal:slot define="item python:container.get_object_at(row,col);
+                                      info python:view.get_sample_info(item);
+                                      alpha python:container.position_to_alpha(row,col);
+                                      pos python:container.get_absolute_position(row,col);">
+                      <td tal:condition="python: not item"
+                          class="empty-slot">
+                        <a class="position_slot_selector" href="#"
+                           tal:attributes="data-row row;
+                                  data-column col;
+                                  id alpha;" >
+                          <div class="col-sm-12">
+                            <br/><br/>
+                          </div>
+                        </a>
+                        <div class="slot-bottom">
+                          <span class="float-left badge badge-light" tal:content="python:alpha"></span>
+                          <span class="float-right badge badge-light" tal:content="python:pos"></span>
+                        </div>
+                      </td>
+                      <td tal:condition="python: item and True or False"
+                          class="non-empty-slot">
+                        <!-- sample title -->
+                        <a href="#"
+                           tal:attributes="href info/url">
+                          <div class="sample-id font-weight-bold text-center"
+                               tal:content="info/id"></div>
+                        </a>
+                        <!-- sample type -->
+                        <div class="sample-type small text-center"
+                             tal:content="info/sample_type"></div>
+                        <!-- sample status -->
+                        <div class="small text-center">
+                          <span i18n:translate="">Status</span>:
+                          <span class="sample-status text-center"
+                                tal:content="info/status_title"></span>
+                        </div>
+
+                        <div class="slot-bottom">
+                          <span class="float-left badge badge-light" tal:content="python:alpha"></span>
+                          <span class="float-right badge badge-light" tal:content="python:pos"></span>
+                        </div>
+                      </td>
+                    </tal:slot>
+                  </tal:cols>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </form>
+      </div>
+    </metal:core>
+  </body>
+</html>

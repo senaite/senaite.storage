@@ -15,14 +15,26 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2019-2020 by it's authors.
+# Copyright 2019-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import events
 
 
+def BeforeTransitionEventHandler(sample, event):
+    """Actions to be done *before a transition* for a sample takes place
+    """
+    if not event.transition:
+        return
+
+    function_name = "before_{}".format(event.transition.id)
+    if hasattr(events, function_name):
+        # Call the before_* function from events package
+        getattr(events, function_name)(sample)
+
+
 def AfterTransitionEventHandler(sample, event):
-    """Actions to be done after a transition for a sample takes place
+    """Actions to be done *after a transition* for a sample takes place
     """
     if not event.transition:
         return

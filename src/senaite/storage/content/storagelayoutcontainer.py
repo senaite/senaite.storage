@@ -15,55 +15,57 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2019-2020 by it's authors.
+# Copyright 2019-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import string
-import math
 import re
-from Products.ATExtensions.ateapi import RecordsField
-from Products.ATExtensions.widget import RecordsWidget
-from Products.Archetypes.Field import IntegerField, ComputedField, LinesField
-from Products.Archetypes.Schema import Schema
-from Products.Archetypes.Widget import IntegerWidget, ComputedWidget, \
-    LinesWidget
-from Products.validation.validators.ExpressionValidator import \
-    ExpressionValidator
+import string
+
 from bika.lims import api
-from bika.lims import alphanumber
 from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims.idserver import renameAfterCreation
 from plone.app.folder.folder import ATFolder
+from Products.Archetypes.Field import IntegerField
+from Products.Archetypes.Field import LinesField
+from Products.Archetypes.Schema import Schema
+from Products.Archetypes.Widget import IntegerWidget
+from Products.Archetypes.Widget import LinesWidget
+from Products.validation.validators.ExpressionValidator import \
+    ExpressionValidator
+from senaite.core.browser.fields.records import RecordsField
+from senaite.core.browser.widgets.recordswidget import RecordsWidget
 from senaite.storage import logger
 from senaite.storage import senaiteMessageFactory as _
-from senaite.storage.interfaces import IStorageLayoutContainer, IStorageFacility
+from senaite.storage.interfaces import IStorageBreadcrumbs
+from senaite.storage.interfaces import IStorageFacility
+from senaite.storage.interfaces import IStorageLayoutContainer
 from zope.interface import implements
 
 Rows = IntegerField(
-    name = "Rows",
-    default = 1,
-    widget = IntegerWidget(
-        label = _("Rows"),
-        description = _("Alphabet letters will be used to represent a row "
-                        "within the container")
+    name="Rows",
+    default=1,
+    widget=IntegerWidget(
+        label=_("Rows"),
+        description=_("Alphabet letters will be used to represent a row "
+                      "within the container")
     ),
-    validators = (
-        ExpressionValidator('python: int(value) > 0'),
-        ExpressionValidator('python: here.get_minimum_size()[0] <= int(value)')
+    validators=(
+        ExpressionValidator("python: int(value) > 0"),
+        ExpressionValidator("python: here.get_minimum_size()[0] <= int(value)")
     )
 )
 
 Columns = IntegerField(
-    name = "Columns",
-    default = 1,
-    widget = IntegerWidget(
-        label = _("Columns"),
-        description = _("Number of positions per row. Numbers will be used to "
-                        "represent a column within a row")
+    name="Columns",
+    default=1,
+    widget=IntegerWidget(
+        label=_("Columns"),
+        description=_("Number of positions per row. Numbers will be used to "
+                      "represent a column within a row")
     ),
-    validators = (
-        ExpressionValidator('python: int(value) > 0'),
-        ExpressionValidator('python: here.get_minimum_size()[1] <= int(value)')
+    validators=(
+        ExpressionValidator("python: int(value) > 0"),
+        ExpressionValidator("python: here.get_minimum_size()[1] <= int(value)")
     )
 )
 
@@ -78,14 +80,14 @@ Columns = IntegerField(
 # The total capacity and utilization of this container is the sum of values of
 # the capacity and utilization of the objects this container stores.
 PositionsLayout = RecordsField(
-    name = "PositionsLayout",
-    subfields = (
+    name="PositionsLayout",
+    subfields=(
         "row",
         "column",
         "uid",
         "samples_capacity",
         "samples_utilization"),
-    subfield_types = {
+    subfield_types={
         "row": "int",
         "column": "int",
         "samples_capacity": "int",
@@ -96,11 +98,11 @@ PositionsLayout = RecordsField(
 )
 
 AvailablePositions = LinesField(
-    name = "AvailablePositions",
-    required = 0,
-    subfields = ("row", "column"),
+    name="AvailablePositions",
+    required=0,
+    subfields=("row", "column"),
     widget=LinesWidget(
-        visible = False
+        visible=False
     )
 )
 
@@ -111,28 +113,32 @@ schema = BikaFolderSchema.copy() + Schema((
     AvailablePositions,
 ))
 
+
+# Do not display these items in the navbar by default
+schema['excludeFromNav'].default = True
+
+
 class StorageLayoutContainer(ATFolder):
     """Base class for storage containers
     """
     implements(IStorageLayoutContainer)
     _at_rename_after_creation = True
-    displayContentsTab = False
     schema = schema
     default_samples_capacity = 0
 
     def _renameAfterCreation(self, check_auto_id=False):
         renameAfterCreation(self)
 
-    def get_full_title(self, breadcrumbs=None):
+    def Description(self):
+        rows = self.getRows()
+        cols = self.getColumns()
+        return _("Layout: {} x {}".format(rows, cols))
+
+    def get_full_title(self):
         """Returns the full title of this container in breadcrumbs format
         """
-        if not breadcrumbs:
-            breadcrumbs = "{} - {}".format(self.Title(), self.getId())
-        parent = self.aq_parent
-        breadcrumbs = "{} > {}".format(api.get_title(parent), breadcrumbs)
-        if IStorageFacility.providedBy(parent):
-            return breadcrumbs
-        return parent.get_full_title(breadcrumbs)
+        adapter = IStorageBreadcrumbs(self)
+        return adapter.get_storage_breadcrumbs()
 
     def get_all_ids(self):
         """Returns the list of ids this container is contained in, the id of the
@@ -144,14 +150,6 @@ class StorageLayoutContainer(ATFolder):
                 return ids
             return feed_parent_ids(container.aq_parent, ids)
         return feed_parent_ids(self, [])
-
-    def get_searchable_text(self):
-        """Returns a string containing terms for searches. Used as an index for
-        wide-range catalog searches
-        """
-        terms = self.get_all_ids()
-        terms.append(self.Title())
-        return ' '.join(terms)
 
     def setRows(self, value):
         self.getField('Rows').set(self, value)
@@ -171,7 +169,7 @@ class StorageLayoutContainer(ATFolder):
         """Returns the alpha part for the passed in row
         """
         alphabet = string.ascii_uppercase
-        num, idx = divmod(row, len(alphabet))
+        num, idx = divmod(int(row), len(alphabet))
         if num:
             return self.get_alpha_column(num - 1) + alphabet[idx]
         return alphabet[idx]
@@ -181,7 +179,7 @@ class StorageLayoutContainer(ATFolder):
         """
         alpha_part = self.get_alpha_row(row)
         lead_zeros = len(str(self.getColumns())) - 1
-        num_part = "%0{}d".format(lead_zeros) % (column + 1)
+        num_part = "%0{}d".format(lead_zeros) % (int(column) + 1)
         return "{}{}".format(alpha_part, num_part)
 
     def alpha_to_position(self, alpha):
@@ -246,7 +244,7 @@ class StorageLayoutContainer(ATFolder):
         """
         if not self.is_valid_position(row, column):
             return True
-        item  = self.get_item_at(row, column)
+        item = self.get_item_at(row, column)
         return item and self.is_taken(item) or False
 
     def is_empty(self, item):
@@ -286,7 +284,7 @@ class StorageLayoutContainer(ATFolder):
         """Returns a uid this container contains at the given position.
         """
         item = self.get_item_at(row, column)
-        return item and item.get("uid","") or None
+        return item and item.get("uid", "") or None
 
     def get_object_at(self, row, column):
         """Returns an object this container contains at the given position
@@ -303,7 +301,7 @@ class StorageLayoutContainer(ATFolder):
         uid = api.get_uid(object_brain_uid)
         if not uid:
             return None
-        els = filter(lambda el: el.get("uid","") == uid,
+        els = filter(lambda el: el.get("uid", "") == uid,
                      self.getPositionsLayout())
         if not els:
             return None
@@ -328,7 +326,7 @@ class StorageLayoutContainer(ATFolder):
         IStorageLayoutContainer
         """
         return filter(lambda obj: IStorageLayoutContainer.providedBy(obj),
-                            self.objectValues())
+                      self.objectValues())
 
     def get_first_empty_position(self):
         """Returns the first empty position of the layout as a tuple (row, col)
@@ -365,7 +363,7 @@ class StorageLayoutContainer(ATFolder):
         uid = api.get_uid(object_brain_uid)
         if not uid:
             return False
-        els = filter(lambda el: el.get("uid","") != uid,
+        els = filter(lambda el: el.get("uid", "") != uid,
                      self.getPositionsLayout())
         self.setPositionsLayout(els)
 
@@ -462,7 +460,7 @@ class StorageLayoutContainer(ATFolder):
                    'row': row,
                    'column': column,
                    'samples_capacity': samples_capacity,
-                   'samples_utilization': samples_utilization,}]
+                   'samples_utilization': samples_utilization, }]
         for item in self.getPositionsLayout():
             if item["row"] == row and item["column"] == column:
                 continue

@@ -1,0 +1,386 @@
+# --- PLEASE EDIT THE LINES BELOW CORRECTLY ---
+# SOME DESCRIPTIVE TITLE.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Translators:
+# Jiří Podhorecký <jirka.p@volny.cz>, 2022
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2025-04-04 10:05+0000\n"
+"PO-Revision-Date: 2019-03-31 21:21+0000\n"
+"Last-Translator: Jiří Podhorecký <jirka.p@volny.cz>, 2022\n"
+"Language-Team: Czech (https://app.transifex.com/senaite/teams/97702/cs/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n <= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
+"Language-Code: en\n"
+"Language-Name: English\n"
+"Preferred-Encodings: utf-8 latin1\n"
+"Domain: senaite.storage\n"
+"Language: cs\n"
+
+#: senaite/storage/browser/container/templates/move_container.pt:23
+#: senaite/storage/browser/container/templates/store_samples.pt:18
+msgid "${back_link}"
+msgstr "${back_link}"
+
+#: senaite/storage/browser/facility/view.py:76
+#: senaite/storage/browser/storage/listing.py:60
+msgid "% Samples"
+msgstr "% Vzorky"
+
+#: senaite/storage/browser/container/templates/move_container.pt:23
+#: senaite/storage/browser/container/templates/store_samples.pt:18
+msgid "&larr; Back"
+msgstr "&larr; Zpět"
+
+#: senaite/storage/profiles/default/workflows/senaite_storage_default_workflow/definition.xml
+msgid "Activate"
+msgstr "Aktivovat"
+
+#: senaite/storage/profiles/default/workflows/senaite_storage_default_workflow/definition.xml
+#: senaite/storage/profiles/default/workflows/senaite_storage_folder_workflow/definition.xml
+msgid "Active"
+msgstr "Aktivní"
+
+#: senaite/storage/browser/storage/view.py:50
+msgid "Add Facility"
+msgstr "Přidat zařízení"
+
+#: senaite/storage/browser/container/templates/store_container.pt:75
+msgid "Add Sample"
+msgstr "Přidat vzorek"
+
+#: senaite/storage/browser/container/samples.py:56
+msgid "Add Samples"
+msgstr "Přidat vzorky"
+
+#: senaite/storage/browser/container/view.py:53
+#: senaite/storage/browser/facility/view.py:62
+msgid "Add container"
+msgstr "Přidat kontejner"
+
+#: senaite/storage/profiles/default/workflows/senaite_storage_default_workflow/definition.xml
+msgid "Add samples"
+msgstr "Přidat vzorky"
+
+#: senaite/storage/browser/container/view.py:59
+msgid "Add samples container"
+msgstr "Přidat kontejner vzorků"
+
+#: senaite/storage/browser/facility/view.py:57
+msgid "Add storage position"
+msgstr "Přidat pozici úložiště"
+
+#: senaite/storage/content/storagefacility.py:55
+msgid "Address"
+msgstr "Adresa"
+
+#: senaite/storage/content/storagelayoutcontainer.py:49
+msgid "Alphabet letters will be used to represent a row within the container"
+msgstr "Písmena abecedy budou použita k reprezentaci řádku v kontejneru"
+
+#: senaite/storage/browser/container/store_container.py:249
+msgid "CSID"
+msgstr ""
+
+#: senaite/storage/browser/container/templates/move_container.pt:81
+#: senaite/storage/browser/container/templates/store_container.pt:82
+#: senaite/storage/browser/container/templates/store_samples.pt:102
+msgid "Cancel"
+msgstr "Zrušit"
+
+#: senaite/storage/browser/container/store_container.py:182
+msgid "Cannot store samples. Samples container {} is full"
+msgstr "Nelze ukládat vzorky. Kontejner na vzorky {} je plný"
+
+#: senaite/storage/browser/container/templates/move_container.pt:63
+msgid "Choose container destination..."
+msgstr "Vyberte cíl kontejneru..."
+
+#: senaite/storage/browser/container/store_container.py:253
+msgid "Client ID"
+msgstr ""
+
+#: senaite/storage/browser/container/view.py:70
+#: senaite/storage/browser/facility/view.py:88
+#: senaite/storage/browser/position/view.py:52
+msgid "Collapsed"
+msgstr "Sbaleno"
+
+#: senaite/storage/content/storagelayoutcontainer.py:62
+msgid "Columns"
+msgstr "Sloupce"
+
+#: senaite/storage/browser/container/samples.py:117
+msgid "Container is full"
+msgstr "Kontejner je plný"
+
+#: senaite/storage/browser/container/move_container.py:68
+msgid "Container moving cancelled"
+msgstr "Přesun kontejneru zrušen"
+
+#: senaite/storage/browser/container/store_samples.py:148
+msgid "Container path"
+msgstr ""
+
+#: senaite/storage/browser/container/samples.py:123
+msgid "Container utilization {} / {}"
+msgstr "Využití kontejneru {} / {}"
+
+#: senaite/storage/browser/container/move_container.py:98
+msgid "Container {} is already located in destination path!"
+msgstr "Kontejner {} se již nachází na cílové cestě!"
+
+#: senaite/storage/browser/storage/listing.py:64
+msgid "Containers"
+msgstr "Kontejnery"
+
+#: senaite/storage/adapters/listing.py:101
+msgid "Date stored"
+msgstr "Datum uloženo"
+
+#: senaite/storage/profiles/default/workflows/senaite_storage_default_workflow/definition.xml
+msgid "Deactivate"
+msgstr "Deaktivovat"
+
+#: senaite/storage/browser/facility/view.py:80
+#: senaite/storage/browser/storage/view.py:70
+msgid "Description"
+msgstr "Popis"
+
+#: senaite/storage/content/storage_position.py:40
+msgid "Description of the storage position that is shown in listings"
+msgstr "Popis skladové pozice, která se zobrazuje ve výpisech"
+
+#: senaite/storage/content/storagefacility.py:47
+msgid "Email Address"
+msgstr "e-mailová adresa"
+
+#: senaite/storage/browser/container/view.py:76
+#: senaite/storage/browser/facility/view.py:94
+#: senaite/storage/browser/position/view.py:58
+msgid "Expanded"
+msgstr "Rozbaleno"
+
+#: senaite/storage/content/storagecontainer.py:38
+msgid "Expected temperature"
+msgstr "Očekávaná teplota"
+
+#: senaite/storage/content/storagecontainer.py:39
+msgid "Expected temperature of this container"
+msgstr "Očekávaná teplota tohoto kontejneru"
+
+#: senaite/storage/content/storagecontainer.py:61
+msgid "Expected temperature: %s Â°C"
+msgstr "Očekávaná teplota: %s °C"
+
+#: senaite/storage/browser/facility/view.py:74
+#: senaite/storage/browser/storage/listing.py:58
+msgid "ID"
+msgstr "ID"
+
+#: senaite/storage/browser/container/store_samples.py:144
+msgid "Id"
+msgstr ""
+
+#: senaite/storage/browser/container/view.py:88
+#: senaite/storage/browser/facility/view.py:106
+#: senaite/storage/browser/position/view.py:70
+msgid "Inactive"
+msgstr "Neaktivní"
+
+#: senaite/storage/content/storagelayoutcontainer.py:135
+msgid "Layout: {} x {}"
+msgstr "Rozložení: {} x {}"
+
+#: senaite/storage/browser/viewlets/templates/sample_container_viewlet.pt:19
+msgid "Location:"
+msgstr "Umístění:"
+
+#: senaite/storage/content/storagefacility.py:92
+msgid "Mail: {}"
+msgstr "E-mail: {}"
+
+#: senaite/storage/browser/container/templates/move_container.pt:15
+msgid "Move Containers"
+msgstr "Přesunout kontejnery"
+
+#: senaite/storage/profiles/default/workflows/senaite_storage_default_workflow/definition.xml
+msgid "Move container"
+msgstr "Přesunout kontejner"
+
+#: senaite/storage/browser/container/move_container.py:105
+msgid "Moved container {} â {}"
+msgstr "Přesunutý kontejner {} â {}"
+
+#: senaite/storage/browser/facility/view.py:71
+#: senaite/storage/browser/storage/listing.py:55
+#: senaite/storage/browser/storage/view.py:58
+msgid "Name"
+msgstr "Název"
+
+#: senaite/storage/browser/container/templates/store_container.pt:94
+msgid "Next container:"
+msgstr "Další kontejner:"
+
+#: senaite/storage/browser/container/move_container.py:56
+#: senaite/storage/browser/container/store_samples.py:62
+msgid "No items selected"
+msgstr "Nejsou vybrány žádné položky"
+
+#: senaite/storage/browser/container/store_container.py:191
+msgid "No position or not valid sample selected"
+msgstr "Není vybrána žádná poloha nebo není platný vzorek"
+
+#: senaite/storage/content/storagelayoutcontainer.py:63
+msgid "Number of positions per row. Numbers will be used to represent a column within a row"
+msgstr "Počet pozic na řádek. Čísla budou použita k představení sloupce v řádku"
+
+#: senaite/storage/content/storagefacility.py:40
+msgid "Phone"
+msgstr "Telefon"
+
+#: senaite/storage/browser/container/samples.py:64
+#: senaite/storage/browser/container/templates/store_container.pt:60
+#: senaite/storage/browser/container/templates/store_samples.pt:77
+msgid "Position"
+msgstr "Pozici"
+
+#: senaite/storage/adapters/listing.py:77
+msgid "Print stickers"
+msgstr "Tisk samolepek"
+
+#: senaite/storage/profiles/default/workflows/senaite_storage_default_workflow/definition.xml
+msgid "Recover samples"
+msgstr "Obnovit vzorky"
+
+#: senaite/storage/content/storagelayoutcontainer.py:48
+msgid "Rows"
+msgstr "Řádky"
+
+#: senaite/storage/browser/storage/view.py:67
+msgid "Sample Containers"
+msgstr "Kontejnery na vzorky"
+
+#: senaite/storage/browser/container/store_container.py:245
+msgid "Sample ID"
+msgstr ""
+
+#: senaite/storage/browser/container/store_container.py:257
+msgid "Sample Type"
+msgstr ""
+
+#: senaite/storage/browser/container/store_container.py:210
+msgid "Sample storing canceled"
+msgstr "Ukládání vzorků bylo zrušeno"
+
+#: senaite/storage/browser/facility/view.py:78
+#: senaite/storage/browser/storage/listing.py:62
+#: senaite/storage/browser/storage/view.py:61
+msgid "Samples"
+msgstr "Vzorky"
+
+#: senaite/storage/profiles/default/types/StorageSamplesContainer.xml
+msgid "Samples container for storage"
+msgstr "Nádoba na vzorky pro skladování"
+
+#: senaite/storage/browser/storage/view.py:37
+#: senaite/storage/profiles/default/types/StorageRootFolder.xml
+msgid "Samples storage"
+msgstr "Úložiště vzorků"
+
+#: senaite/storage/browser/storage/view.py:64
+msgid "Samples usage"
+msgstr "Použití vzorků"
+
+#: senaite/storage/browser/container/store_container.py:261
+msgid "State"
+msgstr ""
+
+#: senaite/storage/browser/container/templates/store_container.pt:156
+msgid "Status"
+msgstr "Stav"
+
+#: senaite/storage/adapters/listing.py:111
+msgid "Storage"
+msgstr "Úložiště"
+
+#: senaite/storage/profiles/default/types/StorageFacility.xml
+msgid "Storage Facility"
+msgstr "Zařízení úložiště"
+
+#: senaite/storage/profiles/default/types/StoragePosition.xml
+msgid "Storage Position"
+msgstr "Pozice úložiště"
+
+#: senaite/storage/profiles/default/types/StorageContainer.xml
+msgid "Storage container"
+msgstr "Úložný kontejner"
+
+#: senaite/storage/profiles/default/controlpanel.xml
+msgid "Storage settings"
+msgstr ""
+
+#: senaite/storage/browser/container/templates/store_samples.pt:96
+msgid "Store Samples"
+msgstr "Ukládání vzorků"
+
+#: senaite/storage/browser/container/templates/store_samples.pt:10
+msgid "Store samples"
+msgstr "Uložit vzorky"
+
+#: senaite/storage/adapters/listing.py:84
+msgid "Stored"
+msgstr "Uloženo"
+
+#: senaite/storage/browser/viewlets/templates/sample_container_viewlet.pt:13
+msgid "Stored sample"
+msgstr "Uložený vzorek"
+
+#: senaite/storage/browser/container/store_container.py:201
+msgid "Stored sample {} at position {}"
+msgstr "Uložený vzorek {} na pozici {}"
+
+#: senaite/storage/content/storagefacility.py:89
+msgid "Tel: {}"
+msgstr "Tel: {}"
+
+#: senaite/storage/content/storage_position.py:34
+msgid "The name of the storage position, e.g. Room 12/3"
+msgstr "Název skladovací pozice, např. místnost 12/3."
+
+#: senaite/storage/profiles/default/types/StoragePosition.xml
+msgid "The storage position inside a facility"
+msgstr "Skladovací pozice uvnitř zařízení"
+
+#: senaite/storage/browser/container/templates/store_container.pt:22
+msgid "Used positions:"
+msgstr "Použité pozice:"
+
+#. Default: "Select this option to automatically transition back the primary from 'stored' to its preceding status when all its partitions are recovered."
+#: senaite/storage/browser/controlpanel.py:52
+msgid "description_storage_settings_recover_primary"
+msgstr ""
+
+#. Default: "Select this option to automatically transition the primary sample to 'stored' status when it does not have analyses assigned and all its partitions are stored."
+#: senaite/storage/browser/controlpanel.py:38
+msgid "description_storage_settings_store_primary"
+msgstr ""
+
+#. Default: "Storage Settings"
+#: senaite/storage/browser/controlpanel.py:65
+msgid "header_storage_settings"
+msgstr ""
+
+#. Default: "Auto-recover primary sample"
+#: senaite/storage/browser/controlpanel.py:48
+msgid "label_storage_settings_recover_primary"
+msgstr ""
+
+#. Default: "Auto-store primary sample"
+#: senaite/storage/browser/controlpanel.py:34
+msgid "label_storage_settings_store_primary"
+msgstr ""

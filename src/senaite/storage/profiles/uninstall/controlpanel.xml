@@ -1,0 +1,3 @@
+<object name="portal_controlpanel">
+  <configlet action_id="senaite.storage" remove="True"/>
+</object>

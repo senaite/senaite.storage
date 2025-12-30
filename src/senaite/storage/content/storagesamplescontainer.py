@@ -15,16 +15,15 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2019-2020 by it's authors.
+# Copyright 2019-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from Products.Archetypes.Schema import Schema
-from Products.Archetypes.atapi import registerType
 from bika.lims import api
 from bika.lims import workflow as wf
-from bika.lims.catalog.analysisrequest_catalog import \
-    CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.interfaces import IAnalysisRequest
+from Products.Archetypes.atapi import registerType
+from Products.Archetypes.Schema import Schema
+from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.storage import PRODUCT_NAME
 from senaite.storage.content.storagelayoutcontainer import \
     StorageLayoutContainer
@@ -61,8 +60,8 @@ class StorageSamplesContainer(StorageLayoutContainer):
             return False
 
         sample = api.get_object(object_brain_uid)
-        stored = super(StorageSamplesContainer, self).add_object_at(sample,
-                                                                    row, column)
+        stored = super(StorageSamplesContainer, self).add_object_at(
+            sample, row, column)
         if not stored:
             return False
 
@@ -80,16 +79,6 @@ class StorageSamplesContainer(StorageLayoutContainer):
         """
         removed = super(StorageSamplesContainer, self).remove_object(
             object_brain_uid, notify_parent=notify_parent)
-        if not removed:
-            return False
-
-        # Do "recover" transition to sample
-        # TODO Better to do this remove_object call from WF's AfterTransition
-        # Otherwise, transition can be triggered through DC Workflow without
-        # the container being notified.
-        self.reindexObject(idxs=["get_samples_uids", "is_full"])
-        sample = api.get_object(object_brain_uid)
-        wf.doActionFor(sample, "recover")
         return removed
 
     def has_samples(self):
@@ -108,7 +97,7 @@ class StorageSamplesContainer(StorageLayoutContainer):
         if not samples_uids:
             return []
         query = dict(portal_type="AnalysisRequest", UID=samples_uids)
-        brains = api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
+        brains = api.search(query, SAMPLE_CATALOG)
         if as_brains:
             return brains
         return map(api.get_object, brains)
@@ -124,7 +113,7 @@ class StorageSamplesContainer(StorageLayoutContainer):
         if not samples_uids:
             return []
         query = dict(UID=samples_uids)
-        brains = api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
+        brains = api.search(query, SAMPLE_CATALOG)
         return map(lambda brain: brain.getSampleTypeUID, brains)
 
 

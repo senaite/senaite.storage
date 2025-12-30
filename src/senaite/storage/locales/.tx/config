@@ -1,9 +1,8 @@
 [main]
 host = https://www.transifex.com
 
-[senaite-storage.senaite]
+[o:senaite:p:senaite-storage:r:senaite]
 file_filter = <lang>/LC_MESSAGES/senaite.storage.po
-host = https://www.transifex.com
 source_file = senaite.storage.pot
 source_lang = en
 type = PO

@@ -15,14 +15,15 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2019-2020 by it's authors.
+# Copyright 2019-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
+from bika.lims import workflow as wf
+from bika.lims.browser import ulocalized_time
 from plone.app.layout.viewlets import ViewletBase
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from senaite.storage.catalog import SENAITE_STORAGE_CATALOG
-from bika.lims import workflow as wf
+from senaite.storage.catalog import STORAGE_CATALOG
 
 
 class SampleContainerViewlet(ViewletBase):
@@ -48,7 +49,7 @@ class SampleContainerViewlet(ViewletBase):
         # Search the container the sample is stored in
         query = {"portal_type": "StorageSamplesContainer",
                  "get_samples_uids": api.get_uid(self.context)}
-        brains = api.search(query, SENAITE_STORAGE_CATALOG)
+        brains = api.search(query, STORAGE_CATALOG)
         if not brains:
             return None
 
@@ -70,3 +71,7 @@ class SampleContainerViewlet(ViewletBase):
         if self.is_stored():
             return ""
         return self.template()
+
+    def ulocalized_time(self, time, long_format=None, time_only=None):
+        return ulocalized_time(time, long_format, time_only,
+                               context=self.context, request=self.request)

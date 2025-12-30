@@ -15,30 +15,66 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2019-2020 by it's authors.
+# Copyright 2019-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from senaite.storage import api as _api
-from senaite.storage import logger
-from zope.lifecycleevent import modified
-
 from bika.lims import api
+from bika.lims.api.snapshot import pause_snapshots_for
+from bika.lims.api.snapshot import resume_snapshots_for
+from bika.lims.interfaces import IAnalysis
 from bika.lims.utils import changeWorkflowState
 from bika.lims.workflow import doActionFor as do_action_for
+from senaite.core.workflow import SAMPLE_WORKFLOW
+from senaite.storage.config import PRODUCT_NAME
+from senaite.storage import api as _api
+
+
+def is_store_primary_enabled():
+    """Returns whether the transition 'store' must be automatically triggered
+    for primary sample when all its partitions have been stored
+    """
+    key = "{}.store_primary".format(PRODUCT_NAME)
+    return api.get_registry_record(key, default=True)
+
+
+def is_recover_primary_enabled():
+    """Returns whether the transition 'recover' must be automatically triggered
+    for primary sample when all its partitions have been recovered
+    """
+    key = "{}.recover_primary".format(PRODUCT_NAME)
+    return api.get_registry_record(key, default=True)
+
+
+def before_dispatch(sample):
+    """Event triggered before "dispatch" transition takes place for a given sample
+    """
+    # recover sample if the sample was stored
+    state = api.get_workflow_status_of(sample)
+    if state == "stored":
+        do_action_for(sample, "recover")
 
 
 def after_store(sample):
     """Event triggered after "store" transition takes place for a given sample
     """
+    if not is_store_primary_enabled():
+        return
+
+    # auto-store the primary sample if all its partitions are stored
     primary = sample.getParentAnalysisRequest()
     if not primary:
+        return
+
+    # Do not store primary if it has it's own analyses assigned
+    analyses = filter(IAnalysis.providedBy, primary.objectValues())
+    if len(analyses) > 0:
         return
 
     # Store primary sample if its partitions have been stored
     parts = primary.getDescendants()
 
     # Partitions in some statuses won't be considered
-    skip = ['cancelled', 'stored', 'retracted', 'rejected']
+    skip = ["cancelled", "stored", "retracted", "rejected"]
     parts = filter(lambda part: api.get_review_status(part) not in skip, parts)
     if not parts:
         # There are no partitions left, transition the primary
@@ -49,21 +85,22 @@ def after_recover(sample):
     """Unassigns the sample from its storage container and "recover". It also
     transitions the sample to its previous state before it was stored
     """
-    container = _api.get_storage_sample(api.get_uid(sample))
-    if container:
-        container.remove_object(sample)
-    else:
-        logger.warn("Container for Sample {} not found".format(sample.getId()))
-
+    # remove the sample from the container
+    _api.remove_sample_from_container(sample)
     # Transition the sample to the state before it was stored
-    previous_state = get_previous_state(sample) or "sample_due"
-    changeWorkflowState(sample, "bika_ar_workflow", previous_state)
-
-    # Notify the sample has ben modified
-    modified(sample)
+    previous_state = api.get_previous_worfklow_status_of(
+        sample, skip=("stored", ), default="sample_due")
+    # Note: we pause the snapshots here because events are fired next
+    pause_snapshots_for(sample)
+    changeWorkflowState(sample, SAMPLE_WORKFLOW, previous_state)
+    resume_snapshots_for(sample)
 
     # Reindex the sample
     sample.reindexObject()
+
+    if not is_recover_primary_enabled():
+        # Do not auto-recover the primary, if any
+        return
 
     # If the sample is a partition, try to promote to the primary
     primary = sample.getParentAnalysisRequest()
@@ -74,19 +111,8 @@ def after_recover(sample):
     parts = primary.getDescendants()
 
     # Partitions in some statuses won't be considered.
-    skip = ['stored']
+    skip = ["cancelled", "stored", "retracted", "rejected"]
     parts = filter(lambda part: api.get_review_status(part) in skip, parts)
     if not parts:
         # There are no partitions left, transition the primary
         do_action_for(primary, "recover")
-
-
-def get_previous_state(instance, omit=("stored",)):
-    # Get the review history, most recent actions first
-    history = api.get_review_history(instance)
-    for item in history:
-        status = item.get("review_state")
-        if not status or status in omit:
-            continue
-        return status
-    return None

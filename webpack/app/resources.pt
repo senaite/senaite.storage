@@ -1,0 +1,9 @@
+<!-- JS bundle -->
+<% for (let js in htmlWebpackPlugin.files.js) { %>
+<script tal:attributes="src <%= 'string:${view/site_url}/' + htmlWebpackPlugin.files.js[js] %>"></script>
+<% } %>
+
+<!-- CSS bundle -->
+<% for (let f in htmlWebpackPlugin.files.css) { %>
+<link href="#" rel="stylesheet" tal:attributes="href <%= 'string:${view/site_url}/' + htmlWebpackPlugin.files.css[f] %>" />
+<% } %>

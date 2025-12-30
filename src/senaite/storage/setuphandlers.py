@@ -15,35 +15,51 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2019-2020 by it's authors.
+# Copyright 2019-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from Products.DCWorkflow.Guard import Guard
+from Acquisition import aq_base
 from bika.lims import api
-from bika.lims import permissions
-from bika.lims.catalog.analysisrequest_catalog import \
-    CATALOG_ANALYSIS_REQUEST_LISTING
-from bika.lims.catalog.catalog_utilities import addZCTextIndex
-from senaite.storage import PRODUCT_NAME
-from senaite.storage import PROFILE_ID
+from plone import api as ploneapi
+from plone.app.dexterity.behaviors.exclfromnav import IExcludeFromNavigation
+from Products.CMFCore.permissions import ModifyPortalContent
+from Products.DCWorkflow.Guard import Guard
+from senaite.core import permissions
+from senaite.core.catalog import SAMPLE_CATALOG
+from senaite.core.setuphandlers import setup_catalog_mappings
+from senaite.core.setuphandlers import setup_core_catalogs
+from senaite.core.setuphandlers import setup_other_catalogs
+from senaite.core.workflow import SAMPLE_WORKFLOW
 from senaite.storage import logger
-from senaite.storage.catalog import SENAITE_STORAGE_CATALOG
+from senaite.storage.catalog import STORAGE_CATALOG
+from senaite.storage.catalog import StorageCatalog
+from senaite.storage.config import PRODUCT_NAME
+from senaite.storage.config import PROFILE_ID
 
-ACTIONS_TO_HIDE = [
-    # Tuples of (id, folder_id)
-    # If folder_id is None, assume folder_id is portal
-    ("bika_storagelocations", "bika_setup")
-]
 
-NEW_CONTENT_TYPES = [
-    # Tuples of (id, folder_id)
-    # If folder_id is None, assume folder_id is portal
-    ("senaite_storage", None),
+SITE_STRUCTURE = [
+    # Tuples of (portal_type, obj_id, obj_title, parent_path, display_type)
+    # If parent_path is None, assume folder_id is portal
+    ("StorageRootFolder", "senaite_storage", "Sample storage", None, True)
 ]
 
 ID_FORMATTING = [
     # An array of dicts. Each dict represents an ID formatting configuration
     {
+        "portal_type": "StorageFacility",
+        "form": "SF-{seq:05d}",
+        "prefix": "sstoragefacility",
+        "sequence_type": "generated",
+        "counter_type": "",
+        "split_length": 1,
+    }, {
+        "portal_type": "StoragePosition",
+        "form": "SP-{seq:05d}",
+        "prefix": "sstorageposition",
+        "sequence_type": "generated",
+        "counter_type": "",
+        "split_length": 1,
+    }, {
         "portal_type": "StorageContainer",
         "form": "SC-{seq:05d}",
         "prefix": "sstoragecontainer",
@@ -60,42 +76,31 @@ ID_FORMATTING = [
     },
 ]
 
-CATALOGS_BY_TYPE = [
-    # Tuples of (type, [catalog])
-    ("StorageSamplesContainer", ["portal_catalog", SENAITE_STORAGE_CATALOG]),
+CATALOGS = (
+    StorageCatalog,
+)
+
+# Tuples of (type, [catalog])
+CATALOG_MAPPINGS = [
 ]
 
+# Tuples of (catalog, index_name, index_attribute, index_type)
 INDEXES = [
-    # Tuples of (catalog, index_name, index_type)
-    # This index is required by reference_widget in searches
-    (SENAITE_STORAGE_CATALOG, "allowedRolesAndUsers", "KeywordIndex"),
-    # Ids of parent containers and current
-    (SENAITE_STORAGE_CATALOG, "get_all_ids", "KeywordIndex"),
-    # Keeps the sample uids stored in each sample container
-    (SENAITE_STORAGE_CATALOG, "get_samples_uids", "KeywordIndex"),
-    # For searches, made of get_all_ids + Title
-    (SENAITE_STORAGE_CATALOG, "get_searchable_text", "ZCTextIndex"),
-    # Index used in searches to filter sample containers with available slots
-    (SENAITE_STORAGE_CATALOG, "is_full", "BooleanIndex"),
-    (SENAITE_STORAGE_CATALOG, "review_state", "FieldIndex"),
     # Index used in ARs view to sort items by date stored by default
-    (CATALOG_ANALYSIS_REQUEST_LISTING, "getDateStored", "DateIndex"),
+    (SAMPLE_CATALOG, "getDateStored", "", "DateIndex"),
 ]
 
+# Tuples of (catalog, column name)
 COLUMNS = [
-    # Tuples of (catalog, column name)
-    (SENAITE_STORAGE_CATALOG, "Title"),
-    # To get the UID of the selected container in searches (reference widget)
-    (SENAITE_STORAGE_CATALOG, "UID"),
     # To display the column Date Stored in AR listings
-    (CATALOG_ANALYSIS_REQUEST_LISTING, "getDateStored"),
+    (SAMPLE_CATALOG, "getDateStored"),
     # To display the Container where the Sample is located in listings
-    (CATALOG_ANALYSIS_REQUEST_LISTING, "getSamplesContainerURL"),
-    (CATALOG_ANALYSIS_REQUEST_LISTING, "getSamplesContainerID")
+    (SAMPLE_CATALOG, "getSamplesContainerURL"),
+    (SAMPLE_CATALOG, "getSamplesContainerID")
 ]
 
 WORKFLOWS_TO_UPDATE = {
-    "bika_ar_workflow": {
+    SAMPLE_WORKFLOW: {
         "permissions": (),
         "states": {
             "sample_received": {
@@ -103,10 +108,25 @@ WORKFLOWS_TO_UPDATE = {
                 "preserve_transitions": True,
                 "transitions": ("store",),
             },
+            "to_be_verified": {
+                # Do not remove transitions already there
+                "preserve_transitions": True,
+                "transitions": ("store",),
+            },
+            "verified": {
+                # Do not remove transitions already there
+                "preserve_transitions": True,
+                "transitions": ("store",),
+            },
+            "published": {
+                # Do not remove transitions already there
+                "preserve_transitions": True,
+                "transitions": ("store",),
+            },
             "stored": {
                 "title": "Stored",
                 "description": "Sample is stored",
-                "transitions": ("recover", "detach"),
+                "transitions": ("recover", "detach", "dispatch", ),
                 # Copy permissions from sample_received first
                 "permissions_copy_from": "sample_received",
                 # Override permissions
@@ -122,8 +142,9 @@ WORKFLOWS_TO_UPDATE = {
                     permissions.TransitionPreserveSample: (),
                     permissions.TransitionPublishResults: (),
                     permissions.TransitionScheduleSampling: (),
+                    ModifyPortalContent: (),
                 }
-            }
+            },
         },
         "transitions": {
             "store": {
@@ -131,9 +152,9 @@ WORKFLOWS_TO_UPDATE = {
                 "new_state": "stored",
                 "action": "Store sample",
                 "guard": {
-                    "guard_permissions": "",
+                    "guard_permissions": "senaite.storage: Transition: Store Sample",  # noqa
                     "guard_roles": "",
-                    "guard_expr": "",
+                    "guard_expr": "python:here.guard_handler('store')",
                 }
             },
             "recover": {
@@ -143,11 +164,11 @@ WORKFLOWS_TO_UPDATE = {
                 "new_state": "stored",
                 "action": "Recover sample",
                 "guard": {
-                    "guard_permissions": "",
+                    "guard_permissions": "senaite.storage: Transition: Recover Sample",  # noqa
                     "guard_roles": "",
-                    "guard_expr": "",
+                    "guard_expr": "python:here.guard_handler('recover')",
                 }
-            }
+            },
         }
     }
 }
@@ -165,7 +186,8 @@ def pre_install(portal_setup):
     # Only install senaite.lims once!
     qi = portal.portal_quickinstaller
     if not qi.isProductInstalled("senaite.lims"):
-        portal_setup.runAllImportStepsFromProfile("profile-senaite.lims:default")
+        portal_setup.runAllImportStepsFromProfile(
+            "profile-senaite.lims:default")
 
     logger.info("{} pre-install handler [DONE]".format(PRODUCT_NAME.upper()))
 
@@ -182,158 +204,56 @@ def post_install(portal_setup):
     # Setup catalogs
     setup_catalogs(portal)
 
-    # Reindex new content types
-    reindex_new_content_types(portal)
+    # Setup site structure
+    setup_site_structure(portal)
 
     # Setup ID Formatting for Storage content types
     setup_id_formatting(portal)
 
-    # Hide actions
-    hide_actions(portal)
-
-    # Migrate "classic" storage locations
-    migrate_storage_locations(portal)
-
     # Injects "store" and "recover" transitions into senaite's workflow
     setup_workflows(portal)
+
+    # reindex storage structure
+    # needed when uninstalled/reinstalled
+    reindex_storage_structure(portal)
 
     logger.info("{} install handler [DONE]".format(PRODUCT_NAME.upper()))
 
 
+def post_uninstall(portal_setup):
+    """Runs after the last import step of the *uninstall* profile
+    This handler is registered as a *post_handler* in the generic setup profile
+    :param portal_setup: SetupTool
+    """
+    logger.info("{} uninstall handler [BEGIN]".format(PRODUCT_NAME.upper()))
+
+    # https://docs.plone.org/develop/addons/components/genericsetup.html#custom-installer-code-setuphandlers-py
+    profile_id = "profile-{}:uninstall".format(PRODUCT_NAME)
+    context = portal_setup._getImportContext(profile_id)  # noqa
+    portal = context.getSite()  # noqa
+
+    # recover all stored samples
+    recover_samples(portal)
+
+    # unindex the storage structure
+    # -> makes it disappear in the navigation
+    unindex_storage_structure(portal)
+
+    # uninstall storage workflow settings
+    uninstall_workflows(portal)
+
+    # uninstall storage catalog
+    uninstall_storage_catalog(portal)
+
+    logger.info("{} uninstall handler [DONE]".format(PRODUCT_NAME.upper()))
+
+
 def setup_catalogs(portal):
-    """Setup Plone catalogs
+    """Setup storage catalogs
     """
-    logger.info("Setup Catalogs ...")
-
-    # Setup catalogs by type
-    for type_name, catalogs in CATALOGS_BY_TYPE:
-        at = api.get_tool("archetype_tool")
-        # get the current registered catalogs
-        current_catalogs = at.getCatalogsByType(type_name)
-        # get the desired catalogs this type should be in
-        desired_catalogs = map(api.get_tool, catalogs)
-        # check if the catalogs changed for this portal_type
-        if set(desired_catalogs).difference(current_catalogs):
-            # fetch the brains to reindex
-            brains = api.search({"portal_type": type_name})
-            # updated the catalogs
-            at.setCatalogsByType(type_name, catalogs)
-            logger.info("Assign '%s' type to Catalogs %s" %
-                        (type_name, catalogs))
-            for brain in brains:
-                obj = api.get_object(brain)
-                logger.info("Reindexing '%s'" % repr(obj))
-                obj.reindexObject()
-
-    # Setup catalog indexes
-    to_index = []
-    for catalog, name, meta_type in INDEXES:
-        c = api.get_tool(catalog)
-        indexes = c.indexes()
-        if name in indexes:
-            logger.info("Index '%s' already in Catalog [SKIP]" % name)
-            continue
-
-        logger.info("Adding Index '%s' for field '%s' to catalog '%s"
-                    % (meta_type, name, catalog))
-        if meta_type == "ZCTextIndex":
-            addZCTextIndex(c, name)
-        else:
-            c.addIndex(name, meta_type)
-        to_index.append((c, name))
-        logger.info("Added Index '%s' for field '%s' to catalog [DONE]"
-                    % (meta_type, name))
-
-    for catalog, name in to_index:
-        logger.info("Indexing new index '%s' ..." % name)
-        catalog.manage_reindexIndex(name)
-        logger.info("Indexing new index '%s' [DONE]" % name)
-
-    # Setup catalog metadata columns
-    for catalog, name in COLUMNS:
-        c = api.get_tool(catalog)
-        if name not in c.schema():
-            logger.info("Adding Column '%s' to catalog '%s' ..."
-                        % (name, catalog))
-            c.addColumn(name)
-            logger.info("Added Column '%s' to catalog '%s' [DONE]"
-                        % (name, catalog))
-        else:
-            logger.info("Column '%s' already in catalog '%s'  [SKIP]"
-                        % (name, catalog))
-            continue
-
-
-def reindex_new_content_types(portal):
-    """Setup new content types"""
-    logger.info("*** Reindex new content types ***")
-
-    # Index objects - Importing through GenericSetup doesn't
-    for obj_id, folder_id in NEW_CONTENT_TYPES:
-        folder = folder_id and portal[folder_id] or portal
-        logger.info("Reindexing {}".format(obj_id))
-        obj = folder[obj_id]
-        obj.unmarkCreationFlag()
-        obj.reindexObject()
-
-
-def hide_actions(portal):
-    """Excludes actions from both navigation portlet and from control_panel
-    """
-    logger.info("Hiding actions ...")
-    for action_id, folder_id in ACTIONS_TO_HIDE:
-        if folder_id and folder_id not in portal:
-            logger.info("{} not found in portal [SKIP]".format(folder_id))
-            continue
-        folder = folder_id and portal[folder_id] or portal
-        hide_action(folder, action_id)
-
-
-def hide_action(folder, action_id):
-    logger.info("Hiding {} from {} ...".format(action_id, folder.id))
-    if action_id not in folder:
-        logger.info("{} not found in {} [SKIP]".format(action_id, folder.id))
-        return
-
-    item = folder[action_id]
-    logger.info("Hide {} ({}) from nav bar".format(action_id, item.Title()))
-    item.setExcludeFromNav(True)
-
-    def get_action_index(action_id):
-        for n, action in enumerate(cp.listActions()):
-            if action.getId() == action_id:
-                return n
-        return -1
-
-    logger.info("Hide {} from control_panel".format(action_id, item.Title()))
-    cp = api.get_tool("portal_controlpanel")
-    action_index = get_action_index(action_id)
-    if (action_index == -1):
-        logger.info("{}  not found in control_panel [SKIP]".format(cp.id))
-        return
-
-    actions = cp._cloneActions()
-    del actions[action_index]
-    cp._actions = tuple(actions)
-    cp._p_changed = 1
-
-
-def migrate_storage_locations(portal):
-    """Migrates classic StorageLocation objects to StorageSamplesContainer
-    """
-    logger.info("Migrating classic Storage Locations ...")
-    query = dict(portal_type="StorageLocation")
-    brains = api.search(query, "portal_catalog")
-    if not brains:
-        logger.info("No Storage Locations found [SKIP]")
-        return
-
-    total = len(brains)
-    for num, brain in enumerate(brains):
-        if num % 100 == 0:
-            logger.info("Migrating Storage Locations: {}/{}".format(num, total))
-        object = api.get_object(brain)
-        # TODO Migrate
+    setup_core_catalogs(portal, catalog_classes=CATALOGS)
+    setup_other_catalogs(portal, indexes=INDEXES, columns=COLUMNS)
+    setup_catalog_mappings(portal, catalog_mappings=CATALOG_MAPPINGS)
 
 
 def setup_workflows(portal):
@@ -476,3 +396,141 @@ def setup_id_formatting(portal, format=None):
         ids.append(record)
     ids.append(format)
     bs.setIDFormatting(ids)
+
+
+def setup_site_structure(portal):
+    """Setup contents structure for senaite.storage
+    """
+    logger.info("Setup site structure ...")
+
+    def resolve_parent(parent_path):
+        if not parent_path:
+            return portal
+        return api.get_object_by_path(parent_path, default=None)
+
+    for portal_type, obj_id, obj_title, parent_path, display in SITE_STRUCTURE:
+        parent = resolve_parent(parent_path)
+        if not parent:
+            logger.warn("Parent path {} does not exist".format(parent_path))
+            continue
+
+        if obj_id in parent:
+            logger.info("Object {}/{} already exists"
+                        .format(api.get_path(parent), obj_id))
+            obj = parent._getOb(obj_id)
+        else:
+            obj = api.create(parent, portal_type, id=obj_id, title=obj_title)
+
+        if display:
+            # Display the object in the nav bar
+            display_in_nav(obj)
+
+    logger.info("Setup site structure [DONE]")
+
+
+def display_in_nav(obj):
+    """Makes an object to be displayed in the navigation bar
+    """
+    # Display in navigation
+    registry_id = "plone.displayed_types"
+    portal_type = api.get_portal_type(obj)
+    to_display = ploneapi.portal.get_registry_record(registry_id, default=())
+    if portal_type not in to_display:
+        to_display = to_display + (portal_type, )
+        ploneapi.portal.set_registry_record(registry_id, to_display)
+
+    nav_exclude = IExcludeFromNavigation(obj, None)
+    if nav_exclude:
+        nav_exclude.exclude_from_nav = False
+        obj.reindexObject(idxs=["exclude_from_nav"])
+
+
+def reindex_storage_structure(portal):
+    """Reindex storage structure
+    """
+    logger.info("*** Reindex storage structure ***")
+
+    def reindex(obj, recurse=False):
+        # skip catalog tools etc.
+        if api.is_object(obj):
+            logger.info("Reindexing {}".format(repr(obj)))
+            obj.reindexObject()
+        if recurse and hasattr(aq_base(obj), "objectValues"):
+            map(lambda o: reindex(o, recurse=recurse),
+                obj.objectValues())
+
+    storage = portal.senaite_storage
+
+    for obj in storage.objectValues():
+        reindex(obj, recurse=True)
+
+    storage.reindexObject()
+
+
+def unindex_storage_structure(portal):
+    """Unindex storage structure
+    """
+    logger.info("*** Unindex storage structure ***")
+
+    def unindex(obj, recurse=False):
+        # skip catalog tools etc.
+        if api.is_object(obj):
+            logger.info("Unindexing {}".format(repr(obj)))
+            obj.unindexObject()
+        if recurse and hasattr(aq_base(obj), "objectValues"):
+            map(lambda o: unindex(o, recurse=recurse),
+                obj.objectValues())
+
+    storage = portal.senaite_storage
+
+    for obj in storage.objectValues():
+        unindex(obj, recurse=True)
+
+    storage.unindexObject()
+
+
+def recover_samples(portal):
+    """recover all stored samples
+    """
+    logger.info("*** Recovering all stored samples ***")
+    catalog = api.get_tool(SAMPLE_CATALOG)
+    query = {"review_state": "stored"}
+    brains = catalog(query)
+    total = len(brains)
+    logger.info("Recovering {} samples ... ".format(total))
+    for num, brain in enumerate(brains):
+        obj = api.get_object(brain)
+        api.do_transition_for(obj, "recover")
+        logger.info("Recovering sample {}/{}: {}".format(
+            num + 1, total, api.get_id(obj)))
+
+
+def uninstall_workflows(portal):
+    """Uninstall injected WFs
+    """
+    logger.info("*** Uninstall storage workflows ...")
+    wf_tool = api.get_tool("portal_workflow")
+
+    workflow = wf_tool.getWorkflowById(SAMPLE_WORKFLOW)
+    states = workflow.states
+
+    DELETE_STATES = ["stored"]
+    DELETE_TRANSITIONS = ["store", "recover"]
+
+    for sid, state in states.items():
+        if sid in DELETE_STATES:
+            states.deleteStates([sid])
+            logger.info("Deleted state '{}' from workflow '{}'".format(
+                sid, workflow.getId()))
+            continue
+        transitions = filter(
+            lambda t: t not in DELETE_TRANSITIONS, state.transitions)
+        state.transitions = tuple(transitions)
+
+
+def uninstall_storage_catalog(portal):
+    """Uninstall storage catalog
+    """
+    logger.info("*** Uninstall storage catalog ...")
+    if STORAGE_CATALOG in portal.objectIds():
+        portal.manage_delObjects([STORAGE_CATALOG])

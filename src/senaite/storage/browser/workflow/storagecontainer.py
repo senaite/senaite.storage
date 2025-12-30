@@ -15,22 +15,48 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2019-2020 by it's authors.
+# Copyright 2019-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims import api
 from bika.lims.browser.workflow import RequestContextAware
 from bika.lims.interfaces import IWorkflowActionUIDsAdapter
-from zope.component.interfaces import implements
+from senaite.storage.interfaces import IStorageLayoutContainer
+from senaite.storage.interfaces import IStorageSamplesContainer
+from zope.interface import implementer
 
 
+@implementer(IWorkflowActionUIDsAdapter)
 class WorkflowActionAddSamplesAdapter(RequestContextAware):
     """Adapter in charge of "add samples" action
     """
-    implements(IWorkflowActionUIDsAdapter)
 
     def __call__(self, action, uids):
         """Redirects the user to the Samples selector view
         """
-        url = "{}/storage_store_container?uids={}".format(self.back_url,
-                                                          ",".join(uids))
+        # filter out UIDs not belonging to sample containers
+        objs = map(api.get_object, uids)
+        containers = filter(
+            lambda o: IStorageSamplesContainer.providedBy(o), objs)
+        container_uids = map(api.get_uid, containers)
+        url = "{}/storage_store_container?uids={}".format(
+            self.back_url, ",".join(container_uids))
+        return self.redirect(redirect_url=url)
+
+
+@implementer(IWorkflowActionUIDsAdapter)
+class WorkflowActionMoveContainerAdapter(RequestContextAware):
+    """Adapter in charge of "move container" action
+    """
+
+    def __call__(self, action, uids):
+        """Redirects the user to the Samples selector view
+        """
+        # filter out UIDs not belonging to sample containers
+        objs = map(api.get_object, uids)
+        containers = filter(
+            lambda o: IStorageLayoutContainer.providedBy(o), objs)
+        container_uids = map(api.get_uid, containers)
+        url = "{}/storage_move_container?uids={}".format(
+            self.back_url, ",".join(container_uids))
         return self.redirect(redirect_url=url)

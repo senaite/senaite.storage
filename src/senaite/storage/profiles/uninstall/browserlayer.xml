@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<layers>
+  <layer remove="True"
+         name="senaite.storage"
+         interface="senaite.storage.interfaces.ISenaiteStorageLayer"/>
+</layers>

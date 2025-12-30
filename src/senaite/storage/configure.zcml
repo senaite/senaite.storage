@@ -1,34 +1,29 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
-    xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:five="http://namespaces.zope.org/five"
     xmlns:cmf="http://namespaces.zope.org/cmf"
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
-    xmlns:i18n="http://namespaces.zope.org/i18n"
-    i18n_domain="senaite.storage">
+    xmlns:i18n="http://namespaces.zope.org/i18n">
 
   <five:registerPackage package="." initialize=".initialize"/>
-
-  <!-- Filesystem directory view for through-the-web Zope scripts -->
-  <cmf:registerDirectory name="zope_scripts" directory="zope_scripts"/>
 
   <!-- Register Translations -->
   <i18n:registerTranslations directory="locales" />
 
-  <!-- Needed for "BIKA: Manage Bika" permission -->
+  <!-- Include senaite.core permissions -->
   <include package="bika.lims" file="permissions.zcml" />
 
-  <!-- Package includes -->
-  <include package=".browser"/>
-  <include package=".monkeys"/>
-  <include package=".upgrade"/>
-  <include package=".subscribers"/>
-  <include package=".workflow"/>
+  <!-- Include senaite.storage permissions -->
+  <include file="permissions.zcml" />
 
-  <!-- Static resource directory -->
-  <browser:resourceDirectory
-      name="senaite.storage.static"
-      directory="static" />
+  <!-- Package includes -->
+  <include package=".adapters"/>
+  <include package=".browser"/>
+  <include package=".indexers"/>
+  <include package=".monkeys"/>
+  <include package=".subscribers"/>
+  <include package=".upgrade"/>
+  <include package=".workflow"/>
 
   <!-- Installation profile -->
   <genericsetup:registerProfile
@@ -39,5 +34,14 @@
       pre_handler="senaite.storage.setuphandlers.pre_install"
       post_handler="senaite.storage.setuphandlers.post_install"
       provides="Products.GenericSetup.interfaces.EXTENSION" />
+
+  <!-- Uninstall profile -->
+  <genericsetup:registerProfile
+    name="uninstall"
+    title="SENAITE STORAGE (uninstall)"
+    directory="profiles/uninstall"
+    description="Uninstalls SENAITE STORAGE"
+    post_handler=".setuphandlers.post_uninstall"
+    provides="Products.GenericSetup.interfaces.EXTENSION" />
 
 </configure>

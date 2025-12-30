@@ -1,0 +1,28 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
+
+  <genericsetup:upgradeStep
+      title="SENAITE.STORAGE 2.6.0: Setup Storage's control panel"
+      description="Setup Storage's control panel"
+      source="2601"
+      destination="2602"
+      handler=".v02_06_000.setup_storage_controlpanel"
+      profile="senaite.storage:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.STORAGE 2.6.0: Remove Scripts (Python) for guards"
+      description="Removes the Scripts (Python) for guards"
+      source="2600"
+      destination="2601"
+      handler=".v02_06_000.remove_guard_scripts"
+      profile="senaite.storage:default"/>
+
+  <genericsetup:upgradeStep
+      title="Upgrade to SENAITE.STORAGE 2.6.0"
+      source="2500"
+      destination="2600"
+      handler=".v02_06_000.upgrade"
+      profile="senaite.storage:default"/>
+
+</configure>

@@ -1,0 +1,27 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    i18n_domain="senaite.core">
+
+  <!-- Add permissions -->
+  <permission id="senaite.storage.permissions.AddStorageRootFolder" title="senaite.storage: Add Storage Root Folder"/>
+  <permission id="senaite.storage.permissions.AddStorageFacility" title="senaite.storage: Add Storage Facility"/>
+  <permission id="senaite.storage.permissions.AddStorageContainer" title="senaite.storage: Add Storage Container"/>
+  <permission id="senaite.storage.permissions.AddStorageSamplesContainer" title="senaite.storage: Add Storage Samples Container"/>
+  <permission id="senaite.storage.permissions.AddStoragePosition" title="senaite.storage: Add Storage Position"/>
+
+  <!-- Store/Recover Sample Permissions (context is a sample) -->
+  <permission id="senaite.storage.permissions.StoreSample" title="senaite.storage: Transition: Store Sample"/>
+  <permission id="senaite.storage.permissions.RecoverSample" title="senaite.storage: Transition: Recover Sample"/>
+
+  <!-- Add/Recover Samples Permissions (context is a storage container) -->
+  <permission id="senaite.storage.permissions.AddSamples" title="senaite.storage: Transition: Add Samples"/>
+  <permission id="senaite.storage.permissions.RecoverSamples" title="senaite.storage: Transition: Recover Samples"/>
+
+  <!-- Activate/Deactivate Permissions (context is a storage container) -->
+  <permission id="senaite.storage.permissions.TransitionDeactivate" title="senaite.storage: Transition: Deactivate"/>
+  <permission id="senaite.storage.permissions.TransitionActivate" title="senaite.storage: Transition: Activate"/>
+
+  <!-- Move Storage Container Permission -->
+  <permission id="senaite.storage.permissions.MoveContainer" title="senaite.storage: Transition: Move Container"/>
+
+</configure>

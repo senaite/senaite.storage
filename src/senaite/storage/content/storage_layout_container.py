@@ -1,0 +1,587 @@
+# -*- coding: utf-8 -*-
+
+import re
+import string
+
+from AccessControl import ClassSecurityInfo
+from bika.lims import api
+from plone.autoform import directives
+from plone.supermodel import model
+from Products.CMFCore import permissions
+from senaite.core.content.base import Container
+from senaite.core.z3cform.widgets.datagrid import DataGridWidgetFactory
+from senaite.core.z3cform.widgets.number import NumberWidget
+from senaite.storage import logger
+from senaite.storage import senaiteMessageFactory as _
+from senaite.storage.interfaces import IStorageBreadcrumbs
+from senaite.storage.interfaces import IStorageFacility
+from senaite.storage.interfaces import IStorageLayoutContainer
+from z3c.form.browser.textlines import TextLinesFieldWidget
+from zope import schema
+from zope.interface import Interface, Invalid, invariant
+from zope.interface import implementer
+
+
+class IPositionLayoutItem(Interface):
+    row = schema.Int(title=_("Row"))
+    column = schema.Int(title=_("Column"))
+    uid = schema.TextLine(title=_("UID"))
+    samples_capacity = schema.Int(title=_("Samples Capacity"), default=0)
+    samples_utilization = schema.Int(title=_("Samples Utilization"), default=0)
+
+
+class IStorageLayoutContainerSchema(model.Schema):
+
+    directives.widget("rows", NumberWidget)
+    rows = schema.Int(
+        title=_(
+            u"title_storage_layout_container_rows",
+            default=u"Rows"
+        ),
+        description=_(
+            u"description_storage_layout_container_rows",
+            default=u"Alphabet letters will be used to represent a row "
+            "within the container"),
+        default=1,
+        required=True,
+    )
+
+    directives.widget("columns", NumberWidget)
+    columns = schema.Int(
+        title=_(
+            u"title_storage_layout_container_columns",
+            default=u"Columns"
+        ),
+        description=_(
+            u"description_storage_layout_container_columns",
+            default=u"Number of positions per row. Numbers will be used to "
+            "represent a column within a row"),
+        default=1,
+        required=True,
+    )
+
+    # This field is not editable and is generated automatically based on the
+    # rows, columns and occupied positions. It returns a list of dicts. Each
+    # dict represents an object stored within this container at the given
+    # 'column' and 'row' keys. The UID of the object is stored as a value for
+    # the key 'uid'.  "capacity" refers to the number of samples the contained
+    # object can store directly or indirectly (through other child containers).
+    # "utilization" field refers to the number of sample the contained object
+    # actually stores directly or indirectly.
+    # The total capacity and utilization of this container is the sum of values
+    # of the capacity and utilization of the objects this container stores.
+    directives.widget("positions_layout", DataGridWidgetFactory)
+    positions_layout = schema.List(
+        title=_("Positions Layout"),
+        value_type=schema.Object(schema=IPositionLayoutItem),
+        required=False,
+        default=[],
+    )
+
+    directives.widget("available_positions", TextLinesFieldWidget)
+    available_positions = schema.List(
+        title=_("Available Positions"),
+        required=False,
+        value_type=schema.TextLine(),
+        default=[],
+    )
+
+    @invariant
+    def validate_rows(data):
+        """Checks if the email is correct
+        """
+        if not data.rows:
+            return
+        if not data.rows > 0:
+            raise Invalid(_("At least one row must be defined"))
+        context = data.__context__
+        if not context:
+            return
+        min_size = context.get_minimum_size()
+        min_rows = min_size[0]
+        if min_rows > data.rows:
+            raise Invalid(_("At least %s rows must be remain" % min_rows))
+
+    @invariant
+    def validate_columns(data):
+        """Checks if the email is correct
+        """
+        if not data.columns:
+            return
+        if not data.columns > 0:
+            raise Invalid(_("At least one column must be defined"))
+        context = data.__context__
+        if not context:
+            return
+        min_size = context.get_minimum_size()
+        min_cols = min_size[1]
+        if min_cols > data.columns:
+            raise Invalid(_("At least %s columns must be remain" % min_cols))
+
+
+@implementer(IStorageLayoutContainer, IStorageLayoutContainerSchema)
+class StorageLayoutContainer(Container):
+    """A storage layout container
+    """
+    security = ClassSecurityInfo()
+
+    default_samples_capacity = 1
+
+    @security.protected(permissions.View)
+    def Description(self):
+        return _("Layout: {} x {}".format(self.rows, self.columns))
+
+    @security.protected(permissions.View)
+    def getRows(self):
+        accessor = self.accessor("rows")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setRows(self, value):
+        mutator = self.mutator("rows")
+        mutator(self, value)
+        # NOTE: we call the method also by a modified event subscriber
+        self.rebuild_layout()
+
+    # BBB: AT schema field property
+    Rows = property(getRows, setRows)
+
+    @security.protected(permissions.View)
+    def getColumns(self):
+        accessor = self.accessor("columns")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setColumns(self, value):
+        mutator = self.mutator("columns")
+        mutator(self, value)
+        # NOTE: we call the method also by a modified event subscriber
+        self.rebuild_layout()
+
+    # BBB: AT schema field property
+    Columns = property(getColumns, setColumns)
+
+    @security.protected(permissions.View)
+    def getPositionsLayout(self):
+        accessor = self.accessor("positions_layout")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setPositionsLayout(self, values):
+        mutator = self.mutator("positions_layout")
+        mutator(self, values)
+        self.rebuild_layout()
+
+    # BBB: AT schema field property
+    PositionsLayout = property(getPositionsLayout, setPositionsLayout)
+
+    @security.protected(permissions.View)
+    def getAvailablePositions(self):
+        accessor = self.accessor("available_positions")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setAvailablePositions(self, values):
+        mutator = self.mutator("available_positions")
+        mutator(self, values)
+
+    # BBB: AT schema field property
+    PositionsLayout = property(getPositionsLayout, setPositionsLayout)
+
+    def get_full_title(self):
+        """Returns the full title of this container in breadcrumbs format
+        """
+        adapter = IStorageBreadcrumbs(self)
+        return adapter.get_storage_breadcrumbs()
+
+    def get_all_ids(self):
+        """Returns the list of ids this container is contained in, the id of the
+        current container included. Used as an index for catalog searches
+        """
+        def feed_parent_ids(container, ids):
+            ids.append(container.getId())
+            if IStorageFacility.providedBy(container.aq_parent):
+                return ids
+            return feed_parent_ids(container.aq_parent, ids)
+        return feed_parent_ids(self, [])
+
+    def get_default_layout_item(self, row=0, column=0):
+        """Returns a default item for the positions layout
+        """
+        return dict(row=row, column=column, uid="", samples_utilization=0,
+                    samples_capacity=self.default_samples_capacity)
+
+    def get_alpha_row(self, row):
+        """Returns the alpha part for the passed in row
+        """
+        alphabet = string.ascii_uppercase
+        def alpha(num):
+            """Converts the given number to alphabetical letter(s).
+            alpha(1) == 'A'
+            alpha(26) == 'Z'
+            alpha(27) == 'AA'
+            alpha(28) == 'AB'
+            """
+            if num == 0:
+                return ""
+            prefix = alpha((num - 1) // len(alphabet))
+            letter = chr((num - 1) % len(alphabet) + ord(alphabet[0]))
+            return "%s%s" % (prefix, letter)
+
+        # row is a position, starting from 0, so we need to add 1
+        return alpha(row + 1)
+
+    def position_to_alpha(self, row, column):
+        """Returns a position in alphanumeric format (e.g A01)
+        """
+        alpha_part = self.get_alpha_row(row)
+        lead_zeros = len(str(self.getColumns())) - 1
+        num_part = "%0{}d".format(lead_zeros) % (int(column) + 1)
+        return "{}{}".format(alpha_part, num_part)
+
+    def alpha_to_position(self, alpha):
+        """Converts an alphanumeric value to a position
+        """
+        alphabet = string.ascii_uppercase
+        regex = re.compile(r"([A-Z]+)(\d+)", re.IGNORECASE)
+        matches = re.findall(regex, alpha)
+        alpha_part = matches[0][0]
+        column = api.to_int(matches[0][1]) - 1
+        row = 0
+        mapping = map(lambda val: alphabet.index(val), alpha_part)
+        for idx in range(len(mapping)):
+            row += idx * len(alphabet) + mapping[idx]
+        return (row, column)
+
+    def get_absolute_position(self, row, column):
+        """Returns the absolute position for the row and column passed in
+        """
+        if not self.is_valid_position(row, column):
+            return -1
+        return row * self.getColumns() + column + 1
+
+    def rebuild_layout(self):
+        """Rebuilds the layout with all positions
+        """
+        new_layout = list()
+        for num_row in range(self.getRows()):
+            for num_col in range(self.getColumns()):
+                new_item = self.get_default_layout_item(num_row, num_col)
+                item = self.get_item_at(num_row, num_col)
+                new_item = item and item.copy() or new_item
+                new_layout.append(new_item)
+        # bypass setter
+        self.positions_layout = new_layout
+        available = map(lambda el: self.position_to_alpha(el[0], el[1]),
+                        self.get_available_positions())
+        self.setAvailablePositions(available)
+
+    def is_valid_position(self, row, column):
+        """Returns whether the position defined is valid or not for this
+        container's layout
+        """
+        col_num = api.to_int(column, default=-1)
+        if col_num < 0 or col_num >= self.getColumns():
+            return False
+        row_num = api.to_int(row, default=-1)
+        if row_num < 0 or row_num >= self.getRows():
+            return False
+        return True
+
+    def is_empty_position(self, row, column):
+        """Returns whether the position defined is empty or not
+        """
+        return not self.is_taken_position(row, column)
+
+    def is_taken_position(self, row, column):
+        """Returns whether the position defined is taken or not
+        """
+        if not self.is_valid_position(row, column):
+            return True
+        item = self.get_item_at(row, column)
+        return item and self.is_taken(item) or False
+
+    def is_empty(self, item):
+        """Returns if an item from the layout is empty
+        """
+        return not self.is_taken(item)
+
+    def is_taken(self, item):
+        """Returns whether an item from the layout has an element assigned
+        """
+        return item.get("uid", "") and True or False
+
+    def get_available_positions(self):
+        """Returns a list of dics with available positions
+        """
+        els = filter(self.is_empty, self.getPositionsLayout())
+        return map(lambda el: (el["row"], el["column"]), els)
+
+    def get_non_available_positions(self):
+        """Returns a list of tuples with non-available positions
+        """
+        els = filter(self.is_taken, self.getPositionsLayout())
+        return map(lambda el: (el["row"], el["column"]), els)
+
+    def get_item_at(self, row, column):
+        """Returns the layout item this container contains at the given position
+        """
+        if not self.is_valid_position(row, column):
+            return None
+        for item in self.getPositionsLayout():
+            if api.to_int(item["row"]) == api.to_int(row):
+                if api.to_int(item["column"]) == api.to_int(column):
+                    return item
+        return None
+
+    def get_uid_at(self, row, column):
+        """Returns a uid this container contains at the given position.
+        """
+        item = self.get_item_at(row, column)
+        return item and item.get("uid", "") or None
+
+    def get_object_at(self, row, column):
+        """Returns an object this container contains at the given position
+        """
+        uid = self.get_uid_at(row, column)
+        if not api.is_uid(uid):
+            return None
+        return api.get_object_by_uid(uid, default=None)
+
+    def get_object_position(self, object_brain_uid):
+        """Returns the position as a tuple (row, column) of the object. If the
+        object is not found, returns None
+        """
+        uid = api.get_uid(object_brain_uid)
+        if not uid:
+            return None
+        els = filter(lambda el: el.get("uid", "") == uid,
+                     self.getPositionsLayout())
+        if not els:
+            return None
+        return (api.to_int(els[0]["row"]), api.to_int(els[0]["column"]))
+
+    def has_object(self, object_brain_uid):
+        """Returns if the container contains the object passed in
+        """
+        if self.get_object_position(object_brain_uid):
+            return True
+        return False
+
+    def is_object_allowed(self, object_brain_uid):
+        """Returns whether the type of object can be stored or not in this
+        container. This function returns true if the object is allowed, even
+        if the container already contains the object
+        """
+        raise NotImplementedError("Must be implemented by subclass")
+
+    def get_layout_containers(self):
+        """Returns the containers that belongs to this container and implement
+        IStorageLayoutContainer
+        """
+        return filter(lambda obj: IStorageLayoutContainer.providedBy(obj),
+                      self.objectValues())
+
+    def get_first_empty_position(self):
+        """Returns the first empty position of the layout as a tuple (row, col)
+        If there are no empty positions, returns None
+        """
+        available_positions = self.get_available_positions()
+        if not available_positions:
+            return None
+        return min(available_positions)
+
+    def get_minimum_size(self):
+        """Returns a tuple (rows, columns) that represents the minimum size this
+        container can have without removing any of the objects it contains
+        """
+        els = filter(self.is_taken, self.getPositionsLayout())
+        rows = map(lambda el: api.to_int(el["row"]), els) or [0]
+        cols = map(lambda el: api.to_int(el["column"]), els) or [0]
+        return (max(rows)+1, max(cols)+1)
+
+    def get_capacity(self):
+        """Returns the total number of positions available for this container
+        """
+        return self.getRows() * self.getColumns()
+
+    def is_full(self):
+        """Returns if the container is full. This is, there are no empty
+        positions remaining without an object in there
+        """
+        return not self.get_first_empty_position()
+
+    def remove_object(self, object_brain_uid, notify_parent=True):
+        """Removes the object from the container, if in there
+        """
+        uid = api.get_uid(object_brain_uid)
+        if not uid:
+            return False
+        els = filter(lambda el: el.get("uid", "") != uid,
+                     self.getPositionsLayout())
+        self.setPositionsLayout(els)
+
+        if notify_parent:
+            self.notify_parent()
+        return True
+
+    def notify_parent(self):
+        """Notifies the parent to update the information it holds about this
+        container
+        """
+        parent = api.get_parent(self)
+        if IStorageLayoutContainer.providedBy(parent):
+            parent.update_object(self)
+
+    def update_object(self, object_brain_uid):
+        """Updates the object from the container, if in there
+        """
+        position = self.get_object_position(object_brain_uid)
+        if not position:
+            return False
+        if not self.remove_object(object_brain_uid, notify_parent=False):
+            return False
+        return self.add_object_at(object_brain_uid, position[0], position[1])
+
+    def can_add_object(self, object_brain_uid, row, column):
+        """Returns whether the object can be added to the position
+        """
+        # Is the position valid?
+        if not self.is_valid_position(row, column):
+            logger.warn("Position ({}, {}) not valid for '{}'"
+                        .format(row, column, self.getId()))
+            return False
+
+        # Is a valid object or a valid uid?
+        uid = api.get_uid(object_brain_uid)
+        if not uid:
+            return False
+
+        # If position taken, the addition is not allowed
+        if self.get_uid_at(row, column):
+            logger.warn("Position ({}, {}) from '{}' is already taken"
+                        .format(row, column, self.getId()))
+            return False
+
+        # If the container already contains the object, do nothing
+        if self.has_object(object_brain_uid):
+            object_id = api.get_object(object_brain_uid).getId()
+            logger.warn("Container '{}' contains the object '{}' already"
+                        .format(self.getId(), object_id))
+            return False
+
+        # Check if this type of object suits well with this container
+        obj = api.get_object(object_brain_uid)
+        if not self.is_object_allowed(obj):
+            logger.warn("Container '{}' does not allow the object '{}'"
+                        .format(self.getId(), obj.getId()))
+            return False
+
+        return True
+
+    def add_object(self, object_brain_uid):
+        """Adds an object to the first available position.
+        """
+        position = self.get_first_empty_position()
+        if not position:
+            logger.warn("Cannot add object. No empty positions available")
+            return False
+        return self.add_object_at(object_brain_uid, position[0], position[1])
+
+    def add_object_at(self, object_brain_uid, row, column):
+        """Adds an object to the specified position. If an object already exists
+        at the given position, return False. Otherwise, return True
+        """
+        if not self.can_add_object(object_brain_uid, row, column):
+            return False
+
+        uid = api.get_uid(object_brain_uid)
+        obj = api.get_object(object_brain_uid)
+
+        # If the object does not implement StorageLayoutContainer, then we
+        # assume the object is not a container, rather the content that needs to
+        # be contained (e.g. a Sample), so we set capacity and utilization to 1
+        samples_capacity = 1
+        samples_utilization = 1
+        if IStorageLayoutContainer.providedBy(obj):
+            # This is a container, so infer the capacity and utilization
+            samples_capacity = obj.get_samples_capacity()
+            samples_utilization = obj.get_samples_utilization()
+
+        row = api.to_int(row)
+        column = api.to_int(column)
+        layout = [{
+            "uid": uid,
+            "row": row,
+            "column": column,
+            "samples_capacity": samples_capacity,
+            "samples_utilization": samples_utilization
+        }]
+        for item in self.getPositionsLayout():
+            if item["row"] == row and item["column"] == column:
+                continue
+            layout.append(item.copy())
+        self.setPositionsLayout(layout)
+        self.notify_parent()
+        return True
+
+    def get_layout_subfield_sum(self, subfield):
+        """Returns the sum of the elements stored in the layout for the subfield
+        name passed in. If the value for the element is not floatable, uses 0
+        """
+        layout = self.getPositionsLayout()
+        return sum(map(lambda el: api.to_int(el[subfield], default=0), layout))
+
+    def get_samples_capacity(self):
+        """Returns the total number of samples this container can store directly
+        or indirectly through contained containers
+        """
+        return self.get_layout_subfield_sum(subfield="samples_capacity")
+
+    def get_samples_utilization(self):
+        """Returns the total number of samples this container actually stores,
+        directly or indirectly through contained containers
+        """
+        return self.get_layout_subfield_sum(subfield="samples_utilization")
+
+    def is_samples_full(self):
+        """Returns whether if this container actually stores the maximum number
+        of samples allowed, directly or indirectly. Note that it will return
+        true if all containers this container contains are full of samples, even
+        if there are still free positions for new containers
+        """
+        return self.get_samples_capacity() == self.get_samples_utilization()
+
+    def reset_samples_usage(self, recursive=True):
+        """Resets the sample usage values (capacity and utilization) for this
+        container. It looks through all children to reset the values.
+        If recursive is set to True, the function reset the samples usage for
+        contained containers too.
+        """
+        items = filter(self.is_taken, self.getPositionsLayout())
+        items = map(lambda item: item.get["uid"], items)
+        uids = filter(api.is_uid, items)
+        if not uids:
+            return
+
+        query = dict(UID=uids)
+        uids_usage = {}
+        for brain in api.search(query, "uid_catalog"):
+            obj = api.get_object(brain)
+            if not IStorageLayoutContainer.providedBy(obj):
+                continue
+            if recursive:
+                obj.reset_samples_usage(recursive=recursive)
+            uids_usage[api.get_uid(obj)] = {
+                "samples_utilization": obj.get_samples_utilization(),
+                "samples_capacity": obj.get_samples_capacity(),
+            }
+
+        new_items = list()
+        for layout_item in self.getPositionsLayout():
+            item = layout_item.copy()
+            usage = uids_usage.get(item.get("uid"), None)
+            if usage:
+                item.update(usage)
+            new_items.append(item)
+        self.setPositionsLayout(new_items)

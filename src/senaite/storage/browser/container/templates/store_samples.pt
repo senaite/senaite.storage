@@ -1,0 +1,115 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="senaite.storage">
+  <body>
+
+    <!-- Title -->
+    <metal:title fill-slot="content-title">
+      <h1 i18n:translate="">
+        Store samples
+      </h1>
+    </metal:title>
+
+    <!-- Description -->
+    <metal:description fill-slot="content-description">
+      <p i18n:translate="">
+        <a tal:attributes="href view/back_url"
+           i18n:name="back_link"
+           i18n:translate="">
+          &larr; Back
+        </a>
+      </p>
+    </metal:description>
+
+    <!-- Content -->
+    <metal:core fill-slot="content-core">
+      <div id="viewlet-senaite-storage-js" tal:content="structure provider:senaite.storage.js" />
+      <div id="store-samples-view"
+           class="row"
+           tal:define="portal context/@@plone_portal_state/portal;">
+
+        <div class="col-sm-12">
+          <form class="form"
+                id="store_samples_form"
+                name="store_samples_form"
+                method="POST">
+
+            <!-- Hidden Fields -->
+            <input type="hidden" name="submitted" value="1"/>
+            <input tal:replace="structure context/@@authenticator/authenticator"/>
+
+            <tal:samples repeat="sample view/get_samples_data">
+
+              <table class="table table-bordered" style="margin-bottom:1.5em;">
+                <thead>
+                  <tr>
+                    <th colspan="3" class="info">
+                      <!-- Sample Title -->
+                      <div class="col-sm-8">
+                        <h2>
+                          <span class="text-primary" tal:content="sample/title"/>
+                          <!-- Additional Sample information -->
+                          <small tal:content="sample/sample_type"/>
+                        </h2>
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr>
+                    <td tal:define="obj python:sample.get('obj');
+                                    uid python:sample.get('uid');">
+                      <div class="col">
+                        <!-- Storage container -->
+                        <div class="senaite-uidreference-widget-input"
+                             tal:attributes="python:view.get_reference_widget_attributes('sample_container.%s:record' % uid, obj);
+                                             id string:sample_container_${uid};
+                                             sample_uid uid">
+                          <!-- ReactJS controlled widget -->
+                        </div>
+                      </div>
+                      <div class="col">
+                        <div class="input-group input-group-sm mt-2 px-0">
+                          <div class="input-group-prepend">
+                            <label class="input-group-text" i18n:translate="">Position</label>
+                          </div>
+                          <select class="form-control form-control-sm"
+                                  style="max-width:fit-content;"
+                                  tal:attributes="id string:sample_container_position_${uid};
+                                                  name string:sample_container_position.${uid}:record">
+                          </select>
+                        </div>
+                      </div>
+
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </tal:samples>
+
+            <!-- Form Controls -->
+            <div>
+              <!-- Store samples -->
+              <input class="btn btn-success btn-sm"
+                     type="submit"
+                     name="button_store"
+                     i18n:attributes="value"
+                     value="Store Samples"/>
+              <!-- Cancel -->
+              <input class="btn btn-secondary btn-sm"
+                     type="submit"
+                     name="button_cancel"
+                     i18n:attributes="value"
+                     value="Cancel"/>
+            </div>
+
+          </form>
+        </div>
+
+      </div>
+    </metal:core>
+  </body>
+</html>

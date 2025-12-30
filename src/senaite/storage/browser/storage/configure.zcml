@@ -1,0 +1,16 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    i18n_domain="senaite.storage">
+
+  <!-- Listing for all storage facilitiey in the root folder -->
+  <browser:page
+      for="senaite.storage.interfaces.IStorageRootFolder"
+      name="view"
+      class=".view.StorageListingView"
+      permission="zope.Public"
+      layer="senaite.storage.interfaces.ISenaiteStorageLayer"
+      />
+
+</configure>

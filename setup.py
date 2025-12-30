@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
-#
-# This file is part of SENAITE.STORAGE
-#
-# Copyright 2019 by it's authors
 
 from setuptools import setup, find_packages
 
-version = "1.0.1.1"
+version = "2.7.0"
+
 
 setup(
     name="senaite.storage",
@@ -22,7 +19,7 @@ setup(
         "Programming Language :: Python",
         "License :: OSI Approved :: GNU General Public License v2 (GPLv2)",
     ],
-    keywords=['senaite', 'lims', 'opensource'],
+    keywords=["senaite", "lims", "opensource"],
     author="RIDING BYTES & NARALABS",
     author_email="senaite@senaite.com",
     url="https://github.com/senaite/senaite.storage",
@@ -33,10 +30,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        "setuptools",
-        "senaite.lims>=1.3.3",
-        "senaite.lims<1.4.0",
-        "archetypes.schemaextender",
+        "senaite.lims>=2.6.0",
     ],
     extras_require={
         "test": [

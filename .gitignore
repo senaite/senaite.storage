@@ -26,9 +26,7 @@ Thumbs.db
 bin
 
 # Other sources
-src/senaite.core
-src/senaite.api
-src/senaite.lims
+src/senaite.*
 
 # Distribution / packaging
 .Python
