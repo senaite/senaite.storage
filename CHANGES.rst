@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #59 Fix AttributeError when migrating facilities to DX (2701)
 - #56 Fix UnicodeDecodeError on positions display in storage listing
 - #55 Fix Unauthorized error when moving a container across storage
 - #54 Fix all storage containers reindexed when other add-ons are upgraded
