@@ -20,7 +20,6 @@
 
 from Acquisition import aq_base
 from bika.lims import api
-from plone.registry.interfaces import IRegistry
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.DCWorkflow.Guard import Guard
 from senaite.core import permissions
@@ -34,7 +33,6 @@ from senaite.storage.catalog import STORAGE_CATALOG
 from senaite.storage.catalog import StorageCatalog
 from senaite.storage.config import PRODUCT_NAME
 from senaite.storage.config import PROFILE_ID
-from zope.component import getUtility
 
 SITE_STRUCTURE = [
     # Tuples of (portal_type, obj_id, obj_title, parent_path, display_type)
@@ -433,20 +431,12 @@ def display_in_nav(obj):
     """
     portal_type = api.get_portal_type(obj)
 
-    # add to the plone's registry displayed_types
-    registry = getUtility(IRegistry)
-    key = "plone.displayed_types"
-    displayed = registry.get(key, ())
-    if portal_type not in displayed:
-        displayed += (portal_type,)
-        registry[key] = displayed
-
-    # add to senaite setup's sidebar_displayed_types
+    # remove from senaite setup's sidebar_skip_types
     setup = api.get_senaite_setup()
-    displayed = setup.getSidebarDisplayedTypes()
-    if displayed and portal_type not in displayed:
-        displayed += (portal_type,)
-        setup.setSidebarDisplayedTypes(displayed)
+    skip = setup.getSidebarSkipTypes()
+    if skip and portal_type in skip:
+        skip = tuple(pt for pt in skip if pt != portal_type)
+        setup.setSidebarSkipTypes(skip)
 
     # if a root folder, add to senaite setup's sidebar_folders
     setup = api.get_senaite_setup()
@@ -457,7 +447,6 @@ def display_in_nav(obj):
         if obj_id not in folders:
             folders += (obj_id, )
             setup.setSidebarFolders(folders)
-
 
 def reindex_storage_structure(portal):
     """Reindex storage structure
