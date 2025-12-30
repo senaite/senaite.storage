@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #58 Fix ValueError: undefined property 'add_permission' on upgrade
 - #56 Fix UnicodeDecodeError on positions display in storage listing
 - #55 Fix Unauthorized error when moving a container across storage
 - #54 Fix all storage containers reindexed when other add-ons are upgraded
