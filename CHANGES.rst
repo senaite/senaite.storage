@@ -5,6 +5,8 @@ Changelog
 ------------------
 
 - #59 Fix AttributeError when migrating facilities to DX (2701)
+- #58 Fix ValueError: undefined property 'add_permission' on upgrade
+- #57 Compatibility with core#2835 (display Storage in navbar)
 - #56 Fix UnicodeDecodeError on positions display in storage listing
 - #55 Fix Unauthorized error when moving a container across storage
 - #54 Fix all storage containers reindexed when other add-ons are upgraded
