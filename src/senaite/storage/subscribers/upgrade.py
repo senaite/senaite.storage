@@ -18,7 +18,10 @@
 # Copyright 2019-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+
+from bika.lims import api
 from bika.lims.api import get_portal
+from plone.dexterity.fti import DexterityFTI
 from senaite.storage import is_installed
 from senaite.storage import logger
 from senaite.storage import PRODUCT_NAME
@@ -37,7 +40,14 @@ def afterUpgradeStepHandler(event):
     setup = portal.portal_setup  # noqa
 
     profile = "profile-{0}:default".format(PRODUCT_NAME)
-    setup.runImportStepFromProfile(profile, "typeinfo")
+
+    # Only run typeinfo import if all types are already migrated to DX
+    # to avoid errors when trying to apply DX properties to AT types
+    if types_migrated_to_dx(portal):
+        setup.runImportStepFromProfile(profile, "typeinfo")
+    else:
+        logger.info("Skipping typeinfo import - AT to DX migration pending")
+
     setup.runImportStepFromProfile(profile, "rolemap")
     setup.runImportStepFromProfile(profile, "workflow")
 
@@ -48,3 +58,27 @@ def afterUpgradeStepHandler(event):
     setup_workflows(portal)
 
     logger.info("Run {}.afterUpgradeStepHandler [DONE]".format(PRODUCT_NAME))
+
+
+def types_migrated_to_dx(portal):
+    """Check if all storage types have been migrated to Dexterity
+    """
+    pt = api.get_tool("portal_types")
+    storage_types = [
+        "StorageRootFolder",
+        "StorageFacility",
+        "StorageContainer",
+        "StorageSamplesContainer",
+    ]
+
+    for type_name in storage_types:
+        fti = pt.getTypeInfo(type_name)
+        if not fti:
+            # Type doesn't exist yet - not migrated
+            return False
+        if not isinstance(fti, DexterityFTI):
+            # Still an AT type - not migrated
+            logger.info("Type '{}' is still AT, migration needed".format(type_name))
+            return False
+
+    return True
