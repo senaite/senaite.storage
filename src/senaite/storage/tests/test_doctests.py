@@ -21,29 +21,33 @@
 import doctest
 from os.path import join
 
-from pkg_resources import resource_listdir
-
 import unittest2 as unittest
-from senaite.storage.config import PRODUCT_NAME
+from pkg_resources import resource_listdir
+from senaite.storage import PRODUCT_NAME
 from senaite.storage.tests.base import SimpleTestCase
 from Testing import ZopeTestCase as ztc
 
-rst_filenames = [f for f in resource_listdir(PRODUCT_NAME, "tests/doctests")
-                 if f.endswith(".rst")]
-
-doctests = [join("doctests", filename) for filename in rst_filenames]
-
+# Option flags for doctests
 flags = doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE | doctest.REPORT_NDIFF
 
 
 def test_suite():
     suite = unittest.TestSuite()
-    for doctestfile in doctests:
+    for doctest_file in get_doctest_files():
         suite.addTests([
             ztc.ZopeDocFileSuite(
-                doctestfile,
+                doctest_file,
                 test_class=SimpleTestCase,
                 optionflags=flags
             )
         ])
     return suite
+
+
+def get_doctest_files():
+    """
+    Return the available doctest files for this package.
+    """
+    files = resource_listdir(PRODUCT_NAME, "tests/doctests")
+    files = filter(lambda name: name.endswith(".rst"), files)
+    return map(lambda name: join("doctests", name), files)
