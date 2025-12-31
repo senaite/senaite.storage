@@ -3,6 +3,18 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="Display Storage in navigation bar"
+      description="
+        This upgrade step makes the product compatible with senaite.core#2835
+        by adding the Storage folder to the setup field “Sidebar displayed
+        portal types”, thereby displaying the Storage link in the left-hand
+        navigation bar."
+      source="2704"
+      destination="2705"
+      handler=".v02_07_000.display_storage_navbar"
+      profile="senaite.storage:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.STORAGE 2.7.0: Migrate Storage Root Folder to DX"
       description="Migrate the Storage Root Folder to Dexterity"
       source="2703"
