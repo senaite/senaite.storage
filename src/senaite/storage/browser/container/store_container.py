@@ -228,7 +228,7 @@ class StoreContainerView(BaseView):
             "data-query": {
                 "portal_type": ["AnalysisRequest"],
                 "review_state": [
-                    "received",
+                    "sample_received",
                     "to_be_verified",
                     "verified",
                     "published",

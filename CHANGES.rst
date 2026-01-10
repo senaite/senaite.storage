@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #60 Fix sample search when assigning received samples to storage container
 - #59 Fix AttributeError when migrating facilities to DX (2701)
 - #58 Fix ValueError: undefined property 'add_permission' on upgrade
 - #57 Compatibility with core#2835 (display Storage in navbar)
