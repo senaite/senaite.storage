@@ -162,12 +162,12 @@ class StorageFacility(Container):
     @security.protected(permissions.View)
     def getAddress(self):
         accessor = self.accessor("address")
-        return accessor(self) or ""
+        return accessor(self)
 
     @security.protected(permissions.ModifyPortalContent)
     def setAddress(self, value):
         mutator = self.mutator("address")
-        mutator(self, api.safe_unicode(value))
+        mutator(self, value)
 
     # BBB: AT schema field property
     Address = property(getAddress, setAddress)
