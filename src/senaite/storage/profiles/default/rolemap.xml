@@ -21,20 +21,6 @@
       <role name="StorageManager"/>
       <role name="StorageAssistant"/>
     </permission>
-    <permission name="Modify portal content" acquire="True">
-      <!--
-       StorageManager and StorageAssistant are allowed to modify contents from
-       inside storage's root folder only. Mappings for this permission are
-       overwritten in storage's specific workflow definitions
-      -->
-    </permission>
-    <permission name="Add portal content" acquire="True">
-      <!--
-       StorageManager and StorageAssistant are allowed to add contents inside
-       storage's root folder only. Mappings for this permission are overwritten
-       in storage's specific workflow definitions
-      -->
-    </permission>
 
     <!-- Add permissions -->
     <permission name="senaite.storage: Add Storage Root Folder" acquire="False">
