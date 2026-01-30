@@ -392,7 +392,7 @@ Now login back as TEST_USER with `LabClerk` role to create and receive the sampl
     >>> api.get_workflow_status_of(sample)
     'sample_received'
 
-Store the sample in the samples container:
+LabClerk stores the sample in the samples container:
 
     >>> samples_container.add_object_at(sample, 0, 0)
     True
@@ -412,7 +412,7 @@ The `recover` transition is available for stored samples:
     >>> "recover" in getAllowedTransitions(sample)
     True
 
-StorageManager can recover the sample from storage:
+StorageManager can recover samples that were stored by other users:
 
     >>> transitioned = do_action_for(sample, "recover")
     >>> api.get_workflow_status_of(sample)
@@ -420,6 +420,20 @@ StorageManager can recover the sample from storage:
 
     >>> samples_container.get_samples_utilization()
     0
+
+StorageManager can also store samples:
+
+    >>> "store" in getAllowedTransitions(sample)
+    True
+
+    >>> samples_container.add_object_at(sample, 1, 0)
+    True
+
+    >>> api.get_workflow_status_of(sample)
+    'stored'
+
+    >>> samples_container.get_samples_utilization()
+    1
 
 
 StorageManager can create full storage hierarchy
