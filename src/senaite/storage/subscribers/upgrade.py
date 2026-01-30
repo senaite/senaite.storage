@@ -55,9 +55,6 @@ def afterUpgradeStepHandler(event):
     # Setup catalogs
     setup_catalogs(portal)
 
-    # setup the roles permissions
-    #setup_roles_permissions(portal)
-
     # setup user groups
     setup_user_groups(portal)
 
