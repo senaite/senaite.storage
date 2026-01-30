@@ -11,15 +11,34 @@ Test Setup
 Needed Imports:
 
     >>> from bika.lims import api
+    >>> from bika.lims.utils.analysisrequest import create_analysisrequest
     >>> from bika.lims.workflow import doActionFor as do_action_for
     >>> from bika.lims.workflow import getAllowedTransitions
+    >>> from DateTime import DateTime
+    >>> from plone.app.testing import login
     >>> from plone.app.testing import setRoles
+    >>> from plone.app.testing import SITE_OWNER_NAME
     >>> from plone.app.testing import TEST_USER_ID
+    >>> from plone.app.testing import TEST_USER_NAME
+
+Functional Helpers:
+
+    >>> def new_sample(services, client, contact, sampletype):
+    ...     values = {
+    ...         'Client': client.UID(),
+    ...         'Contact': contact.UID(),
+    ...         'DateSampled': DateTime().strftime("%Y-%m-%d"),
+    ...         'SampleType': sampletype.UID()}
+    ...     service_uids = map(api.get_uid, services)
+    ...     sample = create_analysisrequest(client, request, values, service_uids)
+    ...     return sample
 
 Variables:
 
     >>> portal = self.portal
     >>> request = self.request
+    >>> setup = portal.setup
+    >>> bikasetup = portal.bika_setup
     >>> storage = portal.senaite_storage
 
 Set the test user with `StorageManager` role:
@@ -339,6 +358,68 @@ Move the samples container to a different container:
 
     >>> "/".join(samples_container.getPhysicalPath())
     '/plone/senaite_storage/SF-00001/SP-00002/SC-00003/SS-00001'
+
+
+StorageManager can recover samples from samples containers
+..........................................................
+
+Users with `StorageManager` role can recover samples from storage, but they
+cannot create samples. Samples must be created by users with other roles such
+as `LabClerk`.
+
+First, we need to create some base objects for samples. We login as site owner
+to create the setup objects (so TEST_USER won't have Owner role on them):
+
+    >>> login(portal.aq_parent, SITE_OWNER_NAME)
+    >>> client = api.create(portal.clients, "Client", Name="Test Client", ClientID="TC")
+    >>> contact = api.create(client, "Contact", Firstname="Test", Lastname="Contact")
+    >>> labcontact = api.create(bikasetup.bika_labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
+    >>> department = api.create(setup.departments, "Department", title="Chemistry", Manager=labcontact)
+    >>> sampletype = api.create(setup.sampletypes, "SampleType", title="Water", Prefix="W")
+    >>> category = api.create(setup.analysiscategories, "AnalysisCategory", title="Metals", Department=department)
+    >>> service = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Copper", Keyword="Cu", Category=category.UID())
+
+Now login back as TEST_USER with `LabClerk` role to create and receive the sample:
+
+    >>> login(portal, TEST_USER_NAME)
+    >>> setRoles(portal, TEST_USER_ID, ["LabClerk"])
+
+    >>> sample = new_sample([service], client, contact, sampletype)
+    >>> api.get_workflow_status_of(sample)
+    'sample_due'
+
+    >>> transitioned = do_action_for(sample, "receive")
+    >>> api.get_workflow_status_of(sample)
+    'sample_received'
+
+Store the sample in the samples container:
+
+    >>> samples_container.add_object_at(sample, 0, 0)
+    True
+
+    >>> api.get_workflow_status_of(sample)
+    'stored'
+
+    >>> samples_container.get_samples_utilization()
+    1
+
+Now switch to `StorageManager` role to recover the sample:
+
+    >>> setRoles(portal, TEST_USER_ID, ["StorageManager"])
+
+The `recover` transition is available for stored samples:
+
+    >>> "recover" in getAllowedTransitions(sample)
+    True
+
+StorageManager can recover the sample from storage:
+
+    >>> transitioned = do_action_for(sample, "recover")
+    >>> api.get_workflow_status_of(sample)
+    'sample_received'
+
+    >>> samples_container.get_samples_utilization()
+    0
 
 
 StorageManager can create full storage hierarchy
