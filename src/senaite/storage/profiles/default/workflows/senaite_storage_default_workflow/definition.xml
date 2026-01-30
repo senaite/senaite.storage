@@ -46,7 +46,13 @@
     <permission-map name="Access contents information" acquired="True" />
     <permission-map name="Delete objects" acquired="True" />
     <permission-map name="List folder contents" acquired="True" />
-    <permission-map name="Modify portal content" acquired="True" />
+    <permission-map name="Modify portal content" acquired="True">
+      <permission-role>StorageManager</permission-role>
+      <permission-role>StorageAssistant</permission-role>
+    </permission-map>
+    <permission-map name="Add portal content" acquired="True">
+      <permission-role>StorageAssistant</permission-role>
+    </permission-map>
     <permission-map name="View" acquired="True" />
     <!-- senaite.storage Add permissions -->
     <permission-map name="senaite.storage: Add Storage Facility" acquired="True" />
