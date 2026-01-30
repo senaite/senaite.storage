@@ -209,6 +209,52 @@ Activating a container also activates nested containers:
     'active'
 
 
+StorageManager can move containers
+..................................
+
+The `move_container` transition is available for containers:
+
+    >>> "move_container" in getAllowedTransitions(container)
+    True
+
+    >>> "move_container" in getAllowedTransitions(nested_container)
+    True
+
+Create a second position to move containers to:
+
+    >>> position_b = api.create(facility, "StoragePosition", title="Room B")
+    >>> position_b
+    <StoragePosition at /plone/senaite_storage/SF-00001/SP-00002>
+
+Move a container from one position to another:
+
+    >>> "/".join(nested_container.getPhysicalPath())
+    '/plone/senaite_storage/SF-00001/SP-00001/SC-00001/SC-00002'
+
+    >>> nested_container = api.move_object(nested_container, position_b, check_constraints=False)
+    >>> nested_container
+    <StorageContainer at /plone/senaite_storage/SF-00001/SP-00002/SC-00002>
+
+    >>> nested_container.aq_parent == position_b
+    True
+
+    >>> "/".join(nested_container.getPhysicalPath())
+    '/plone/senaite_storage/SF-00001/SP-00002/SC-00002'
+
+Move a container inside another container:
+
+    >>> another_container = api.create(position_b, "StorageContainer", title="Cabinet B")
+    >>> another_container
+    <StorageContainer at /plone/senaite_storage/SF-00001/SP-00002/SC-00003>
+
+    >>> nested_container = api.move_object(nested_container, another_container, check_constraints=False)
+    >>> nested_container
+    <StorageContainer at /plone/senaite_storage/SF-00001/SP-00002/SC-00003/SC-00002>
+
+    >>> nested_container.aq_parent == another_container
+    True
+
+
 StorageManager can create samples containers
 ............................................
 
@@ -268,6 +314,33 @@ And activate it again:
     'active'
 
 
+StorageManager can move samples containers
+..........................................
+
+The `move_container` transition is available for samples containers:
+
+    >>> "move_container" in getAllowedTransitions(samples_container)
+    True
+
+Samples containers can only be moved inside other containers. Check the current
+location of the samples container:
+
+    >>> "/".join(samples_container.getPhysicalPath())
+    '/plone/senaite_storage/SF-00001/SP-00001/SC-00001/SS-00001'
+
+Move the samples container to a different container:
+
+    >>> samples_container = api.move_object(samples_container, another_container, check_constraints=False)
+    >>> samples_container
+    <StorageSamplesContainer at /plone/senaite_storage/SF-00001/SP-00002/SC-00003/SS-00001>
+
+    >>> samples_container.aq_parent == another_container
+    True
+
+    >>> "/".join(samples_container.getPhysicalPath())
+    '/plone/senaite_storage/SF-00001/SP-00002/SC-00003/SS-00001'
+
+
 StorageManager can create full storage hierarchy
 ................................................
 
@@ -277,14 +350,14 @@ Create a complete storage hierarchy:
     >>> facility2
     <StorageFacility at /plone/senaite_storage/SF-00002>
 
-    >>> position2 = api.create(facility2, "StoragePosition", title="Room B")
+    >>> position2 = api.create(facility2, "StoragePosition", title="Room C")
     >>> position2
-    <StoragePosition at /plone/senaite_storage/SF-00002/SP-00002>
+    <StoragePosition at /plone/senaite_storage/SF-00002/SP-00003>
 
     >>> container2 = api.create(position2, "StorageContainer", title="Freezer 1")
     >>> container2
-    <StorageContainer at /plone/senaite_storage/SF-00002/SP-00002/SC-00003>
+    <StorageContainer at /plone/senaite_storage/SF-00002/SP-00003/SC-00004>
 
     >>> samples_container2 = api.create(container2, "StorageSamplesContainer", title="Box 1", Rows=3, Columns=3)
     >>> samples_container2
-    <StorageSamplesContainer at /plone/senaite_storage/SF-00002/SP-00002/SC-00003/SS-00002>
+    <StorageSamplesContainer at /plone/senaite_storage/SF-00002/SP-00003/SC-00004/SS-00002>
