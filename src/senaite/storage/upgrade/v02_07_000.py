@@ -505,7 +505,7 @@ def setup_storage_roles_and_groups(tool):
             # acquisition. Therefore, we deactivate here all unmodified objects
             # from the cache of the current database connection
             logger.info("Flushing deactivated objects from cache ...")
-            api.get_portal()._p_jar.cacheMinimize()  # noqa
+            portal._p_jar.cacheMinimize()  # noqa
 
         ob = api.get_object(brain)
         workflow.updateRoleMappingsFor(ob)
