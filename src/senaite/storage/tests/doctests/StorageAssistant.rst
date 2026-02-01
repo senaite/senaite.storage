@@ -86,6 +86,21 @@ inside the storage root folder:
     ...     pass
 
 
+StorageAssistant CAN edit facilities
+.....................................
+
+Even though StorageAssistant cannot create facilities, they can edit existing
+facilities created by other users:
+
+    >>> facility.setTitle("Updated Facility Name")
+    >>> facility.Title()
+    'Updated Facility Name'
+
+Reset the title:
+
+    >>> facility.setTitle("Test Facility")
+
+
 StorageAssistant CAN create positions
 .....................................
 
@@ -106,6 +121,20 @@ Create another position for move tests:
     >>> position_b = api.create(facility, "StoragePosition", title="Room B")
     >>> position_b
     <StoragePosition at /plone/senaite_storage/SF-00001/SP-00002>
+
+
+StorageAssistant CAN edit positions
+....................................
+
+StorageAssistant can modify position properties:
+
+    >>> position.setTitle("Cold Room A")
+    >>> position.Title()
+    'Cold Room A'
+
+Reset the title:
+
+    >>> position.setTitle("Room A")
 
 
 StorageAssistant CAN create containers
