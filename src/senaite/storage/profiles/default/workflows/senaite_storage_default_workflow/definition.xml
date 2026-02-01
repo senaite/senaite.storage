@@ -21,6 +21,8 @@
   <!-- This governs whether you can get a listing of the contents of a folder; it -->
   <!-- doesn't check whether you have the right to view the objects listed. -->
   <permission>List folder contents</permission>
+  <!-- This governs whether you are allowed to add content to a folder. -->
+  <permission>Add portal content</permission>
 
   <!-- senaite.storage Add permissions -->
   <permission>senaite.storage: Add Storage Facility</permission>
