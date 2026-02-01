@@ -472,7 +472,7 @@ def setup_storage_roles_and_groups(tool):
     logger.info("Updating role mappings of storage objects ...")
     workflow = wapi.get_workflow(STORAGE_WORKFLOW_ID)
     cat = api.get_tool(STORAGE_CATALOG)
-    brains = [] # cat()
+    brains = cat()
     total = len(brains)
     for num, brain in enumerate(brains):
         if num and num % 100 == 0:
@@ -489,7 +489,7 @@ def setup_storage_roles_and_groups(tool):
     logger.info("Updating role mappings of samples ...")
     workflow = wapi.get_workflow(SAMPLE_WORKFLOW)
     cat = api.get_tool(SAMPLE_CATALOG)
-    brains = cat(review_state="stored", sort_limit=1000)
+    brains = cat(review_state="stored")
     total = len(brains)
     for num, brain in enumerate(brains):
         if num and num % 100 == 0:
