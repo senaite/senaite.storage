@@ -134,12 +134,6 @@ WORKFLOWS_TO_UPDATE = {
                     cmf_permissions.ListFolderContents: [
                         "StorageManager", "StorageAssistant"
                     ],
-                    # XXX This feels wrong, but this is the permission required
-                    #     for AnalysisRequest/base_view and its analyses tables
-                    #     See https://github.com/senaite/senaite.core/blob/a8cbc4546/src/bika/lims/browser/analysisrequest/configure.zcml#L80-L114
-                    #permissions.ManageAnalysisRequests: [
-                    #    "StorageManager", "StorageAssistant"
-                    #],
                     # Note here we are passing tuples, so these permissions are
                     # set with acquire=False
                     cmf_permissions.ModifyPortalContent: (),
@@ -204,6 +198,15 @@ ROLES = [
         cmf_permissions.View,
         cmf_permissions.AccessContentsInformation,
         cmf_permissions.ListFolderContents,
+        # core's `ManageAnalysisRequests` permission is required for:
+        #
+        #   - AnalysisRequest's `base_view` and its analyses tables
+        #     See https://github.com/senaite/senaite.core/blob/a8cbc4546/src/bika/lims/browser/analysisrequest/configure.zcml#L80-L114
+        #
+        #   - The `storage_store_samples` view (container assignment to
+        #     pre-selected samples) and `storage_store_container` view (samples
+        #     assignment to a pre-selected container)
+        #     See browser/container/configure.zcml
         permissions.ManageAnalysisRequests,
     ]),
     ("StorageAssistant", [
@@ -215,7 +218,7 @@ ROLES = [
 ]
 
 GROUPS = [
-    # Tuple of (group_name, roles_group
+    # Tuple of (group_name, [roles])
     ("Storage Managers", ["Member", "StorageManager"], ),
     ("Storage Assistants", ["Member", "StorageAssistant"], ),
 ]
