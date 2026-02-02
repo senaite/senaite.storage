@@ -33,6 +33,7 @@ from senaite.storage import PRODUCT_NAME
 from senaite.storage.catalog import STORAGE_CATALOG
 from senaite.storage.config import STORAGE_WORKFLOW_ID
 from senaite.storage.setuphandlers import display_in_nav
+from senaite.storage.setuphandlers import setup_roles
 from senaite.storage.setuphandlers import setup_user_groups
 from senaite.storage.setuphandlers import setup_workflows
 from zope.component import getMultiAdapter
@@ -452,6 +453,9 @@ def setup_storage_roles_and_groups(tool):
     # import rolemap and workflow definitions
     setup.runImportStepFromProfile(profile, "rolemap")
     setup.runImportStepFromProfile(profile, "workflow")
+
+    # setup roles permissions for portal
+    setup_roles(portal)
 
     # setup user groups
     setup_user_groups(portal)

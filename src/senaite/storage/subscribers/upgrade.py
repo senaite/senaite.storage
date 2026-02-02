@@ -26,6 +26,7 @@ from senaite.storage import is_installed
 from senaite.storage import logger
 from senaite.storage import PRODUCT_NAME
 from senaite.storage.setuphandlers import setup_catalogs
+from senaite.storage.setuphandlers import setup_roles
 from senaite.storage.setuphandlers import setup_user_groups
 from senaite.storage.setuphandlers import setup_workflows
 
@@ -54,6 +55,9 @@ def afterUpgradeStepHandler(event):
 
     # Setup catalogs
     setup_catalogs(portal)
+
+    # setup roles permissions for portal
+    setup_roles(portal)
 
     # setup user groups
     setup_user_groups(portal)

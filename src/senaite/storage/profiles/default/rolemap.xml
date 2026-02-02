@@ -8,20 +8,6 @@
 
   <permissions>
 
-    <!-- Plone permissions. We do (acquire="True") to **add** roles -->
-    <permission name="View" acquire="True">
-      <role name="StorageManager"/>
-      <role name="StorageAssistant"/>
-    </permission>
-    <permission name="Access contents information" acquire="True">
-      <role name="StorageManager"/>
-      <role name="StorageAssistant"/>
-    </permission>
-    <permission name="List folder contents" acquire="True">
-      <role name="StorageManager"/>
-      <role name="StorageAssistant"/>
-    </permission>
-
     <!-- Add permissions -->
     <permission name="senaite.storage: Add Storage Root Folder" acquire="False">
       <role name="Manager"/>

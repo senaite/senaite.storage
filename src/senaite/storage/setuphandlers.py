@@ -21,7 +21,6 @@
 from Acquisition import aq_base
 from bika.lims import api
 from plone import api as ploneapi
-from Products.CMFCore.permissions import ModifyPortalContent
 from senaite.core import permissions
 from Products.CMFCore import permissions as cmf_permissions
 from senaite.core.api.workflow import update_workflow
@@ -143,6 +142,7 @@ WORKFLOWS_TO_UPDATE = {
                     #],
                     # Note here we are passing tuples, so these permissions are
                     # set with acquire=False
+                    cmf_permissions.ModifyPortalContent: (),
                     permissions.AddAnalysis: (),
                     permissions.AddAttachment: (),
                     permissions.TransitionCancelAnalysisRequest: (),
@@ -152,7 +152,6 @@ WORKFLOWS_TO_UPDATE = {
                     permissions.TransitionPreserveSample: (),
                     permissions.TransitionPublishResults: (),
                     permissions.TransitionScheduleSampling: (),
-                    ModifyPortalContent: (),
                 }
             },
         },
@@ -182,6 +181,38 @@ WORKFLOWS_TO_UPDATE = {
         }
     }
 }
+ROLES = [
+    # Tuple of (role, [permissions])
+    #
+    # Permission assignment strategy for this add-on:
+    #
+    # 1. Portal-level permissions (site root):
+    #
+    #    - OUR permissions → roles: use `rolemap.xml`
+    #    - OTHER add-ons' permissions → OUR roles: use `setup_roles()` below
+    #
+    #    Why not use rolemap.xml for both? Because rolemap.xml replaces the
+    #    entire role list for a permission, even with acquire="1". This would
+    #    remove roles that other add-ons have already assigned.
+    #
+    # 2. Content-level permissions (objects managed by workflows):
+    #
+    #    - OUR content types: defined in our DC workflow definitions
+    #    - OTHER add-ons' content types: use WORKFLOWS_TO_UPDATE above
+    #
+    ("StorageManager", [
+        cmf_permissions.View,
+        cmf_permissions.AccessContentsInformation,
+        cmf_permissions.ListFolderContents,
+        permissions.ManageAnalysisRequests,
+    ]),
+    ("StorageAssistant", [
+        cmf_permissions.View,
+        cmf_permissions.AccessContentsInformation,
+        cmf_permissions.ListFolderContents,
+        permissions.ManageAnalysisRequests,
+    ]),
+]
 
 GROUPS = [
     # Tuple of (group_name, roles_group
@@ -219,6 +250,9 @@ def post_install(portal_setup):
 
     # Setup catalogs
     setup_catalogs(portal)
+
+    # Setup roles permissions for portal
+    setup_roles(portal)
 
     # Setup user groups
     setup_user_groups(portal)
@@ -275,8 +309,49 @@ def setup_catalogs(portal):
     setup_catalog_mappings(portal, catalog_mappings=CATALOG_MAPPINGS)
 
 
+def setup_roles(portal):
+    """Setup the top-level permissions (at portal) for product-specific roles.
+    The roles are added for each permission in portal root while keeping the
+    existing acquire setting
+    """
+    logger.info("Setup storage-specific roles ...")
+
+    # Default permissions
+    for role_name, perms in ROLES:
+        for permission in perms:
+            grant_permission_to(portal, permission, role_name)
+
+    logger.info("Setup storage-specific roles [DONE]")
+
+
+def grant_permission_to(folder, permission, role):
+    """Grants a permission to the given role and given folder
+    :param folder: the folder to which the permission for the role must apply
+    :param permission: the permission to be assigned
+    :param role: role to which the permission must be granted
+    :return True if succeeded, otherwise, False
+    """
+    roles = filter(lambda perm: perm.get("selected") == "SELECTED",
+                   folder.rolesOfPermission(permission))
+    roles = map(lambda perm_role: perm_role["name"], roles)
+    if role in roles:
+        # Nothing to do, the role has the permission granted already
+        logger.info("Role '{}' has permission {} for {} already".format(
+            role, repr(permission), repr(folder)))
+        return False
+
+    roles.append(role)
+    acquire = folder.acquiredRolesAreUsedBy(permission) == "CHECKED" and 1 or 0
+    folder.manage_permission(permission, roles=roles, acquire=acquire)
+    folder.reindexObject()
+    logger.info("Added permission {} to role '{}' for {}".format(
+        repr(permission), role, repr(folder)))
+
+    return True
+
+
 def setup_user_groups(portal):
-    """Configure the ptoduct-specific user groups
+    """Configure the product-specific user groups
     """
     logger.info("Setup storage-specific user groups ...")
     groups = portal.portal_groups
