@@ -21,6 +21,96 @@ Variables:
     >>> request = self.request
     >>> storage = portal.senaite_storage
 
+
+Portal-level permissions (site root)
+....................................
+
+When `senaite.storage` is installed, it adds storage-specific roles to existing
+permissions at the portal level WITHOUT removing roles assigned by other add-ons
+(e.g., `senaite.core`) and WITHOUT modifying the acquire setting.
+
+Helper to get roles with a permission granted for a given context:
+
+    >>> def get_roles_for_permission(context, permission):
+    ...     roles = filter(lambda p: p.get("selected") == "SELECTED",
+    ...                    context.rolesOfPermission(permission))
+    ...     return sorted([r["name"] for r in roles])
+
+Helper to check if acquire is enabled for a permission:
+
+    >>> def is_acquire_enabled(context, permission):
+    ...     return context.acquiredRolesAreUsedBy(permission) == "CHECKED"
+
+The `View` permission at the portal level has storage roles added, while
+preserving roles from other add-ons (e.g., `Analyst` from `senaite.core`):
+
+    >>> roles = get_roles_for_permission(portal, "View")
+    >>> "StorageManager" in roles
+    True
+    >>> "StorageAssistant" in roles
+    True
+    >>> "LabManager" in roles
+    True
+    >>> "LabClerk" in roles
+    True
+    >>> "Analyst" in roles
+    True
+
+The `Access contents information` permission has storage roles added while
+preserving existing roles:
+
+    >>> roles = get_roles_for_permission(portal, "Access contents information")
+    >>> "StorageManager" in roles
+    True
+    >>> "StorageAssistant" in roles
+    True
+    >>> "LabManager" in roles
+    True
+    >>> "LabClerk" in roles
+    True
+    >>> "Analyst" in roles
+    True
+
+The `List folder contents` permission has storage roles added while preserving
+existing roles:
+
+    >>> roles = get_roles_for_permission(portal, "List folder contents")
+    >>> "StorageManager" in roles
+    True
+    >>> "StorageAssistant" in roles
+    True
+    >>> "LabManager" in roles
+    True
+    >>> "LabClerk" in roles
+    True
+    >>> "Analyst" in roles
+    True
+    >>> "Manager" in roles
+    True
+
+The `senaite.core: Manage Analysis Requests` permission has storage roles added
+while preserving core roles (e.g., `LabManager`, `LabClerk`):
+
+    >>> roles = get_roles_for_permission(portal, "senaite.core: Manage Analysis Requests")
+    >>> "StorageManager" in roles
+    True
+    >>> "StorageAssistant" in roles
+    True
+    >>> "LabManager" in roles
+    True
+    >>> "LabClerk" in roles
+    True
+
+The acquire setting is preserved for these permissions. For instance, `View` at
+the portal level has acquire enabled and it remains enabled after installation:
+
+    >>> is_acquire_enabled(portal, "View")
+    True
+
+    >>> is_acquire_enabled(portal, "Access contents information")
+    True
+
+
 Create test objects as LabManager:
 
     >>> setRoles(portal, TEST_USER_ID, ["LabManager"])
