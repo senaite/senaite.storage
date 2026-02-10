@@ -1,28 +1,40 @@
 <?xml version="1.0"?>
 <rolemap>
 
+  <roles>
+    <role name="StorageManager"/>
+    <role name="StorageAssistant"/>
+  </roles>
+
   <permissions>
 
     <!-- Add permissions -->
     <permission name="senaite.storage: Add Storage Root Folder" acquire="False">
       <role name="Manager"/>
       <role name="LabManager"/>
+      <role name="StorageManager"/>
     </permission>
     <permission name="senaite.storage: Add Storage Facility" acquire="False">
       <role name="Manager"/>
       <role name="LabManager"/>
-    </permission>
-    <permission name="senaite.storage: Add Storage Container" acquire="False">
-      <role name="Manager"/>
-      <role name="LabManager"/>
-    </permission>
-    <permission name="senaite.storage: Add Storage Samples Container" acquire="False">
-      <role name="Manager"/>
-      <role name="LabManager"/>
+      <role name="StorageManager"/>
     </permission>
     <permission name="senaite.storage: Add Storage Position" acquire="False">
       <role name="Manager"/>
       <role name="LabManager"/>
+      <role name="StorageManager"/>
+    </permission>
+    <permission name="senaite.storage: Add Storage Container" acquire="False">
+      <role name="Manager"/>
+      <role name="LabManager"/>
+      <role name="StorageManager"/>
+      <role name="StorageAssistant"/>
+    </permission>
+    <permission name="senaite.storage: Add Storage Samples Container" acquire="False">
+      <role name="Manager"/>
+      <role name="LabManager"/>
+      <role name="StorageManager"/>
+      <role name="StorageAssistant"/>
     </permission>
 
     <!-- Move Container -->
@@ -30,6 +42,8 @@
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
+      <role name="StorageManager"/>
+      <role name="StorageAssistant"/>
     </permission>
 
     <!-- Store/Recover Sample Transition Permissions (sample objects) -->
@@ -37,11 +51,15 @@
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
+      <role name="StorageManager"/>
+      <role name="StorageAssistant"/>
     </permission>
     <permission name="senaite.storage: Transition: Recover Sample" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
+      <role name="StorageManager"/>
+      <role name="StorageAssistant"/>
     </permission>
 
     <!-- Add/Recover Samples Transition Permissions (storage listings) -->
@@ -49,11 +67,15 @@
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
+      <role name="StorageManager"/>
+      <role name="StorageAssistant"/>
     </permission>
     <permission name="senaite.storage: Transition: Recover Samples" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
+      <role name="StorageManager"/>
+      <role name="StorageAssistant"/>
     </permission>
 
     <!-- Activate/Deactivate Transition Permissions -->
@@ -61,11 +83,13 @@
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
+      <role name="StorageManager"/>
     </permission>
     <permission name="senaite.storage: Transition: Deactivate" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
+      <role name="StorageManager"/>
     </permission>
 
   </permissions>

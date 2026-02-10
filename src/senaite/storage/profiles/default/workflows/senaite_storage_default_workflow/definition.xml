@@ -21,6 +21,8 @@
   <!-- This governs whether you can get a listing of the contents of a folder; it -->
   <!-- doesn't check whether you have the right to view the objects listed. -->
   <permission>List folder contents</permission>
+  <!-- This governs whether you are allowed to add content to a folder. -->
+  <permission>Add portal content</permission>
 
   <!-- senaite.storage Add permissions -->
   <permission>senaite.storage: Add Storage Facility</permission>
@@ -46,7 +48,13 @@
     <permission-map name="Access contents information" acquired="True" />
     <permission-map name="Delete objects" acquired="True" />
     <permission-map name="List folder contents" acquired="True" />
-    <permission-map name="Modify portal content" acquired="True" />
+    <permission-map name="Modify portal content" acquired="True">
+      <permission-role>StorageManager</permission-role>
+      <permission-role>StorageAssistant</permission-role>
+    </permission-map>
+    <permission-map name="Add portal content" acquired="True">
+      <permission-role>StorageAssistant</permission-role>
+    </permission-map>
     <permission-map name="View" acquired="True" />
     <!-- senaite.storage Add permissions -->
     <permission-map name="senaite.storage: Add Storage Facility" acquired="True" />

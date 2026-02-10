@@ -20,9 +20,10 @@
 
 from Acquisition import aq_base
 from bika.lims import api
-from Products.CMFCore.permissions import ModifyPortalContent
-from Products.DCWorkflow.Guard import Guard
+from plone import api as ploneapi
 from senaite.core import permissions
+from Products.CMFCore import permissions as cmf_permissions
+from senaite.core.api.workflow import update_workflow
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.setuphandlers import setup_catalog_mappings
 from senaite.core.setuphandlers import setup_core_catalogs
@@ -98,27 +99,22 @@ COLUMNS = [
 
 WORKFLOWS_TO_UPDATE = {
     SAMPLE_WORKFLOW: {
-        "permissions": (),
         "states": {
             "sample_received": {
-                # Do not remove transitions already there
-                "preserve_transitions": True,
-                "transitions": ("store",),
+                # Use a list to extend transitions
+                "transitions": ["store"],
             },
             "to_be_verified": {
-                # Do not remove transitions already there
-                "preserve_transitions": True,
-                "transitions": ("store",),
+                # Use a list to extend transitions
+                "transitions": ["store"],
             },
             "verified": {
-                # Do not remove transitions already there
-                "preserve_transitions": True,
-                "transitions": ("store",),
+                # Use a list to extend transitions
+                "transitions": ["store"],
             },
             "published": {
-                # Do not remove transitions already there
-                "preserve_transitions": True,
-                "transitions": ("store",),
+                # Use a list to extend transitions
+                "transitions": ["store"],
             },
             "stored": {
                 "title": "Stored",
@@ -128,8 +124,19 @@ WORKFLOWS_TO_UPDATE = {
                 "permissions_copy_from": "sample_received",
                 # Override permissions
                 "permissions": {
+                    # **Add** (acquire=True) storage-specific roles
+                    cmf_permissions.View: [
+                        "StorageManager", "StorageAssistant"
+                    ],
+                    cmf_permissions.AccessContentsInformation: [
+                        "StorageManager", "StorageAssistant"
+                    ],
+                    cmf_permissions.ListFolderContents: [
+                        "StorageManager", "StorageAssistant"
+                    ],
                     # Note here we are passing tuples, so these permissions are
                     # set with acquire=False
+                    cmf_permissions.ModifyPortalContent: (),
                     permissions.AddAnalysis: (),
                     permissions.AddAttachment: (),
                     permissions.TransitionCancelAnalysisRequest: (),
@@ -139,7 +146,6 @@ WORKFLOWS_TO_UPDATE = {
                     permissions.TransitionPreserveSample: (),
                     permissions.TransitionPublishResults: (),
                     permissions.TransitionScheduleSampling: (),
-                    ModifyPortalContent: (),
                 }
             },
         },
@@ -169,6 +175,53 @@ WORKFLOWS_TO_UPDATE = {
         }
     }
 }
+ROLES = [
+    # Tuple of (role, [permissions])
+    #
+    # Permission assignment strategy for this add-on:
+    #
+    # 1. Portal-level permissions (site root):
+    #
+    #    - OUR permissions → roles: use `rolemap.xml`
+    #    - OTHER add-ons' permissions → OUR roles: use `setup_roles()` below
+    #
+    #    Why not use rolemap.xml for both? Because rolemap.xml replaces the
+    #    entire role list for a permission, even with acquire="1". This would
+    #    remove roles that other add-ons have already assigned.
+    #
+    # 2. Content-level permissions (objects managed by workflows):
+    #
+    #    - OUR content types: defined in our DC workflow definitions
+    #    - OTHER add-ons' content types: use WORKFLOWS_TO_UPDATE above
+    #
+    ("StorageManager", [
+        cmf_permissions.View,
+        cmf_permissions.AccessContentsInformation,
+        cmf_permissions.ListFolderContents,
+        # core's `ManageAnalysisRequests` permission is required for:
+        #
+        #   - AnalysisRequest's `base_view` and its analyses tables
+        #     See https://github.com/senaite/senaite.core/blob/a8cbc4546/src/bika/lims/browser/analysisrequest/configure.zcml#L80-L114
+        #
+        #   - The `storage_store_samples` view (container assignment to
+        #     pre-selected samples) and `storage_store_container` view (samples
+        #     assignment to a pre-selected container)
+        #     See browser/container/configure.zcml
+        permissions.ManageAnalysisRequests,
+    ]),
+    ("StorageAssistant", [
+        cmf_permissions.View,
+        cmf_permissions.AccessContentsInformation,
+        cmf_permissions.ListFolderContents,
+        permissions.ManageAnalysisRequests,
+    ]),
+]
+
+GROUPS = [
+    # Tuple of (group_name, [roles])
+    ("Storage Managers", ["Member", "StorageManager"], ),
+    ("Storage Assistants", ["Member", "StorageAssistant"], ),
+]
 
 
 def pre_install(portal_setup):
@@ -200,6 +253,12 @@ def post_install(portal_setup):
 
     # Setup catalogs
     setup_catalogs(portal)
+
+    # Setup roles permissions for portal
+    setup_roles(portal)
+
+    # Setup user groups
+    setup_user_groups(portal)
 
     # Setup site structure
     setup_site_structure(portal)
@@ -253,111 +312,77 @@ def setup_catalogs(portal):
     setup_catalog_mappings(portal, catalog_mappings=CATALOG_MAPPINGS)
 
 
+def setup_roles(portal):
+    """Setup the top-level permissions (at portal) for product-specific roles.
+    The roles are added for each permission in portal root while keeping the
+    existing acquire setting
+    """
+    logger.info("Setup storage-specific roles ...")
+
+    # Default permissions
+    for role_name, perms in ROLES:
+        for permission in perms:
+            grant_permission_to(portal, permission, role_name)
+
+    logger.info("Setup storage-specific roles [DONE]")
+
+
+def grant_permission_to(folder, permission, role):
+    """Grants a permission to the given role and given folder
+    :param folder: the folder to which the permission for the role must apply
+    :param permission: the permission to be assigned
+    :param role: role to which the permission must be granted
+    :return True if succeeded, otherwise, False
+    """
+    roles = filter(lambda perm: perm.get("selected") == "SELECTED",
+                   folder.rolesOfPermission(permission))
+    roles = map(lambda perm_role: perm_role["name"], roles)
+    if role in roles:
+        # Nothing to do, the role has the permission granted already
+        logger.info("Role '{}' has permission {} for {} already".format(
+            role, repr(permission), repr(folder)))
+        return False
+
+    roles.append(role)
+    acquire = folder.acquiredRolesAreUsedBy(permission) == "CHECKED" and 1 or 0
+    folder.manage_permission(permission, roles=roles, acquire=acquire)
+    folder.reindexObject()
+    logger.info("Added permission {} to role '{}' for {}".format(
+        repr(permission), role, repr(folder)))
+
+    return True
+
+
+def setup_user_groups(portal):
+    """Configure the product-specific user groups
+    """
+    logger.info("Setup storage-specific user groups ...")
+    groups = portal.portal_groups
+    existing = groups.listGroupIds()
+
+    for group, roles in GROUPS:
+        if group in existing:
+            # group exists already, grant default roles
+            logger.info("Group '%s' already exists. Granted roles: %s" %
+                        (group, ", ".join(roles)))
+            ploneapi.group.grant_roles(groupname=group, roles=roles)
+            break
+
+        # group does not exist yet
+        logger.info("Group '%s' added. Granted roles: %s" %
+                    (group, ", ".join(roles)))
+        groups.addGroup(group, title=group, roles=roles)
+
+    logger.info("Setup storage-specific user groups [DONE]")
+
+
 def setup_workflows(portal):
     """Injects 'store' and 'recover' transitions into workflow
     """
     logger.info("Setup storage workflow ...")
     for wf_id, settings in WORKFLOWS_TO_UPDATE.items():
-        update_workflow(portal, wf_id, settings)
-
-
-def update_workflow(portal, workflow_id, settings):
-    """Injects 'store' and 'recover' transitions into workflow
-    """
-    logger.info("Updating workflow '{}' ...".format(workflow_id))
-    wf_tool = api.get_tool("portal_workflow")
-    workflow = wf_tool.getWorkflowById(workflow_id)
-    if not workflow:
-        logger.warn("Workflow '{}' not found [SKIP]".format(workflow_id))
-    states = settings.get("states", {})
-    for state_id, values in states.items():
-        update_workflow_state(workflow, state_id, values)
-
-    transitions = settings.get("transitions", {})
-    for transition_id, values in transitions.items():
-        update_workflow_transition(workflow, transition_id, values)
-
-
-def update_workflow_state(workflow, status_id, settings):
-    logger.info("Updating workflow '{}', status: '{}' ..."
-                .format(workflow.id, status_id))
-
-    # Create the status (if does not exist yet)
-    new_status = workflow.states.get(status_id)
-    if not new_status:
-        workflow.states.addState(status_id)
-        new_status = workflow.states.get(status_id)
-
-    # Set basic info (title, description, etc.)
-    new_status.title = settings.get("title", new_status.title)
-    new_status.description = settings.get("description", new_status.description)
-
-    # Set transitions
-    trans = settings.get("transitions", ())
-    if settings.get("preserve_transitions", False):
-        trans = tuple(set(new_status.transitions+trans))
-    new_status.transitions = trans
-
-    # Set permissions
-    update_workflow_state_permissions(workflow, new_status, settings)
-
-
-def update_workflow_state_permissions(workflow, status, settings):
-    # Copy permissions from another state?
-    permissions_copy_from = settings.get("permissions_copy_from", None)
-    if permissions_copy_from:
-        logger.info("Copying permissions from '{}' to '{}' ..."
-                    .format(permissions_copy_from, status.id))
-        copy_from_state = workflow.states.get(permissions_copy_from)
-        if not copy_from_state:
-            logger.info("State '{}' not found [SKIP]".format(copy_from_state))
-        else:
-            for perm_id in copy_from_state.permissions:
-                perm_info = copy_from_state.getPermissionInfo(perm_id)
-                acquired = perm_info.get("acquired", 1)
-                roles = perm_info.get("roles", acquired and [] or ())
-                logger.info("Setting permission '{}' (acquired={}): '{}'"
-                            .format(perm_id, repr(acquired), ', '.join(roles)))
-                status.setPermission(perm_id, acquired, roles)
-
-    # Override permissions
-    logger.info("Overriding permissions for '{}' ...".format(status.id))
-    state_permissions = settings.get('permissions', {})
-    if not state_permissions:
-        logger.info(
-            "No permissions set for '{}' [SKIP]".format(status.id))
-        return
-    for permission_id, roles in state_permissions.items():
-        state_roles = roles and roles or ()
-        if isinstance(state_roles, tuple):
-            acq = 0
-        else:
-            acq = 1
-        logger.info("Setting permission '{}' (acquired={}): '{}'"
-                    .format(permission_id, repr(acq),
-                            ', '.join(state_roles)))
-        status.setPermission(permission_id, acq, state_roles)
-
-
-def update_workflow_transition(workflow, transition_id, settings):
-    logger.info("Updating workflow '{}', transition: '{}'"
-                .format(workflow.id, transition_id))
-    if transition_id not in workflow.transitions:
-        workflow.transitions.addTransition(transition_id)
-    transition = workflow.transitions.get(transition_id)
-    transition.setProperties(
-        title=settings.get("title"),
-        new_state_id=settings.get("new_state"),
-        after_script_name=settings.get("after_script", ""),
-        actbox_name=settings.get("action", settings.get("title"))
-    )
-    guard = transition.guard or Guard()
-    guard_props = {"guard_permissions": "",
-                   "guard_roles": "",
-                   "guard_expr": ""}
-    guard_props = settings.get("guard", guard_props)
-    guard.changeFromProperties(guard_props)
-    transition.guard = guard
+        update_workflow(wf_id, **settings)
+    logger.info("Setup storage workflow [DONE]")
 
 
 def setup_id_formatting(portal, format=None):

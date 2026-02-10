@@ -13,6 +13,7 @@
   <permission>Delete objects</permission>
   <permission>List folder contents</permission>
   <permission>Modify portal content</permission>
+  <permission>Add portal content</permission>
   <permission>View</permission>
 
   <!-- State: active -->
@@ -27,6 +28,8 @@
       <permission-role>RegulatoryInspector</permission-role>
       <permission-role>Sampler</permission-role>
       <permission-role>SamplingCoordinator</permission-role>
+      <permission-role>StorageManager</permission-role>
+      <permission-role>StorageAssistant</permission-role>
       <!-- Plone roles -->
       <permission-role>Manager</permission-role>
       <permission-role>Site Administrator</permission-role>
@@ -41,6 +44,8 @@
       <permission-role>RegulatoryInspector</permission-role>
       <permission-role>Sampler</permission-role>
       <permission-role>SamplingCoordinator</permission-role>
+      <permission-role>StorageManager</permission-role>
+      <permission-role>StorageAssistant</permission-role>
       <!-- Plone roles -->
       <permission-role>Manager</permission-role>
       <permission-role>Site Administrator</permission-role>
@@ -49,6 +54,10 @@
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="Add portal content" acquired="True">
+      <!-- Only StorageManager can add (Facilities) inside storage's root -->
+      <permission-role>StorageManager</permission-role>
     </permission-map>
     <permission-map name="View" acquired="False">
       <!-- All except Anonymous and Client -->
@@ -59,6 +68,8 @@
       <permission-role>RegulatoryInspector</permission-role>
       <permission-role>Sampler</permission-role>
       <permission-role>SamplingCoordinator</permission-role>
+      <permission-role>StorageManager</permission-role>
+      <permission-role>StorageAssistant</permission-role>
       <!-- Plone roles -->
       <permission-role>Manager</permission-role>
       <permission-role>Site Administrator</permission-role>
