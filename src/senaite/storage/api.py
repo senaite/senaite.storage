@@ -67,7 +67,7 @@ def get_retention_rules():
     """Return the list of retention period rules from the registry
 
     Each rule is a dict with keys:
-    - service_keyword: keyword of the AnalysisService
+    - service: UID of the AnalysisService
     - result: expected result value (empty string means any result)
     - retention_days: number of days for retention
     """
@@ -83,7 +83,7 @@ def get_default_retention_period(sample):
 
     Matching logic:
     1. Get all analyses of the sample
-    2. For each analysis, check rules for matching service_keyword
+    2. For each analysis, check rules for matching service UID
     3. If rule has a result specified, also match by result value
     4. Specific rules (with result) take priority over general rules
     5. If multiple rules match, use the longest retention period
@@ -93,23 +93,23 @@ def get_default_retention_period(sample):
     if not rules:
         return None
 
-    # Build a lookup: service_keyword -> list of rules
-    rules_by_keyword = {}
+    # Build a lookup: service_uid -> list of rules
+    rules_by_uid = {}
     for rule in rules:
-        keyword = rule.get("service_keyword", "")
-        if not keyword:
+        service_uid = rule.get("service", "")
+        if not service_uid:
             continue
-        if keyword not in rules_by_keyword:
-            rules_by_keyword[keyword] = []
-        rules_by_keyword[keyword].append(rule)
+        if service_uid not in rules_by_uid:
+            rules_by_uid[service_uid] = []
+        rules_by_uid[service_uid].append(rule)
 
     specific_candidates = []
     general_candidates = []
 
     analyses = sample.getAnalyses(full_objects=True)
     for analysis in analyses:
-        keyword = analysis.getKeyword()
-        matching_rules = rules_by_keyword.get(keyword, [])
+        service_uid = analysis.getServiceUID()
+        matching_rules = rules_by_uid.get(service_uid, [])
         result = analysis.getResult()
         for rule in matching_rules:
             rule_result = rule.get("result", "")
