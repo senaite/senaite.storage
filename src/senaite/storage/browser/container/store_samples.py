@@ -23,6 +23,7 @@ import json
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.storage import api as _api
 from senaite.storage import logger
 from senaite.storage import senaiteMessageFactory as _s
 from senaite.storage.browser import BaseView
@@ -68,6 +69,7 @@ class StoreSamplesView(BaseView):
             # extract relevant data
             container_mapping = form.get("sample_container", {})
             container_position_mapping = form.get("sample_container_position", {})
+            retention_mapping = form.get("sample_retention_period", {})
 
             for sample in samples:
                 sample_uid = api.get_uid(sample)
@@ -86,6 +88,9 @@ class StoreSamplesView(BaseView):
                 if stored:
                     stored = container.get_object_at(position[0], position[1])
                     stored_samples.append(stored)
+                    # Store retention period in days
+                    retention_days = retention_mapping.get(sample_uid)
+                    stored.setStorageRetentionPeriod(retention_days)
 
             message = _s("Stored {} samples: {}".format(
                 len(stored_samples), ", ".join(
@@ -104,6 +109,7 @@ class StoreSamplesView(BaseView):
         """
         for obj in self.get_objects_from_request():
             obj = api.get_object(obj)
+            retention = _api.get_default_retention_period(obj)
             yield {
                 "obj": obj,
                 "id": api.get_id(obj),
@@ -111,7 +117,8 @@ class StoreSamplesView(BaseView):
                 "title": api.get_title(obj),
                 "path": api.get_path(obj),
                 "url": api.get_url(obj),
-                "sample_type": api.get_title(obj.getSampleType())
+                "sample_type": api.get_title(obj.getSampleType()),
+                "default_retention_period": retention or "",
             }
 
     def get_reference_widget_attributes(self, name, obj=None):

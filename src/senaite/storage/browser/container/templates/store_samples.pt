@@ -83,6 +83,19 @@
                           </select>
                         </div>
                       </div>
+                      <div class="col">
+                        <div class="input-group input-group-sm mt-2 px-0">
+                          <div class="input-group-prepend">
+                            <label class="input-group-text" i18n:translate="">Retention (days)</label>
+                          </div>
+                          <input type="number"
+                                 class="form-control form-control-sm"
+                                 min="0"
+                                 style="max-width:100px;"
+                                 tal:attributes="name string:sample_retention_period.${uid}:record;
+                                                 value python:sample.get('default_retention_period', '')"/>
+                        </div>
+                      </div>
 
                     </td>
                   </tr>

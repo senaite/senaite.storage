@@ -198,6 +198,10 @@ class StoreContainerView(BaseView):
             # Store
             position = container.alpha_to_position(alpha_position)
             if container.add_object_at(sample, position[0], position[1]):
+                # Store retention period in days
+                retention_days = form.get("retention_period")
+                sample.setStorageRetentionPeriod(retention_days)
+
                 message = _("Stored sample {} at position {}").format(
                     api.get_id(sample), alpha_position)
                 if container.is_full():
