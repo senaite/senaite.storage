@@ -20,15 +20,58 @@
 
 from plone.app.registry.browser.controlpanel import ControlPanelFormWrapper
 from plone.app.registry.browser.controlpanel import RegistryEditForm
+from plone.autoform import directives
+from plone.supermodel import model
 from plone.z3cform import layout
+from senaite.core.schema.registry import DataGridRow
+from senaite.core.z3cform.widgets.datagrid import DataGridWidgetFactory
 from senaite.storage import _
 from zope import schema
 from zope.interface import Interface
 
 
+class IRetentionRule(Interface):
+    """Schema for a single retention period rule row
+    """
+
+    service_keyword = schema.TextLine(
+        title=_(u"Service Keyword"),
+        description=_(
+            u"The keyword of the Analysis Service"
+        ),
+        required=True,
+    )
+
+    result = schema.TextLine(
+        title=_(u"Result"),
+        description=_(
+            u"Expected result value (leave empty for any result)"
+        ),
+        required=False,
+        default=u"",
+    )
+
+    retention_days = schema.TextLine(
+        title=_(u"Retention (days)"),
+        description=_(
+            u"Number of days for retention"
+        ),
+        required=True,
+    )
+
+
 class IStorageControlPanel(Interface):
     """Control panel Settings for senaite.storage
     """
+
+    model.fieldset(
+        "retention_rules",
+        label=_(u"Retention Rules"),
+        description=_(u""),
+        fields=[
+            "retention_period_rules",
+        ],
+    )
 
     store_primary = schema.Bool(
         title=_(
@@ -56,6 +99,29 @@ class IStorageControlPanel(Interface):
                     u"its partitions are recovered."
         ),
         default=True,
+    )
+
+    directives.widget(
+        "retention_period_rules",
+        DataGridWidgetFactory,
+        allow_reorder=True,
+        auto_append=True)
+    retention_period_rules = schema.List(
+        title=_(
+            u"label_storage_settings_retention_period_rules",
+            default=u"Retention period rules"
+        ),
+        description=_(
+            u"description_storage_settings_retention_period_rules",
+            default=u"Configure default retention periods based on test "
+                    u"and/or result criteria. When storing a sample, the "
+                    u"system will suggest a retention period based on these "
+                    u"rules."
+        ),
+        value_type=DataGridRow(
+            title=u"Retention Rule",
+            schema=IRetentionRule),
+        required=False,
     )
 
 
