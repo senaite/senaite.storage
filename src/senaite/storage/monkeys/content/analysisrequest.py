@@ -20,6 +20,7 @@
 
 from bika.lims import api
 from bika.lims import workflow as wf
+from bika.lims.workflow import getTransitionDate
 from senaite.storage import api as sapi
 from senaite.storage import check_installed
 
@@ -69,6 +70,21 @@ def setStorageRetentionPeriod(self, days):
     field = self.getField("StorageRetentionPeriod")
     days = api.to_int(days, default=None)
     field.set(self, days)
+
+
+@check_installed(None)
+def getStorageRetentionExpiryDate(self):
+    """Returns the date when storage expires based on the retention period.
+    """
+    days = self.getStorageRetentionPeriod()
+    days = api.to_int(days, default=-1)
+    if days < 0:
+        return None
+    # get the date when the sample was stored
+    stored = wf.getTransitionDate(self, "store", return_as_datetime=1)
+    if not stored:
+        return None
+    return stored + days
 
 
 @check_installed(None)

@@ -45,4 +45,11 @@
     ignoreOriginal="True"
     replacement=".content.analysisrequest.getDefaultStorageRetentionPeriod" />
 
+  <monkey:patch
+    description="Storage expiration date of stored sample"
+    class="bika.lims.content.analysisrequest.AnalysisRequest"
+    original="getStorageRetentionExpiryDate"
+    ignoreOriginal="True"
+    replacement=".content.analysisrequest.getStorageRetentionExpiryDate" />
+
 </configure>
