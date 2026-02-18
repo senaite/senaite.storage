@@ -30,14 +30,11 @@ from senaite.core.schema.registry import DataGridRow
 from senaite.core.z3cform.widgets.datagrid import DataGridWidgetFactory
 from senaite.core.z3cform.widgets.uidreference import UIDReferenceWidget
 from senaite.storage import _
-from z3c.form.interfaces import IFieldWidget
-from z3c.form.widget import FieldWidget
 from zope import schema
 from zope.interface import Interface
-from zope.interface import implementer
 
 
-class ControlPanelReferenceWidget(UIDReferenceWidget):
+class ControlPanelUIDReferenceWidget(UIDReferenceWidget):
     """UIDReferenceWidget for use in control panel DataGrid rows.
 
     Overrides get_context to return the form context directly, avoiding
@@ -50,18 +47,13 @@ class ControlPanelReferenceWidget(UIDReferenceWidget):
         return getattr(form, "context", None)
 
 
-@implementer(IFieldWidget)
-def ControlPanelReferenceWidgetFactory(field, request):
-    return FieldWidget(field, ControlPanelReferenceWidget(request))
-
-
 class IRetentionRule(Interface):
     """Schema for a single retention period rule row
     """
 
     directives.widget(
         "service",
-        ControlPanelReferenceWidgetFactory,
+        ControlPanelUIDReferenceWidget,
         catalog=SETUP_CATALOG,
         query={
             "portal_type": ["AnalysisService"],

@@ -1,5 +1,4 @@
-<configure xmlns="http://namespaces.zope.org/zope"
-           i18n_domain="senaite.storage">
+<configure xmlns="http://namespaces.zope.org/zope">
 
   <include package="archetypes.schemaextender" />
 

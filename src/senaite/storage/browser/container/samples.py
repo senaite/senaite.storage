@@ -77,7 +77,7 @@ class SampleListingView(ListingView):
                 "title": _s("Date Received"),
                 "toggle": True}),
             ("getStorageExpiryDate", {
-                "title": _("Retention Expiry Date"),
+                "title": _("Storage Expiry Date"),
                 "toggle": True}),
             ("Client", {
                 "title": _s("Client"),
