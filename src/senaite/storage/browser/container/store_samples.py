@@ -28,6 +28,8 @@ from senaite.storage import logger
 from senaite.storage import senaiteMessageFactory as _s
 from senaite.storage.browser import BaseView
 from senaite.storage.catalog import STORAGE_CATALOG
+from DateTime import DateTime
+
 
 DISPLAY_TEMPLATE = "<a href='${url}' _target='blank'>${get_full_title}</a>"
 
@@ -88,9 +90,14 @@ class StoreSamplesView(BaseView):
                 if stored:
                     stored = container.get_object_at(position[0], position[1])
                     stored_samples.append(stored)
-                    # Store retention period in days
+                    # Compute and store the expiry date
                     retention_days = retention_mapping.get(sample_uid)
-                    stored.setStorageRetentionPeriod(retention_days)
+                    retention_days = api.to_int(retention_days, default=-1)
+                    if retention_days >= 0:
+                        expiry = DateTime() + retention_days
+                        sample.setStorageExpiryDate(expiry)
+                    else:
+                        sample.setStorageExpiryDate(None)
 
             message = _s("Stored {} samples: {}".format(
                 len(stored_samples), ", ".join(

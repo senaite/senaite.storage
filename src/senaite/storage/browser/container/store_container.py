@@ -22,13 +22,14 @@ import json
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _s
+from DateTime import DateTime
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.workflow import SAMPLE_WORKFLOW
 from senaite.storage import logger
 from senaite.storage import senaiteMessageFactory as _
 from senaite.storage.browser import BaseView
 from senaite.storage.interfaces import IStorageSamplesContainer
-from senaite.core.catalog import SAMPLE_CATALOG
 
 DISPLAY_TEMPLATE = "<a href='${url}' _target='blank'>${getId}</a>"
 
@@ -198,9 +199,14 @@ class StoreContainerView(BaseView):
             # Store
             position = container.alpha_to_position(alpha_position)
             if container.add_object_at(sample, position[0], position[1]):
-                # Store retention period in days
+                # Compute and store the expiry date
                 retention_days = form.get("retention_period")
-                sample.setStorageRetentionPeriod(retention_days)
+                retention_days = api.to_int(retention_days, default=-1)
+                if retention_days >= 0:
+                    expiry = DateTime() + retention_days
+                    sample.setStorageExpiryDate(expiry)
+                else:
+                    sample.setStorageExpiryDate(None)
 
                 message = _("Stored sample {} at position {}").format(
                     api.get_id(sample), alpha_position)

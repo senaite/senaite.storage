@@ -19,7 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from archetypes.schemaextender.field import ExtensionField as ATExtensionField
-from Products.Archetypes.atapi import IntegerField
+from Products.Archetypes.atapi import DateTimeField
 
 
 class ExtensionField(ATExtensionField):
@@ -31,6 +31,6 @@ class ExtensionField(ATExtensionField):
         super(ExtensionField, self).__init__(*args, **kwargs)
 
 
-class ExtIntegerField(ExtensionField, IntegerField):
-    """Field extender of IntegerField
+class ExtDateTimeField(ExtensionField, DateTimeField):
+    """Field extender of DateTimeField
     """

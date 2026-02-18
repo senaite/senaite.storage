@@ -76,7 +76,7 @@ class SampleListingView(ListingView):
             ("getDateReceived", {
                 "title": _s("Date Received"),
                 "toggle": True}),
-            ("getStorageRetentionExpiryDate", {
+            ("getStorageExpiryDate", {
                 "title": _("Retention Expiry Date"),
                 "toggle": True}),
             ("Client", {
@@ -156,9 +156,9 @@ class SampleListingView(ListingView):
             item["PreviousState"] = self.translate_review_state(
                 prev_state, api.get_portal_type(obj))
 
-        # retention expiry date
-        column = "getStorageRetentionExpiryDate"
-        expiry_date = obj.getStorageRetentionExpiryDate()
+        # storage expiry date
+        column = "getStorageExpiryDate"
+        expiry_date = obj.getStorageExpiryDate()
         item[column] = self.ulocalized_time(expiry_date)
 
         # display in red if retention expired

@@ -21,18 +21,18 @@
 from archetypes.schemaextender.interfaces import IBrowserLayerAwareExtender
 from archetypes.schemaextender.interfaces import ISchemaExtender
 from bika.lims.interfaces import IAnalysisRequest
-from Products.Archetypes.Widget import IntegerWidget
-from senaite.storage.archetypes.field import ExtIntegerField
+from senaite.core.browser.widgets import DateTimeWidget
+from senaite.storage.archetypes.field import ExtDateTimeField
 from senaite.storage.interfaces import ISenaiteStorageLayer
 from zope.component import adapter
 from zope.interface import implementer
 
 
 fields = [
-    ExtIntegerField(
-        "StorageRetentionPeriod",
+    ExtDateTimeField(
+        "StorageExpiryDate",
         default=None,
-        widget=IntegerWidget(
+        widget=DateTimeWidget(
             visible=False,
         ),
     ),

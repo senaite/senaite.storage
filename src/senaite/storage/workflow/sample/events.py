@@ -88,8 +88,8 @@ def after_recover(sample):
     # remove the sample from the container
     _api.remove_sample_from_container(sample)
 
-    # clear the retention period
-    sample.setStorageRetentionPeriod(None)
+    # clear the storage expiry date
+    sample.setStorageExpiryDate(None)
 
     # Transition the sample to the state before it was stored
     previous_state = api.get_previous_worfklow_status_of(
