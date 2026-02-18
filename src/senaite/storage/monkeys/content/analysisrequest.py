@@ -69,3 +69,10 @@ def setStorageRetentionPeriod(self, days):
     field = self.getField("StorageRetentionPeriod")
     days = api.to_int(days, default=None)
     field.set(self, days)
+
+
+@check_installed(None)
+def getDefaultStorageRetentionPeriod(self):
+    """Returns the default retention period (days) computed from rules
+    """
+    return sapi.get_default_retention_period(self)

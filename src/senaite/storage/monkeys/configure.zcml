@@ -38,4 +38,11 @@
     ignoreOriginal="True"
     replacement=".content.analysisrequest.setStorageRetentionPeriod" />
 
+  <monkey:patch
+    description="Default retention period computed from rules"
+    class="bika.lims.content.analysisrequest.AnalysisRequest"
+    original="getDefaultStorageRetentionPeriod"
+    ignoreOriginal="True"
+    replacement=".content.analysisrequest.getDefaultStorageRetentionPeriod" />
+
 </configure>
