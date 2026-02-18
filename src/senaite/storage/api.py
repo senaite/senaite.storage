@@ -114,8 +114,7 @@ def get_default_retention_period(sample):
         result = analysis.getResult()
         for rule in matching_rules:
             rule_result = rule.get("result", "")
-            retention_days = rule.get("retention_days")
-            retention_days = api.to_int(retention_days)
+            retention_days = rule.get("retention_days", 0)
             if rule_result and rule_result == result:
                 specific_candidates.append(retention_days)
             elif not rule_result:

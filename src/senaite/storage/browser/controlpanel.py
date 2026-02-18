@@ -94,7 +94,7 @@ class IRetentionRule(Interface):
         default=u"",
     )
 
-    retention_days = schema.TextLine(
+    retention_days = schema.Int(
         title=_(u"Retention (days)"),
         description=_(
             u"Number of days for retention"
