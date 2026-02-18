@@ -93,15 +93,16 @@ def get_default_retention_period(sample):
     if not rules:
         return None
 
-    # Build a lookup: service_uid -> list of rules
+    # Group the list of rules by service uid
     rules_by_uid = {}
     for rule in rules:
         service_uid = rule.get("service", "")
+        # UIDReferenceField stores values as lists
+        if isinstance(service_uid, (list, tuple)):
+            service_uid = service_uid[0] if service_uid else ""
         if not service_uid:
             continue
-        if service_uid not in rules_by_uid:
-            rules_by_uid[service_uid] = []
-        rules_by_uid[service_uid].append(rule)
+        rules_by_uid.setdefault(service_uid, []).append(rule)
 
     specific_candidates = []
     general_candidates = []
@@ -113,15 +114,12 @@ def get_default_retention_period(sample):
         result = analysis.getResult()
         for rule in matching_rules:
             rule_result = rule.get("result", "")
-            retention_days = rule.get("retention_days", "0")
-            try:
-                days = int(retention_days)
-            except (ValueError, TypeError):
-                continue
+            retention_days = rule.get("retention_days")
+            retention_days = api.to_int(retention_days)
             if rule_result and rule_result == result:
-                specific_candidates.append(days)
+                specific_candidates.append(retention_days)
             elif not rule_result:
-                general_candidates.append(days)
+                general_candidates.append(retention_days)
 
     if specific_candidates:
         return max(specific_candidates)
