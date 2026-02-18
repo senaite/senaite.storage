@@ -517,3 +517,15 @@ def setup_storage_roles_and_groups(tool):
         ob._p_deactivate()  # noqa
 
     logger.info("Setup storage-specific roles and groups [DONE]")
+
+
+def setup_retention_period_rules(tool):
+    """Register retention period rules field in the registry
+    """
+    logger.info("Setup retention period rules ...")
+
+    portal = tool.aq_inner.aq_parent
+    setup = portal.portal_setup  # noqa
+    setup.runImportStepFromProfile(profile, "plone.app.registry")
+
+    logger.info("Setup retention period rules [DONE]")
