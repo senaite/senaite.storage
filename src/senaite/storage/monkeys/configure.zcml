@@ -24,4 +24,18 @@
     ignoreOriginal="True"
     replacement=".content.analysisrequest.getSamplesContainerURL" />
 
+  <monkey:patch
+    description="The retention period for stored sample"
+    class="bika.lims.content.analysisrequest.AnalysisRequest"
+    original="getStorageRetentionPeriod"
+    ignoreOriginal="True"
+    replacement=".content.analysisrequest.getStorageRetentionPeriod" />
+
+  <monkey:patch
+    description="Set the retention period for stored sample"
+    class="bika.lims.content.analysisrequest.AnalysisRequest"
+    original="setStorageRetentionPeriod"
+    ignoreOriginal="True"
+    replacement=".content.analysisrequest.setStorageRetentionPeriod" />
+
 </configure>

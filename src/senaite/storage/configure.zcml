@@ -18,7 +18,9 @@
 
   <!-- Package includes -->
   <include package=".adapters"/>
+  <include package=".archetypes"/>
   <include package=".browser"/>
+  <include package=".content"/>
   <include package=".indexers"/>
   <include package=".monkeys"/>
   <include package=".subscribers"/>
