@@ -112,10 +112,14 @@ def get_default_retention_period(sample):
         service_uid = analysis.getServiceUID()
         matching_rules = rules_by_uid.get(service_uid, [])
         result = analysis.getResult()
+        # Multiselect/multichoice results are stored as JSON arrays.
+        # api.to_list parses JSON strings and wraps scalars in a list,
+        # so we can always use `in` for matching.
+        result_values = api.to_list(result)
         for rule in matching_rules:
             rule_result = rule.get("result", "")
             retention_days = rule.get("retention_days", 0)
-            if rule_result and rule_result == result:
+            if rule_result and rule_result in result_values:
                 specific_candidates.append(retention_days)
             elif not rule_result:
                 general_candidates.append(retention_days)

@@ -95,7 +95,7 @@ class IRetentionRule(Interface):
     )
 
 
-class IStorageControlPanel(Interface):
+class IStorageControlPanel(model.Schema):
     """Control panel Settings for senaite.storage
     """
 

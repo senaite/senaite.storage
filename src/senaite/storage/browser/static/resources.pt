@@ -1,1 +1,1 @@
-<script tal:attributes="src string:${view/site_url}//++plone++senaite.storage.static/bundles/senaite.storage.ffbb7849be73108ccb2d.js"></script><link href="#" rel="stylesheet" tal:attributes="href string:${view/site_url}//++plone++senaite.storage.static/bundles/senaite.storage.css"/>
+<script tal:attributes="src string:${view/site_url}//++plone++senaite.storage.static/bundles/senaite.storage.b6aedfddf72a5e938a6f.js"></script><link href="#" rel="stylesheet" tal:attributes="href string:${view/site_url}//++plone++senaite.storage.static/bundles/senaite.storage.css"/>
