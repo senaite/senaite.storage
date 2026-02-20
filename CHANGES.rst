@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #62 Add configurable storage retention period
 - #61 Added StorageManager and StorageAssistant roles and counterpart groups
 - #60 Fix sample search when assigning received samples to storage container
 - #59 Fix AttributeError when migrating facilities to DX (2701)

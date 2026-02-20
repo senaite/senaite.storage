@@ -20,7 +20,7 @@
 
 from bika.lims import api
 from bika.lims import workflow as wf
-from senaite.storage import api as _api
+from senaite.storage import api as sapi
 from senaite.storage import check_installed
 
 
@@ -35,7 +35,7 @@ def getDateStored(self):
 def getSamplesContainer(self):
     """Returns the samples container the sample is located in
     """
-    return _api.get_storage_sample(self)
+    return sapi.get_storage_sample(self)
 
 
 @check_installed(None)
@@ -52,3 +52,26 @@ def getSamplesContainerURL(self):
     """
     container = getSamplesContainer(self)
     return container and api.get_url(container) or ""
+
+
+@check_installed(None)
+def getStorageExpiryDate(self):
+    """Returns the date when storage retention expires
+    """
+    field = self.getField("StorageExpiryDate")
+    return field.get(self)
+
+
+@check_installed(None)
+def setStorageExpiryDate(self, value):
+    """Sets the storage retention expiry date
+    """
+    field = self.getField("StorageExpiryDate")
+    field.set(self, value)
+
+
+@check_installed(None)
+def getDefaultStorageRetentionPeriod(self):
+    """Returns the default retention period (days) computed from rules
+    """
+    return sapi.get_default_retention_period(self)

@@ -3,6 +3,16 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="Setup retention period rules"
+      description="
+        Register retention period rules field in the registry for
+        configurable default sample retention periods."
+      source="2706"
+      destination="2707"
+      handler=".v02_07_000.setup_retention_period_rules"
+      profile="senaite.storage:default"/>
+
+  <genericsetup:upgradeStep
       title="Setup new storage-specific groups and roles"
       description="
         This upgrade step creates the roles 'Storage Manager' and 'Storage

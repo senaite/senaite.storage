@@ -24,4 +24,25 @@
     ignoreOriginal="True"
     replacement=".content.analysisrequest.getSamplesContainerURL" />
 
+  <monkey:patch
+    description="The storage retention expiry date"
+    class="bika.lims.content.analysisrequest.AnalysisRequest"
+    original="getStorageExpiryDate"
+    ignoreOriginal="True"
+    replacement=".content.analysisrequest.getStorageExpiryDate" />
+
+  <monkey:patch
+    description="Set the storage retention expiry date"
+    class="bika.lims.content.analysisrequest.AnalysisRequest"
+    original="setStorageExpiryDate"
+    ignoreOriginal="True"
+    replacement=".content.analysisrequest.setStorageExpiryDate" />
+
+  <monkey:patch
+    description="Default retention period computed from rules"
+    class="bika.lims.content.analysisrequest.AnalysisRequest"
+    original="getDefaultStorageRetentionPeriod"
+    ignoreOriginal="True"
+    replacement=".content.analysisrequest.getDefaultStorageRetentionPeriod" />
+
 </configure>

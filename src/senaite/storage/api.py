@@ -21,6 +21,7 @@
 from bika.lims import api
 from senaite.storage import logger
 from senaite.storage.catalog import STORAGE_CATALOG
+from senaite.storage.config import PRODUCT_NAME
 from senaite.storage.config import STORAGE_WORKFLOW_ID
 
 
@@ -60,6 +61,70 @@ def get_storage_workflow():
     """
     wf_tool = api.get_tool("portal_workflow")
     return wf_tool.getWorkflowByd(STORAGE_WORKFLOW_ID)
+
+
+def get_retention_rules():
+    """Return the list of retention period rules from the registry
+
+    Each rule is a dict with keys:
+    - service: UID of the AnalysisService
+    - result: expected result value (empty string means any result)
+    - retention_days: number of days for retention
+    """
+    key = "{}.retention_period_rules".format(PRODUCT_NAME)
+    rules = api.get_registry_record(key, default=None)
+    if not rules:
+        return []
+    return list(rules)
+
+
+def get_default_retention_period(sample):
+    """Return the default retention period (days) for a sample
+
+    Matching logic:
+    1. Get all analyses of the sample
+    2. For each analysis, check rules for matching service UID
+    3. If rule has a result specified, also match by result value
+    4. Specific rules (with result) take priority over general rules
+    5. If multiple rules match, use the longest retention period
+    6. Return None if no rule matches
+    """
+    rules = get_retention_rules()
+    if not rules:
+        return None
+
+    # Group the list of rules by service uid
+    rules_by_uid = {}
+    for rule in rules:
+        service_uid = rule.get("service", "")
+        # UIDReferenceField stores values as lists
+        if isinstance(service_uid, (list, tuple)):
+            service_uid = service_uid[0] if service_uid else ""
+        if not service_uid:
+            continue
+        rules_by_uid.setdefault(service_uid, []).append(rule)
+
+    specific_candidates = []
+    general_candidates = []
+
+    analyses = sample.getAnalyses(full_objects=True)
+    for analysis in analyses:
+        service_uid = analysis.getServiceUID()
+        matching_rules = rules_by_uid.get(service_uid, [])
+        result = analysis.getResult()
+        for rule in matching_rules:
+            rule_result = rule.get("result", "")
+            retention_days = rule.get("retention_days", 0)
+            if rule_result and rule_result == result:
+                specific_candidates.append(retention_days)
+            elif not rule_result:
+                general_candidates.append(retention_days)
+
+    if specific_candidates:
+        return max(specific_candidates)
+    elif general_candidates:
+        return max(general_candidates)
+    return None
 
 
 def get_parents(obj, parents=None, predicate=None):

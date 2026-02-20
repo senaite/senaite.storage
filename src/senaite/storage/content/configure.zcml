@@ -1,0 +1,11 @@
+<configure xmlns="http://namespaces.zope.org/zope">
+
+  <include package="archetypes.schemaextender" />
+
+  <!-- AnalysisRequest schema extender -->
+  <adapter
+      name="senaite.storage.analysisrequest.schemaextender"
+      factory=".analysisrequest.AnalysisRequestSchemaExtender"
+      provides="archetypes.schemaextender.interfaces.ISchemaExtender" />
+
+</configure>

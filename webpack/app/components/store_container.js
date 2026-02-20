@@ -8,6 +8,9 @@ StoreContainerController = class StoreContainerController {
     this.bind_eventhandler = this.bind_eventhandler.bind(this);
     this.on_position_change = this.on_position_change.bind(this);
     this.on_position_slot_click = this.on_position_slot_click.bind(this);
+    this.on_sample_select = this.on_sample_select.bind(this);
+    this.fetch_default_retention_period = this.fetch_default_retention_period.bind(this);
+    this.get_portal_url = this.get_portal_url.bind(this);
     this.debug = this.debug.bind(this);
     console.debug("StoreContainerController::init");
     // bind the event handler to the elements
@@ -19,7 +22,9 @@ StoreContainerController = class StoreContainerController {
   bind_eventhandler() {
     this.debug("StoreContainerController::bind_eventhandler");
     $("body").on("click", "a.position_slot_selector", this.on_position_slot_click);
-    return $("body").on("change", "#position", this.on_position_change);
+    $("body").on("change", "#position", this.on_position_change);
+    $("body").on("select", ".senaite-uidreference-widget-input textarea", this.on_sample_select);
+    return $("body").on("deselect", ".senaite-uidreference-widget-input textarea", this.on_sample_select);
   }
 
   on_position_change(event) {
@@ -49,6 +54,58 @@ StoreContainerController = class StoreContainerController {
     if (sample_uid) {
       return $("#button_store").click();
     }
+  }
+
+  on_sample_select(event) {
+    /*
+     * When a sample is selected, fetch the default retention period
+     * and populate the retention period input field
+     */
+    this.debug("StoreContainerController::on_sample_select");
+    var sample_uid = event.detail ? event.detail.value : "";
+    if (sample_uid) {
+      this.fetch_default_retention_period(sample_uid);
+    } else {
+      $("#retention_period").val("");
+    }
+  }
+
+  fetch_default_retention_period(sample_uid) {
+    /*
+     * Fetch the default retention period for a sample via the JSON API
+     */
+    var method_name = "getDefaultStorageRetentionPeriod";
+    this.debug("StoreContainerController::fetch_default_retention_period:sample_uid=" + sample_uid);
+    $.ajax({
+      url: this.get_portal_url() + "/@@API/read",
+      type: "POST",
+      context: this,
+      dataType: "json",
+      data: {
+        catalog_name: "uid_catalog",
+        UID: sample_uid,
+        include_fields: [],
+        include_methods: [method_name],
+      }
+    }).done(function(data) {
+      var days = data.objects[0][method_name];
+      if (days !== null && days !== undefined) {
+        $("#retention_period").val(days);
+      } else {
+        $("#retention_period").val("");
+      }
+    }).fail(function() {
+      console.warn("Failed to get default retention period");
+    });
+  }
+
+  get_portal_url() {
+    /*
+     * Return the portal url (calculated in code)
+     */
+    var url;
+    url = $("input[name=portal_url]").val();
+    return url || window.portal_url;
   }
 
   debug(message) {

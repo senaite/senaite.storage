@@ -69,6 +69,17 @@
               </div>
             </div>
 
+            <!-- Retention Period -->
+            <div class="mr-2">
+              <div class="input-group input-group-sm">
+                <div class="input-group-prepend">
+                  <div i18n:translate="" class="input-group-text">Retention (days)</div>
+                </div>
+                <input type="number" name="retention_period" id="retention_period"
+                       class="form-control" min="0" style="max-width:100px;"/>
+              </div>
+            </div>
+
             <!-- Buttons -->
             <div class="mr-2">
               <!-- Store samples -->

@@ -87,6 +87,10 @@ def after_recover(sample):
     """
     # remove the sample from the container
     _api.remove_sample_from_container(sample)
+
+    # clear the storage expiry date
+    sample.setStorageExpiryDate(None)
+
     # Transition the sample to the state before it was stored
     previous_state = api.get_previous_worfklow_status_of(
         sample, skip=("stored", ), default="sample_due")

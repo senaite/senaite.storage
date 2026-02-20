@@ -23,6 +23,7 @@ import collections
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _s
 from senaite.app.listing.view import ListingView
+from senaite.core.api import dtime
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.storage import senaiteMessageFactory as _
 from senaite.storage.permissions import TransitionAddSamples
@@ -74,6 +75,9 @@ class SampleListingView(ListingView):
                 "toggle": True}),
             ("getDateReceived", {
                 "title": _s("Date Received"),
+                "toggle": True}),
+            ("getStorageExpiryDate", {
+                "title": _("Storage Expiry Date"),
                 "toggle": True}),
             ("Client", {
                 "title": _s("Client"),
@@ -139,15 +143,28 @@ class SampleListingView(ListingView):
         """Applies new properties to item that is currently being rendered as a
         row in the list
         """
-        received = obj.getDateReceived
-        sampled = obj.getDateSampled
+        obj = api.get_object(obj)
+        received = obj.getDateReceived()
+        sampled = obj.getDateSampled()
         item["getDateReceived"] = self.ulocalized_time(received, long_format=1)
         item["getDateSampled"] = self.ulocalized_time(sampled, long_format=1)
-        position = self.context.get_object_position(api.get_uid(obj))
+        position = self.context.get_object_position(obj)
         item["position"] = self.context.position_to_alpha(
             position[0], position[1])
         prev_state = api.get_previous_worfklow_status_of(obj, skip=("stored",))
         if prev_state:
             item["PreviousState"] = self.translate_review_state(
                 prev_state, api.get_portal_type(obj))
+
+        # storage expiry date
+        column = "getStorageExpiryDate"
+        expiry_date = obj.getStorageExpiryDate()
+        item[column] = self.ulocalized_time(expiry_date)
+
+        # display in red if retention expired
+        if expiry_date <= dtime.DateTime():
+            expiry = self.ulocalized_time(expiry_date)
+            span = "<span class='text-danger'>%s</span>" % expiry
+            item["replace"][column] = span
+
         return item
