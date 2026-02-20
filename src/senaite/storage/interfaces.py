@@ -22,6 +22,8 @@ from bika.lims.interfaces import IBikaLIMS
 from senaite.core.interfaces import ISenaiteCatalogObject
 from senaite.lims.interfaces import ISenaiteLIMS
 from zope.interface import Interface
+
+
 class ISenaiteStorageLayer(IBikaLIMS, ISenaiteLIMS):
     """Zope 3 browser Layer interface specific for senaite.storage
     This interface is referred in profiles/default/browserlayer.xml.
