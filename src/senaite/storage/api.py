@@ -97,9 +97,6 @@ def get_default_retention_period(sample):
     rules_by_uid = {}
     for rule in rules:
         service_uid = rule.get("service", "")
-        # UIDReferenceField stores values as lists
-        if isinstance(service_uid, (list, tuple)):
-            service_uid = service_uid[0] if service_uid else ""
         if not service_uid:
             continue
         rules_by_uid.setdefault(service_uid, []).append(rule)

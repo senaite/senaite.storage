@@ -104,7 +104,7 @@ Add a general rule for Copper (any result, 30 days):
 
     >>> Cu_uid = api.get_uid(Cu)
     >>> set_retention_rules([
-    ...     {"service": [Cu_uid], "result": u"", "retention_days": 30},
+    ...     {"service": Cu_uid, "result": u"", "retention_days": 30},
     ... ])
 
 Verify the rule is stored:
@@ -112,7 +112,7 @@ Verify the rule is stored:
     >>> rules = storage_api.get_retention_rules()
     >>> len(rules)
     1
-    >>> rules[0]["service"] == [Cu_uid]
+    >>> rules[0]["service"] == Cu_uid
     True
     >>> rules[0]["retention_days"]
     30
@@ -136,8 +136,8 @@ Add a second general rule for Iron with a longer period:
 
     >>> Fe_uid = api.get_uid(Fe)
     >>> set_retention_rules([
-    ...     {"service": [Cu_uid], "result": u"", "retention_days": 30},
-    ...     {"service": [Fe_uid], "result": u"", "retention_days": 60},
+    ...     {"service": Cu_uid, "result": u"", "retention_days": 30},
+    ...     {"service": Fe_uid, "result": u"", "retention_days": 60},
     ... ])
 
 When multiple general rules match, the longest retention period wins:
@@ -161,9 +161,9 @@ Add a specific rule for Copper with result "10" (90 days) alongside the
 general rules:
 
     >>> set_retention_rules([
-    ...     {"service": [Cu_uid], "result": u"", "retention_days": 30},
-    ...     {"service": [Fe_uid], "result": u"", "retention_days": 60},
-    ...     {"service": [Cu_uid], "result": u"10", "retention_days": 90},
+    ...     {"service": Cu_uid, "result": u"", "retention_days": 30},
+    ...     {"service": Fe_uid, "result": u"", "retention_days": 60},
+    ...     {"service": Cu_uid, "result": u"10", "retention_days": 90},
     ... ])
 
 Without any results submitted, only general rules match:
@@ -203,8 +203,8 @@ Multiple specific rules
 When multiple specific rules match, the longest retention period wins:
 
     >>> set_retention_rules([
-    ...     {"service": [Cu_uid], "result": u"10", "retention_days": 90},
-    ...     {"service": [Fe_uid], "result": u"20", "retention_days": 120},
+    ...     {"service": Cu_uid, "result": u"10", "retention_days": 90},
+    ...     {"service": Fe_uid, "result": u"20", "retention_days": 120},
     ... ])
 
     >>> cu_analysis.setResult("10")
@@ -254,7 +254,7 @@ Create a sample that includes the multiselect service:
 Configure a specific rule for the ``Positive`` result (value ``"1"``):
 
     >>> set_retention_rules([
-    ...     {"service": [Ms_uid], "result": u"1", "retention_days": 90},
+    ...     {"service": Ms_uid, "result": u"1", "retention_days": 90},
     ... ])
 
 With no result submitted the specific rule does not match:
@@ -303,7 +303,7 @@ Reset to a simple general rule for Copper and clear previous results:
     >>> cu_analysis.setResult("")
     >>> fe_analysis.setResult("")
     >>> set_retention_rules([
-    ...     {"service": [Cu_uid], "result": u"", "retention_days": 30},
+    ...     {"service": Cu_uid, "result": u"", "retention_days": 30},
     ... ])
 
 Before storing, the sample has no expiry date:
@@ -386,7 +386,7 @@ Rules can be changed between store/recover cycles. Store the sample again
 with a different retention period:
 
     >>> set_retention_rules([
-    ...     {"service": [Cu_uid], "result": u"", "retention_days": 7},
+    ...     {"service": Cu_uid, "result": u"", "retention_days": 7},
     ... ])
 
     >>> storage_api.get_default_retention_period(sample1)

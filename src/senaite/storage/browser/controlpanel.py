@@ -25,7 +25,6 @@ from plone.autoform import directives
 from plone.supermodel import model
 from plone.z3cform import layout
 from senaite.core.catalog import SETUP_CATALOG
-from senaite.core.schema.fields import DataGridField
 from senaite.core.schema.registry import DataGridRow
 from senaite.core.schema.vocabulary import to_simple_vocabulary
 from senaite.core.z3cform.widgets.datagrid import DataGridWidgetFactory
@@ -129,7 +128,7 @@ class IStorageControlPanel(model.Schema):
         DataGridWidgetFactory,
         allow_reorder=True,
         auto_append=True)
-    retention_period_rules = DataGridField(
+    retention_period_rules = schema.List(
         title=_(
             u"label_storage_settings_retention_period_rules",
             default=u"Retention period rules"
