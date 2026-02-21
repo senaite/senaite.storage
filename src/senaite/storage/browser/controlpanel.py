@@ -18,62 +18,49 @@
 # Copyright 2019-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims import senaiteMessageFactory as _s
+from bika.lims import api
 from plone.app.registry.browser.controlpanel import ControlPanelFormWrapper
 from plone.app.registry.browser.controlpanel import RegistryEditForm
 from plone.autoform import directives
 from plone.supermodel import model
 from plone.z3cform import layout
 from senaite.core.catalog import SETUP_CATALOG
-from senaite.core.schema import UIDReferenceField
 from senaite.core.schema.registry import DataGridRow
+from senaite.core.schema.vocabulary import to_simple_vocabulary
 from senaite.core.z3cform.widgets.datagrid import DataGridWidgetFactory
-from senaite.core.z3cform.widgets.uidreference import UIDReferenceWidget
 from senaite.storage import _
 from zope import schema
 from zope.interface import Interface
+from zope.interface import provider
+from zope.schema.interfaces import IContextSourceBinder
 
 
-class ControlPanelUIDReferenceWidget(UIDReferenceWidget):
-    """UIDReferenceWidget for use in control panel DataGrid rows.
-
-    Overrides get_context to return the form context directly, avoiding
-    the creation of a temporary object which fails for AT types when the
-    form context is the Plone site root.
+@provider(IContextSourceBinder)
+def services_vocabulary(context):
+    """Returns a SimpleVocabulary made of the active AnalysisService objects
     """
-
-    def get_context(self):
-        form = self.get_form()
-        return getattr(form, "context", None)
+    catalog = api.get_tool(SETUP_CATALOG)
+    query = {
+        "portal_type": "AnalysisService",
+        "is_active": True,
+        "sort_on": "sortable_title",
+        "sort_order": "ascending",
+    }
+    brains = catalog(query)
+    items = [(api.get_uid(br), api.get_title(br)) for br in brains]
+    return to_simple_vocabulary(items)
 
 
 class IRetentionRule(Interface):
     """Schema for a single retention period rule row
     """
 
-    directives.widget(
-        "service",
-        ControlPanelUIDReferenceWidget,
-        catalog=SETUP_CATALOG,
-        query={
-            "portal_type": ["AnalysisService"],
-            "is_active": True,
-            "sort_on": "sortable_title",
-            "sort_order": "ascending",
-        },
-        columns=[
-            {"name": "Title", "label": _s("Title")},
-            {"name": "getKeyword", "label": _s("Keyword")},
-            {"name": "getCategoryTitle", "label": _s("Category")},
-        ],
-    )
-    service = UIDReferenceField(
+    service = schema.Choice(
         title=_(u"Analysis Service"),
         description=_(
             u"The Analysis Service for this rule"
         ),
-        allowed_types=("AnalysisService",),
-        multi_valued=False,
+        source=services_vocabulary,
         required=True,
     )
 
@@ -95,7 +82,7 @@ class IRetentionRule(Interface):
     )
 
 
-class IStorageControlPanel(Interface):
+class IStorageControlPanel(model.Schema):
     """Control panel Settings for senaite.storage
     """
 

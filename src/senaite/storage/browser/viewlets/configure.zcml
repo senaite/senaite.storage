@@ -12,19 +12,10 @@
       permission="zope2.View"
       layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
 
-  <!-- JS Viewlet Manager -->
-  <browser:viewletManager
-      name="senaite.storage.js"
-      provides="senaite.storage.interfaces.IStorageJS"
-      permission="zope2.View"
-      class="plone.app.viewletmanager.manager.OrderedViewletManager"
-      layer="senaite.storage.interfaces.ISenaiteStorageLayer"
-      />
-
   <!-- Static Resources Viewlet -->
   <browser:viewlet
       name="senaite.storage.static"
-      manager="senaite.storage.interfaces.IStorageJS"
+      manager="plone.app.layout.viewlets.interfaces.IHtmlHead"
       class="senaite.core.browser.viewlets.resources.ResourcesViewlet"
       permission="zope2.View"
       template="../static/resources.pt"
