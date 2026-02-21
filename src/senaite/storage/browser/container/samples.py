@@ -156,6 +156,7 @@ class SampleListingView(ListingView):
             item["PreviousState"] = self.translate_review_state(
                 prev_state, api.get_portal_type(obj))
 
+        return item
         # storage expiry date
         column = "getStorageExpiryDate"
         expiry_date = obj.getStorageExpiryDate()
