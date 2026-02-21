@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #63 Result type-specific controls in retention rules settings
+- #64 Add 'Storage Expiry Date' column in samples listing, under 'Stored'
 - #62 Add configurable storage retention period
 - #61 Added StorageManager and StorageAssistant roles and counterpart groups
 - #60 Fix sample search when assigning received samples to storage container
