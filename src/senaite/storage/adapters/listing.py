@@ -26,6 +26,7 @@ from senaite.storage import is_installed
 from senaite.storage import senaiteMessageFactory as _
 from zope.component import adapts
 from zope.interface import implementer
+from senaite.core.api import dtime
 
 
 @implementer(IListingViewAdapter)
@@ -117,27 +118,43 @@ class AnalysisRequestsListingViewAdapter(object):
                              column_values, after="getDateStored",
                              review_states=("stored", ))
 
+        # Add expiry date column
+        utils.add_column(
+            self.listing,
+            column_id="getStorageExpiryDate",
+            column_values=dict(
+                title=_("Storage Expiry Date"),
+                toggle=True,
+            ),
+            after="getDateStored",
+            review_states=("stored", )
+        )
+
     def folder_item(self, obj, item, index):
         # Return immediately when add-on is not installed
         if not self.installed:
             return item
 
-        # Ingore partitions and add column
-        if self.is_stored_state():
-            # Show the date time when the sample was stored
-            item["getDateStored"] = self.str_time(obj.getDateStored)
+        # Return immediately if sample is not stored
+        if not self.is_stored_state():
+            return item
 
-        # Display all samples in "flat style"
-        if self.flat_listing:
-            item["parent"] = ""
-            item["children"] = []
+        # date time when the sample was stored
+        stored_date = dtime.to_localized_time(obj.getDateStored, long_format=1)
+        item["getDateStored"] = stored_date
+
+        # date when the retention period expires
+        obj = api.get_object(obj)
+        expiry_date = obj.getStorageExpiryDate()
+        item["getStorageExpiryDate"] = dtime.to_localized_time(expiry_date)
+
+        # display in red if retention expired
+        if expiry_date <= dtime.DateTime():
+            expiry = dtime.to_localized_time(expiry_date)
+            span = "<span class='text-danger'>%s</span>" % expiry
+            item["replace"]["getStorageExpiryDate"] = span
 
         return item
-
-    def str_time(self, date_time, long_format=1):
-        """Returns a string representation of localized DateTime
-        """
-        return self.listing.ulocalized_time(date_time, long_format=long_format)
 
     def is_stored_state(self):
         """Returns whether the current review state of the listing is "stored"
