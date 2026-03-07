@@ -61,6 +61,7 @@ ADD_COLUMNS = (
             u"listing_samples_column_storage_expiry_date",
             default=u"Storage expiry date"
         ),
+        "index": "getStorageExpiryDate",
         "toggle": True,
         "after": "getDateStored",
         "review_states": ("stored", "past_retention"),
@@ -112,7 +113,7 @@ ADD_REVIEW_STATES = (
         ),
         "contentFilter": {
             "review_state": ("stored",),
-            "sort_on": "getDateStored",
+            "sort_on": "getStorageExpiryDate",
             "sort_order": "descending",
         },
         "transitions": [],
@@ -153,6 +154,17 @@ class AnalysisRequestsListingViewAdapter(object):
         if self.is_stored_state():
             self.flat_listing = True
             self.listing.contentFilter.pop("isRootAncestor", None)
+
+        # Update the contentFilter of the "past_retention" filter, so only
+        # stored samples whose retention period has passed are displayed
+        for rv in self.listing.review_states:
+            if rv.get("id") == "past_retention":
+                rv["contentFilter"].update({
+                    "getStorageExpiryDate": {
+                        "query": dtime.DateTime(),
+                        "range": "max",
+                    }
+                })
 
     def add_review_state(self, state_info):
         """Adds the review state with the provided information

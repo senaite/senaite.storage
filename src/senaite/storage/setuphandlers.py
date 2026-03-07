@@ -86,6 +86,7 @@ CATALOG_MAPPINGS = [
 INDEXES = [
     # Index used in ARs view to sort items by date stored by default
     (SAMPLE_CATALOG, "getDateStored", "", "DateIndex"),
+    (SAMPLE_CATALOG, "getStorageExpiryDate", "", "DateIndex"),
 ]
 
 # Tuples of (catalog, column name)

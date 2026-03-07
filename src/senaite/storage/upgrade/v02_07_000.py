@@ -25,6 +25,7 @@ from plone.dexterity.utils import createContent
 from senaite.core.api import workflow as wapi
 from senaite.core.interfaces import IContentMigrator
 from senaite.core.schema.addressfield import PHYSICAL_ADDRESS
+from senaite.core.setuphandlers import add_catalog_index
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.workflow import SAMPLE_WORKFLOW
@@ -529,3 +530,29 @@ def setup_retention_period_rules(tool):
     setup.runImportStepFromProfile(profile, "plone.app.registry")
 
     logger.info("Setup retention period rules [DONE]")
+
+
+def setup_past_retention_filter(tool):
+    """Adds a DateIndex in samples catalog ('getStorageExpiryDate') to allow
+    date range searches by retention period expiry date
+    """
+    logger.info("Setup past retention filter ...")
+    portal = tool.aq_inner.aq_parent
+
+    # Add the index (without reindex)
+    cat = api.get_tool(SAMPLE_CATALOG)
+    idx_id = "getStorageExpiryDate"
+    add_catalog_index(cat, idx_id, "", "DateIndex")
+
+    # reindex this index only for samples in stored status
+    brains = cat(review_state="stored")
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Processed objects: {0}/{1}".format(num, total))
+
+        obj = api.get_object(brain)
+        obj.reindexObject(idxs=[idx_id])
+        obj._p_deactivate()
+
+    logger.info("Setup past retention filter [DONE]")
