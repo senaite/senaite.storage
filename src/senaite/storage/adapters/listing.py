@@ -59,7 +59,7 @@ ADD_COLUMNS = (
         "id": "getStorageExpiryDate",
         "title": _(
             u"listing_samples_column_storage_expiry_date",
-            default=u"Storage expiry date"
+            default=u"Retain Until"
         ),
         "index": "getStorageExpiryDate",
         "toggle": True,
