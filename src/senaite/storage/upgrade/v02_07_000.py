@@ -550,6 +550,7 @@ def setup_past_retention_filter(tool):
     for num, brain in enumerate(brains):
         if num and num % 100 == 0:
             logger.info("Processed objects: {0}/{1}".format(num, total))
+            transaction.savepoint()
 
         obj = api.get_object(brain)
         obj.reindexObject(idxs=[idx_id])
