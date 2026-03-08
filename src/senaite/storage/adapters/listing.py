@@ -28,6 +28,7 @@ from senaite.app.listing.interfaces import IListingViewAdapter
 from senaite.core.api import dtime
 from senaite.storage import is_installed
 from senaite.storage import senaiteMessageFactory as _
+from senaite.storage import api as sapi
 from zope.component import adapter
 from zope.interface import implementer
 
@@ -130,11 +131,24 @@ class AnalysisRequestsListingViewAdapter(object):
     # Order of priority of this subscriber adapter over others
     priority_order = 10
 
+    # number of days before a sample's retention period ends when it should be
+    # marked as approaching expiration
+    _warning_days = None
+
     def __init__(self, listing, context):
         self.listing = listing
         self.context = context
         self.installed = is_installed()
         self.flat_listing = False
+
+    @property
+    def warning_days_before_expiration(self):
+        """Returns the number of days before a sample's retention period ends
+        when it should be marked as approaching expiration
+        """
+        if self._warning_days is None:
+            self._warning_days = sapi.get_warning_days_before_expiration()
+        return self._warning_days
 
     def before_render(self):
         # Return immediately if not installed
@@ -230,14 +244,18 @@ class AnalysisRequestsListingViewAdapter(object):
 
         # date when the retention period expires
         obj = api.get_object(obj)
+        column = "getStorageExpiryDate"
         expiry_date = obj.getStorageExpiryDate()
-        item["getStorageExpiryDate"] = dtime.to_localized_time(expiry_date)
+        expiry_str = dtime.to_localized_time(expiry_date)
+        item[column] = expiry_str
 
-        # display in red if retention expired
-        if expiry_date <= dtime.DateTime():
-            expiry = dtime.to_localized_time(expiry_date)
-            span = "<span class='text-danger'>%s</span>" % expiry
-            item["replace"]["getStorageExpiryDate"] = span
+        # visual indicators if retention expired or approaching expiration
+        warn_days = self.warning_days_before_expiration
+        span = "<span class='font-weight-bold %s'>%s</span>"
+        if sapi.is_retention_expired(obj):
+            item["replace"][column] = span % ("text-danger", expiry_str)
+        elif sapi.is_retention_approaching_expiration(obj, warn_days):
+            item["replace"][column] = span % ("text-warning", expiry_str)
 
         return item
 

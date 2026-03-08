@@ -151,7 +151,7 @@
                         </div>
                       </td>
                       <td tal:condition="python: item and True or False"
-                          class="non-empty-slot">
+                          tal:attributes="class python: info.get('css','non-empty-slot')">
                         <!-- sample title -->
                         <a href="#"
                            tal:attributes="href info/url">

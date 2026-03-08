@@ -123,6 +123,21 @@ class IStorageControlPanel(model.Schema):
         default=True,
     )
 
+    warning_days_before_expiration = schema.Int(
+        title=_(
+            u"label_storage_settings_warning_days_expiration",
+            default=u"Days before expiration"
+        ),
+        description=_(
+            u"description_storage_settings_warning_days_expiration",
+            default=u"Enter the number of days before a sample's retention "
+                    u"period ends when it should be marked as approaching "
+                    u"expiration. Samples within this threshold will display "
+                    u"a visual indicator to help you quickly identify them."
+        ),
+        default=5,
+    )
+
     directives.widget(
         "retention_period_rules",
         DataGridWidgetFactory,

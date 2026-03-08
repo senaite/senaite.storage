@@ -3,6 +3,18 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="Add 'Days before expiration' setting"
+      description="
+        This setting stores the number of days before a sample's retention
+        period ends when it should be marked as approaching expiration.
+        Samples within this threshold will display a visual indicator to help
+        lab personnel to quickly identify them."
+      source="2708"
+      destination="2709"
+      handler=".v02_07_000.setup_days_before_expiration"
+      profile="senaite.storage:default"/>
+
+  <genericsetup:upgradeStep
       title="Add 'Past Retention' filter in samples listing"
       description="
         Adds a 'Past Retention' filter in samples listing and a DateIndex in

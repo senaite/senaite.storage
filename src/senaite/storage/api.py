@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
+from senaite.core.api import dtime
 from senaite.storage import logger
 from senaite.storage.catalog import STORAGE_CATALOG
 from senaite.storage.config import PRODUCT_NAME
@@ -140,3 +141,34 @@ def get_parents(obj, parents=None, predicate=None):
     if predicate(parent):
         return parents
     return get_parents(parent, parents=parents, predicate=predicate)
+
+
+def get_warning_days_before_expiration():
+    """Returns the number of days before a sample's retention period ends
+    when it should be marked as approaching expiration
+    """
+    key = "{}.warning_days_before_expiration".format(PRODUCT_NAME)
+    days =  api.get_registry_record(key)
+    return api.to_int(days, default=5)
+
+
+def is_retention_expired(sample, on_date=None):
+    """Returns whether the storage retention period of this sample is expired
+    on the given date. If the on_date is None, uses current date
+    """
+    expiry_date = sample.getStorageExpiryDate()
+    if not expiry_date:
+        return None
+    if not on_date:
+        on_date = dtime.DateTime()
+    return expiry_date <= on_date
+
+
+def is_retention_approaching_expiration(sample, days=None):
+    """Returns whether the storage retention period of this sample is
+    approaching expiration
+    """
+    if days is None:
+        days = get_warning_days_before_expiration()
+    on_date = dtime.DateTime() + days
+    return is_retention_expired(sample, on_date)

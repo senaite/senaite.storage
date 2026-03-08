@@ -557,3 +557,15 @@ def setup_past_retention_filter(tool):
         obj._p_deactivate()
 
     logger.info("Setup past retention filter [DONE]")
+
+
+def setup_days_before_expiration(tool):
+    """Add 'Days before expiration' setting in control panel
+    """
+    logger.info("Setup days before expiration ...")
+
+    portal = tool.aq_inner.aq_parent
+    setup = portal.portal_setup  # noqa
+    setup.runImportStepFromProfile(profile, "plone.app.registry")
+
+    logger.info("Setup days before expiration [DONE]")
