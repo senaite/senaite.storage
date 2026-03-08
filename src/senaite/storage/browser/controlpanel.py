@@ -91,6 +91,7 @@ class IStorageControlPanel(model.Schema):
         label=_(u"Retention Rules"),
         description=_(u""),
         fields=[
+            "warning_days_before_expiration",
             "retention_period_rules",
         ],
     )
