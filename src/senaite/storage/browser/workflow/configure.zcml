@@ -14,6 +14,17 @@
     provides="bika.lims.interfaces.IWorkflowActionAdapter"
     permission="zope.Public" />
 
+  <!-- Analysis Requests: "recover" (retrieve)
+  Redirects to the retrieve reasons form when retrieve reasons are configured
+  in the control panel. Otherwise, proceeds with default transition. -->
+  <adapter
+    name="workflow_action_recover"
+    for="*
+         zope.publisher.interfaces.browser.IBrowserRequest"
+    factory=".analysisrequest.WorkflowActionRecoverAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="zope.Public" />
+
   <!-- Workflow action "add_samples" -->
   <adapter
     name="workflow_action_add_samples"

@@ -58,6 +58,9 @@ def before_dispatch(sample):
 def after_store(sample):
     """Event triggered after "store" transition takes place for a given sample
     """
+    # clear retrieve reason from previous store/retrieve cycle
+    sample.setRetrieveReason("")
+
     if not is_store_primary_enabled():
         return
 

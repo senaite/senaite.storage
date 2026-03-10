@@ -1,0 +1,23 @@
+<div tal:omit-tag=""
+     tal:condition="python: view.is_visible()"
+     i18n:domain="senaite.storage">
+
+  <div class="visualClear"></div>
+
+  <div id="portal-alert">
+    <div class="portlet-alert-item alert alert-info">
+      <p class="title mb-0">
+        <strong i18n:translate="">
+          Sample retrieved from storage on
+          <span i18n:name="retrieval_datetime"
+                tal:replace="python:view.get_recovery_date()"/>
+          by
+          <span i18n:name="retrieved_by"
+                tal:replace="python:view.get_recovered_by()"/>
+        </strong>
+      </p>
+      <p class="description mb-0"
+         tal:content="python:view.get_retrieve_reason()"/>
+    </div>
+  </div>
+</div>

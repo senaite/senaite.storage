@@ -1,0 +1,14 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="senaite.storage">
+
+  <!-- Retrieve samples view -->
+  <browser:page
+      for="*"
+      name="storage_retrieve_samples"
+      class=".retrieve_samples.RetrieveSamplesView"
+      permission="senaite.core.permissions.ManageAnalysisRequests"
+      layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
+
+</configure>

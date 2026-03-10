@@ -20,7 +20,9 @@
 
 from bika.lims import api
 from bika.lims.browser.workflow import RequestContextAware
+from bika.lims.browser.workflow import WorkflowActionGenericAdapter
 from bika.lims.interfaces import IWorkflowActionUIDsAdapter
+from senaite.storage import api as sapi
 from zope.interface import implementer
 
 
@@ -35,3 +37,20 @@ class WorkflowActionStoreAdapter(RequestContextAware):
         url = "{}/storage_store_samples?uids={}".format(
             api.get_url(self.context), ",".join(uids))
         return self.redirect(redirect_url=url)
+
+
+@implementer(IWorkflowActionUIDsAdapter)
+class WorkflowActionRecoverAdapter(WorkflowActionGenericAdapter):
+    """Adapter in charge of Analysis Requests 'recover' (retrieve) action
+    """
+
+    def __call__(self, action, uids):
+        reasons = sapi.get_retrieve_reasons()
+        if reasons:
+            # Redirect to the retrieve reasons form
+            url = "{}/storage_retrieve_samples?uids={}".format(
+                api.get_url(self.context), ",".join(uids))
+            return self.redirect(redirect_url=url)
+
+        # No reasons configured, fall back to the generic adapter
+        return super(WorkflowActionRecoverAdapter, self).__call__(action, uids)

@@ -45,4 +45,18 @@
     ignoreOriginal="True"
     replacement=".content.analysisrequest.getDefaultStorageRetentionPeriod" />
 
+  <monkey:patch
+    description="The reason why the sample was retrieved from storage"
+    class="bika.lims.content.analysisrequest.AnalysisRequest"
+    original="getRetrieveReason"
+    ignoreOriginal="True"
+    replacement=".content.analysisrequest.getRetrieveReason" />
+
+  <monkey:patch
+    description="Set the reason why the sample was retrieved from storage"
+    class="bika.lims.content.analysisrequest.AnalysisRequest"
+    original="setRetrieveReason"
+    ignoreOriginal="True"
+    replacement=".content.analysisrequest.setRetrieveReason" />
+
 </configure>

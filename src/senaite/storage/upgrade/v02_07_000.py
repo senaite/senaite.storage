@@ -571,6 +571,18 @@ def setup_days_before_expiration(tool):
     logger.info("Setup days before expiration [DONE]")
 
 
+def setup_retrieve_reasons(tool):
+    """Register retrieve reason fields in the registry
+    """
+    logger.info("Setup retrieve reasons ...")
+
+    portal = tool.aq_inner.aq_parent
+    setup = portal.portal_setup  # noqa
+    setup.runImportStepFromProfile(profile, "plone.app.registry")
+
+    logger.info("Setup retrieve reasons [DONE]")
+
+
 def rename_recover_to_retrieve(tool):
     """Renames the user-facing term 'recover' to 'retrieve', which aligns with
     ISO 17025 and ISO 15189 standard terminology for the process of taking

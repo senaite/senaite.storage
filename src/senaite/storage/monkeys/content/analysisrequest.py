@@ -75,3 +75,19 @@ def getDefaultStorageRetentionPeriod(self):
     """Returns the default retention period (days) computed from rules
     """
     return sapi.get_default_retention_period(self)
+
+
+@check_installed(None)
+def getRetrieveReason(self):
+    """Returns the reason why the sample was retrieved from storage
+    """
+    field = self.getField("RetrieveReason")
+    return field.get(self)
+
+
+@check_installed(None)
+def setRetrieveReason(self, value):
+    """Sets the reason why the sample was retrieved from storage
+    """
+    field = self.getField("RetrieveReason")
+    field.set(self, value)

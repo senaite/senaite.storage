@@ -12,6 +12,16 @@
       permission="zope2.View"
       layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
 
+  <!-- Retrieved sample viewlet: displays retrieve reason -->
+  <browser:viewlet
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="senaite.storage.retrieved_sample_viewlet"
+      class=".retrieved_sample.RetrievedSampleViewlet"
+      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+      template="templates/retrieved_sample.pt"
+      permission="zope2.View"
+      layer="senaite.storage.interfaces.ISenaiteStorageLayer" />
+
   <!-- Static Resources Viewlet -->
   <browser:viewlet
       name="senaite.storage.static"

@@ -20,6 +20,7 @@
 
 from archetypes.schemaextender.field import ExtensionField as ATExtensionField
 from Products.Archetypes.atapi import DateTimeField
+from Products.Archetypes.atapi import StringField
 
 
 class ExtensionField(ATExtensionField):
@@ -33,4 +34,9 @@ class ExtensionField(ATExtensionField):
 
 class ExtDateTimeField(ExtensionField, DateTimeField):
     """Field extender of DateTimeField
+    """
+
+
+class ExtStringField(ExtensionField, StringField):
+    """Field extender of StringField
     """

@@ -96,6 +96,16 @@ class IStorageControlPanel(model.Schema):
         ],
     )
 
+    model.fieldset(
+        "retrieve_reasons",
+        label=_(u"Retrieve Reasons"),
+        description=_(u""),
+        fields=[
+            "require_retrieve_reason",
+            "retrieve_reasons",
+        ],
+    )
+
     store_primary = schema.Bool(
         title=_(
             u"label_storage_settings_store_primary",
@@ -159,6 +169,36 @@ class IStorageControlPanel(model.Schema):
         value_type=DataGridRow(
             title=u"Retention Rule",
             schema=IRetentionRule),
+        required=False,
+    )
+
+    require_retrieve_reason = schema.Bool(
+        title=_(
+            u"label_storage_settings_require_retrieve_reason",
+            default=u"Require retrieve reason"
+        ),
+        description=_(
+            u"description_storage_settings_require_retrieve_reason",
+            default=u"If enabled, users must select a reason when "
+                    u"retrieving samples from storage. If disabled, "
+                    u"selecting a reason is optional."
+        ),
+        default=False,
+    )
+
+    retrieve_reasons = schema.List(
+        title=_(
+            u"label_storage_settings_retrieve_reasons",
+            default=u"Retrieve reasons"
+        ),
+        description=_(
+            u"description_storage_settings_retrieve_reasons",
+            default=u"Predefined list of reasons for retrieving "
+                    u"samples from storage. When configured, users "
+                    u"will be prompted to select a reason before the "
+                    u"retrieve transition takes place."
+        ),
+        value_type=schema.TextLine(title=u"Reason"),
         required=False,
     )
 
