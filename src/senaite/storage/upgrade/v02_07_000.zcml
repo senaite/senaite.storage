@@ -3,6 +3,17 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="Add 'Past Retention' filter in samples listing"
+      description="
+        Adds a 'Past Retention' filter in samples listing and a DateIndex in
+        samples catalog ('getStorageExpiryDate') to allow date range searches
+        by retention period expiry date."
+      source="2707"
+      destination="2708"
+      handler=".v02_07_000.setup_past_retention_filter"
+      profile="senaite.storage:default"/>
+
+  <genericsetup:upgradeStep
       title="Setup retention period rules"
       description="
         Register retention period rules field in the registry for
