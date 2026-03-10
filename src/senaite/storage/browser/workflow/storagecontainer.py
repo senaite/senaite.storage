@@ -20,10 +20,38 @@
 
 from bika.lims import api
 from bika.lims.browser.workflow import RequestContextAware
+from bika.lims.browser.workflow import WorkflowActionGenericAdapter
 from bika.lims.interfaces import IWorkflowActionUIDsAdapter
+from senaite.storage import api as sapi
 from senaite.storage.interfaces import IStorageLayoutContainer
 from senaite.storage.interfaces import IStorageSamplesContainer
 from zope.interface import implementer
+
+
+@implementer(IWorkflowActionUIDsAdapter)
+class WorkflowActionRecoverSamplesAdapter(WorkflowActionGenericAdapter):
+    """Adapter in charge of StorageSamplesContainer 'recover_samples' action.
+    Redirects to the retrieve reasons form when reasons are configured.
+    """
+
+    def __call__(self, action, uids):
+        reasons = sapi.get_retrieve_reasons()
+        if reasons:
+            # Collect sample UIDs from all selected containers
+            sample_uids = []
+            for uid in uids:
+                obj = api.get_object_by_uid(uid)
+                if IStorageSamplesContainer.providedBy(obj):
+                    sample_uids.extend(obj.get_samples_uids())
+            if sample_uids:
+                url = "{}/storage_retrieve_samples?uids={}".format(
+                    api.get_url(self.context), ",".join(sample_uids))
+                return self.redirect(redirect_url=url)
+
+        # No reasons configured, fall back to the generic adapter
+        return super(
+            WorkflowActionRecoverSamplesAdapter, self
+        ).__call__(action, uids)
 
 
 @implementer(IWorkflowActionUIDsAdapter)

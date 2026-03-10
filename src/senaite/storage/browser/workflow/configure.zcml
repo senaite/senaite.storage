@@ -25,6 +25,17 @@
     provides="bika.lims.interfaces.IWorkflowActionAdapter"
     permission="zope.Public" />
 
+  <!-- StorageSamplesContainer: "recover_samples" (retrieve all)
+  Redirects to the retrieve reasons form when retrieve reasons are configured
+  in the control panel. Otherwise, proceeds with default transition. -->
+  <adapter
+    name="workflow_action_recover_samples"
+    for="senaite.storage.interfaces.IStorageContent
+         zope.publisher.interfaces.browser.IBrowserRequest"
+    factory=".storagecontainer.WorkflowActionRecoverSamplesAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="zope.Public" />
+
   <!-- Workflow action "add_samples" -->
   <adapter
     name="workflow_action_add_samples"
