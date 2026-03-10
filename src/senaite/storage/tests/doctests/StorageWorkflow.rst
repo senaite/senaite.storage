@@ -207,7 +207,7 @@ Now the sample can be stored:
     1
 
 
-Recovering stored samples
+Retrieving stored samples
 .........................
 
 As soon as a samples container has stored samples, the `recover_samples`
@@ -216,7 +216,7 @@ transition is available:
    >>> getAllowedTransitions(ssc)
    ['deactivate', 'move_container', 'add_samples', 'recover_samples']
 
-Recovering a sample restores the previous workflow state of the sample:
+Retrieving a sample restores the previous workflow state of the sample:
 
     >>> transitioned = do_action_for(sample, "recover")
 
@@ -261,7 +261,7 @@ Stored samples can be dispatched:
     >>> api.get_workflow_status_of(sample)
     'dispatched'
 
-Dispatched samples will be automatically recovered from the storage first:
+Dispatched samples will be automatically retrieved from storage first:
 
     >>> ssc.has_samples()
     False

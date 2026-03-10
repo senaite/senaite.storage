@@ -3,6 +3,19 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="Rename 'Recover' to 'Retrieve' in workflow titles"
+      description="
+        Updates the user-facing workflow transition titles and action labels
+        from 'Recover' to 'Retrieve'. This aligns with ISO 17025 and
+        ISO 15189 standard terminology for the process of taking samples
+        out of storage. Internal transition IDs and permission strings
+        remain unchanged for backwards compatibility."
+      source="2709"
+      destination="2710"
+      handler=".v02_07_000.rename_recover_to_retrieve"
+      profile="senaite.storage:default"/>
+
+  <genericsetup:upgradeStep
       title="Add 'Days before expiration' setting"
       description="
         This setting stores the number of days before a sample's retention

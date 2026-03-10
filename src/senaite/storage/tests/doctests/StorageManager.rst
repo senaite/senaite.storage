@@ -360,10 +360,10 @@ Move the samples container to a different container:
     '/plone/senaite_storage/SF-00001/SP-00002/SC-00003/SS-00001'
 
 
-StorageManager can recover samples from samples containers
-..........................................................
+StorageManager can retrieve samples from samples containers
+...........................................................
 
-Users with `StorageManager` role can recover samples from storage, but they
+Users with `StorageManager` role can retrieve samples from storage, but they
 cannot create samples. Samples must be created by users with other roles such
 as `LabClerk`.
 
@@ -403,16 +403,16 @@ LabClerk stores the sample in the samples container:
     >>> samples_container.get_samples_utilization()
     1
 
-Now switch to `StorageManager` role to recover the sample:
+Now switch to `StorageManager` role to retrieve the sample:
 
     >>> setRoles(portal, TEST_USER_ID, ["StorageManager"])
 
-The `recover` transition is available for stored samples:
+The `recover` transition (retrieve) is available for stored samples:
 
     >>> "recover" in getAllowedTransitions(sample)
     True
 
-StorageManager can recover samples that were stored by other users:
+StorageManager can retrieve samples that were stored by other users:
 
     >>> transitioned = do_action_for(sample, "recover")
     >>> api.get_workflow_status_of(sample)

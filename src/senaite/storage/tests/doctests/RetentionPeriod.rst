@@ -356,10 +356,10 @@ A sample can be stored without an expiry date:
     True
 
 
-Recovery clears the expiry date
-................................
+Retrieval clears the expiry date
+.................................
 
-When a stored sample is recovered, the expiry date is cleared:
+When a stored sample is retrieved, the expiry date is cleared:
 
     >>> sample1.getStorageExpiryDate() is not None
     True
@@ -382,7 +382,7 @@ The sample is no longer in the container:
 Re-storing with updated rules
 ..............................
 
-Rules can be changed between store/recover cycles. Store the sample again
+Rules can be changed between store/retrieve cycles. Store the sample again
 with a different retention period:
 
     >>> set_retention_rules([
@@ -401,7 +401,7 @@ with a different retention period:
     >>> days_diff
     7
 
-Recover again and verify cleanup:
+Retrieve again and verify cleanup:
 
     >>> do_action_for(sample1, "recover")
     (...)

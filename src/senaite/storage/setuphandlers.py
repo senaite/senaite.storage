@@ -161,12 +161,16 @@ WORKFLOWS_TO_UPDATE = {
                     "guard_expr": "python:here.guard_handler('store')",
                 }
             },
+            # NOTE: The transition ID "recover" is kept for historical
+            # reasons. The user-facing term is "retrieve", which aligns
+            # with ISO 17025 and ISO 15189 standard terminology for
+            # the process of taking samples out of storage.
             "recover": {
-                "title": "Recover",
+                "title": "Retrieve",
                 # We set same new_state here because system will transition the
                 # sample to the state before when was stored. See events
                 "new_state": "stored",
-                "action": "Recover sample",
+                "action": "Retrieve sample",
                 "guard": {
                     "guard_permissions": "senaite.storage: Transition: Recover Sample",  # noqa
                     "guard_roles": "",
@@ -267,7 +271,7 @@ def post_install(portal_setup):
     # Setup ID Formatting for Storage content types
     setup_id_formatting(portal)
 
-    # Injects "store" and "recover" transitions into senaite's workflow
+    # Injects "store" and "retrieve" transitions into senaite's workflow
     setup_workflows(portal)
 
     # reindex storage structure
@@ -289,8 +293,8 @@ def post_uninstall(portal_setup):
     context = portal_setup._getImportContext(profile_id)  # noqa
     portal = context.getSite()  # noqa
 
-    # recover all stored samples
-    recover_samples(portal)
+    # retrieve all stored samples
+    retrieve_samples(portal)
 
     # unindex the storage structure
     # -> makes it disappear in the navigation
@@ -378,7 +382,7 @@ def setup_user_groups(portal):
 
 
 def setup_workflows(portal):
-    """Injects 'store' and 'recover' transitions into workflow
+    """Injects 'store' and 'retrieve' transitions into workflow
     """
     logger.info("Setup storage workflow ...")
     for wf_id, settings in WORKFLOWS_TO_UPDATE.items():
@@ -518,19 +522,19 @@ def unindex_storage_structure(portal):
     storage.unindexObject()
 
 
-def recover_samples(portal):
-    """recover all stored samples
+def retrieve_samples(portal):
+    """Retrieve all stored samples
     """
-    logger.info("*** Recovering all stored samples ***")
+    logger.info("*** Retrieving all stored samples ***")
     catalog = api.get_tool(SAMPLE_CATALOG)
     query = {"review_state": "stored"}
     brains = catalog(query)
     total = len(brains)
-    logger.info("Recovering {} samples ... ".format(total))
+    logger.info("Retrieving {} samples ... ".format(total))
     for num, brain in enumerate(brains):
         obj = api.get_object(brain)
         api.do_transition_for(obj, "recover")
-        logger.info("Recovering sample {}/{}: {}".format(
+        logger.info("Retrieving sample {}/{}: {}".format(
             num + 1, total, api.get_id(obj)))
 
 

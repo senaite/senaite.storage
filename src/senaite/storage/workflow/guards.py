@@ -50,7 +50,7 @@ class GuardsAdapter(object):
         return not context.is_full()
 
     def guard_recover_samples(self, context):
-        """Guard for recover all samples from this container
+        """Guard for retrieving all samples from this container
         """
         if not IStorageSamplesContainer.providedBy(context):
             return False
