@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #66 Add visual warning for samples approaching retention expiration
 - #65 Add a "Past Retention" filter in samples listing
 - #63 Result type-specific controls in retention rules settings
 - #64 Add 'Storage Expiry Date' column in samples listing, under 'Stored'

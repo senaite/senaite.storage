@@ -407,3 +407,122 @@ Recover again and verify cleanup:
     (...)
     >>> sample1.getStorageExpiryDate() is None
     True
+
+
+Warning days before expiration
+..............................
+
+The control panel setting ``warning_days_before_expiration`` controls how many
+days before the expiry date a sample should be flagged as approaching
+expiration. The default value is 5:
+
+    >>> storage_api.get_warning_days_before_expiration()
+    5
+
+The value can be changed through the registry:
+
+    >>> def set_warning_days(days):
+    ...     key = "senaite.storage.warning_days_before_expiration"
+    ...     ploneapi.portal.set_registry_record(key, days)
+
+    >>> set_warning_days(10)
+    >>> storage_api.get_warning_days_before_expiration()
+    10
+
+Reset to default for subsequent tests:
+
+    >>> set_warning_days(5)
+
+
+Retention expiration check
+..........................
+
+The ``is_retention_expired`` function checks whether a sample's retention
+period has expired. It returns ``None`` if the sample has no expiry date:
+
+    >>> sample1.getStorageExpiryDate() is None
+    True
+    >>> storage_api.is_retention_expired(sample1) is None
+    True
+
+Store the sample and set an expiry date 30 days from now:
+
+    >>> set_retention_rules([
+    ...     {"service": Cu_uid, "result": u"", "retention_days": 30},
+    ... ])
+    >>> ssc.add_object_at(sample1, 0, 0)
+    True
+    >>> expiry = DateTime() + 30
+    >>> sample1.setStorageExpiryDate(expiry)
+
+The retention is not expired (expiry is 30 days from now):
+
+    >>> storage_api.is_retention_expired(sample1)
+    False
+
+Check against a specific date in the future (31 days from now):
+
+    >>> future_date = DateTime() + 31
+    >>> storage_api.is_retention_expired(sample1, on_date=future_date)
+    True
+
+Check against a specific date before the expiry (29 days from now):
+
+    >>> before_date = DateTime() + 29
+    >>> storage_api.is_retention_expired(sample1, on_date=before_date)
+    False
+
+Set the expiry date in the past to simulate an expired retention:
+
+    >>> sample1.setStorageExpiryDate(DateTime() - 1)
+    >>> storage_api.is_retention_expired(sample1)
+    True
+
+
+Approaching expiration check
+.............................
+
+The ``is_retention_approaching_expiration`` function checks whether a sample's
+retention period is approaching expiration within the given number of days.
+
+Set the expiry date to 3 days from now:
+
+    >>> sample1.setStorageExpiryDate(DateTime() + 3)
+
+With the default warning threshold of 5 days, the sample is approaching
+expiration (3 days < 5 days threshold):
+
+    >>> storage_api.is_retention_approaching_expiration(sample1)
+    True
+
+With a custom threshold of 2 days, the sample is NOT approaching expiration
+(3 days > 2 days threshold):
+
+    >>> storage_api.is_retention_approaching_expiration(sample1, days=2)
+    False
+
+A sample with an expiry date far in the future is not approaching expiration:
+
+    >>> sample1.setStorageExpiryDate(DateTime() + 30)
+    >>> storage_api.is_retention_approaching_expiration(sample1)
+    False
+
+An already expired sample is also considered as approaching expiration (since
+``is_retention_approaching_expiration`` delegates to ``is_retention_expired``
+with a future date offset):
+
+    >>> sample1.setStorageExpiryDate(DateTime() - 1)
+    >>> storage_api.is_retention_approaching_expiration(sample1)
+    True
+
+A sample without an expiry date returns None:
+
+    >>> sample1.setStorageExpiryDate(None)
+    >>> storage_api.is_retention_approaching_expiration(sample1) is None
+    True
+
+Cleanup:
+
+    >>> do_action_for(sample1, "recover")
+    (...)
+    >>> set_retention_rules([])

@@ -23,11 +23,13 @@ import json
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _s
 from DateTime import DateTime
+from plone.memoize.view import memoize
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.workflow import SAMPLE_WORKFLOW
 from senaite.storage import logger
 from senaite.storage import senaiteMessageFactory as _
+from senaite.storage import api as sapi
 from senaite.storage.browser import BaseView
 from senaite.storage.interfaces import IStorageSamplesContainer
 
@@ -121,6 +123,13 @@ class StoreContainerView(BaseView):
         }
         return json.dumps(base_query)
 
+    @memoize
+    def get_warning_days_before_expiration(self):
+        """Returns the number of days before a sample's retention period ends
+        when it should be marked as approaching expiration
+        """
+        return sapi.get_warning_days_before_expiration()
+
     def get_sample_info(self, sample):
         """Returns the sample info
         """
@@ -134,6 +143,15 @@ class StoreContainerView(BaseView):
         state = sample_wf.states.get(status)
         if state:
             status_title = state.title
+
+        # display in orange or red depending on the retention period
+        css = ["non-empty-slot"]
+        warn_days = self.get_warning_days_before_expiration()
+        if sapi.is_retention_expired(sample):
+            css.append("bg-danger")
+        elif sapi.is_retention_approaching_expiration(sample, warn_days):
+            css.append("bg-warning")
+
         return {
             "obj": sample,
             "id": api.get_id(sample),
@@ -143,6 +161,7 @@ class StoreContainerView(BaseView):
             "sample_type": sample.getSampleTypeTitle(),
             "status": status,
             "status_title": status_title,
+            "css": " ".join(css),
         }
 
     def get_allowed_states(self):
