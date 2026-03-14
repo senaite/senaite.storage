@@ -15,7 +15,9 @@ StoreContainerController = class StoreContainerController {
     console.debug("StoreContainerController::init");
     // bind the event handler to the elements
     this.bind_eventhandler();
-    $("#position").change();
+    if ($("#position").length) {
+      $("#position").change();
+    }
     return this;
   }
 
@@ -36,6 +38,9 @@ StoreContainerController = class StoreContainerController {
     this.debug("StoreContainerController::on_position_change");
     select = $(event.currentTarget);
     $("td.empty-slot").removeClass("selected");
+    if (!select.val()) {
+      return;
+    }
     return $("#" + select.val()).parent("td.empty-slot").addClass("selected");
   }
 
@@ -47,6 +52,9 @@ StoreContainerController = class StoreContainerController {
      */
     this.debug("StoreContainerController::on_position_slot_click");
     event.preventDefault();
+    if (!$("#position").length) {
+      return;
+    }
     anchor = $(event.currentTarget);
     select = $("#position").val(anchor.attr("id"));
     $("#position").change();

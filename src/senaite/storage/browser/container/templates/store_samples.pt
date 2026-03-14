@@ -70,7 +70,7 @@
                           <!-- ReactJS controlled widget -->
                         </div>
                       </div>
-                      <div class="col">
+                      <div class="col storage-position-field">
                         <div class="input-group input-group-sm mt-2 px-0">
                           <div class="input-group-prepend">
                             <label class="input-group-text" i18n:translate="">Position</label>
@@ -81,6 +81,7 @@
                                                   name string:sample_container_position.${uid}:record">
                           </select>
                         </div>
+                        <small class="form-text text-muted storage-position-help"></small>
                       </div>
                       <div class="col">
                         <div class="input-group input-group-sm mt-2 px-0">

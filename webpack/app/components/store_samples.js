@@ -14,7 +14,7 @@ StoreSamplesController = class StoreSamplesController {
     this.fill_container_positions = this.fill_container_positions.bind(this);
     this.diff = this.diff.bind(this);
     this.get_selected_positions = this.get_selected_positions.bind(this);
-    this.fetch_available_positions = this.fetch_available_positions.bind(this);
+    this.fetch_container_info = this.fetch_container_info.bind(this);
     this.ajax_submit = this.ajax_submit.bind(this);
     this.get_portal_url = this.get_portal_url.bind(this);
     this.debug = this.debug.bind(this);
@@ -59,6 +59,9 @@ StoreSamplesController = class StoreSamplesController {
     if (!container_uid) {
       return;
     }
+    if (select.attr("data-managed") === "false") {
+      return;
+    }
     position = select.val();
     this.purge_container_position(container_uid, position);
     orig_value = select.attr("original_value");
@@ -76,6 +79,9 @@ StoreSamplesController = class StoreSamplesController {
      * are bound to the container passed in that do not contain this position
      * already
      */
+    if (!position) {
+      return;
+    }
     this.debug(`StoreSamplesController::add_container_position:container_uid=${container_uid}, position=${position}`);
     selects = this.get_container_position_selects(container_uid);
     $.each(selects, function(index, select) {
@@ -106,6 +112,9 @@ StoreSamplesController = class StoreSamplesController {
      * that are bound to the container passed in. It only affects to those
      * elements that have a position selected other than the one passed in.
      */
+    if (!position) {
+      return;
+    }
     this.debug(`StoreSamplesController::purge_container_position:container_uid=${container_uid}, position=${position}`);
     selects = this.get_container_position_selects(container_uid);
     $.each(selects, function(index, select) {
@@ -133,11 +142,33 @@ StoreSamplesController = class StoreSamplesController {
      * assigned twice
      */
     this.debug(`StoreSamplesController::fill_container_positions:container_uid=${container_uid}`);
+    var help;
+    if (!select) {
+      return;
+    }
     $(select).find("option").remove();
     $(select).attr("original_value", "");
-    $(select).attr("container_uid", container_uid);
-    this.fetch_available_positions(container_uid).done(function(positions) {
-      var available, i, len, position, selected_positions;
+    $(select).attr("container_uid", container_uid || "");
+    help = $(select).closest(".storage-position-field").find(".storage-position-help");
+    help.text("");
+    $(select).attr("data-managed", "true");
+    if (!container_uid) {
+      $(select).prop("disabled", true);
+      return;
+    }
+    this.fetch_container_info(container_uid).done(function(container) {
+      var available, i, len, managed, position, positions, selected_positions;
+      managed = container.is_managed !== false;
+      positions = container.available_positions || [];
+      $(select).attr("data-managed", managed ? "true" : "false");
+      if (!managed) {
+        $(select).prop("disabled", true);
+        $(select).append(new Option("Automatic", ""));
+        $(select).val("");
+        help.text("Assigned automatically for unmanaged containers.");
+        return;
+      }
+      $(select).prop("disabled", false);
       selected_positions = this.get_selected_positions(container_uid);
       available = this.diff(positions, $.makeArray(selected_positions));
       for (i = 0, len = available.length; i < len; i++) {
@@ -168,27 +199,32 @@ StoreSamplesController = class StoreSamplesController {
     var selects;
     selects = this.get_container_position_selects(container_uid);
     return $(selects).map(function() {
+      if ($(this).attr("data-managed") === "false") {
+        return null;
+      }
       return $(this).val();
     });
   }
 
-  fetch_available_positions(uid) {
+  fetch_container_info(uid) {
     /*
-     * Returns the available positions from a sample container with the uid
+     * Returns the positioning metadata from a sample container with the uid
      * passed in. If no container found for this uid, returns null
      */
-    var deferred, field_name;
+    var deferred, field_names, method_names;
     deferred = $.Deferred();
-    field_name = "available_positions";
+    field_names = ["available_positions"];
+    method_names = ["is_managed"];
     this.ajax_submit({
       url: this.get_portal_url() + "/@@API/read",
       data: {
         catalog_name: "uid_catalog",
         UID: uid,
-        include_fields: [field_name]
+        include_fields: field_names,
+        include_methods: method_names
       }
     }).done(function(data) {
-      return deferred.resolveWith(this, [data.objects[0][field_name]]);
+      return deferred.resolveWith(this, [data.objects[0] || {}]);
     });
     return deferred.promise();
   }

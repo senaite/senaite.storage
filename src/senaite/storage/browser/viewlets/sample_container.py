@@ -55,14 +55,19 @@ class SampleContainerViewlet(ViewletBase):
 
         # Get the data info from the container
         container = api.get_object(brains[0])
-        position = container.get_object_position(self.context)
-        position = container.position_to_alpha(position[0], position[1])
+        position = ""
+        display_title = container.get_full_title()
+        if container.requires_position_tracking():
+            position = container.get_object_position(self.context)
+            position = container.position_to_alpha(position[0], position[1])
+            display_title = "{} ({})".format(display_title, position)
         return {
             "uid": api.get_uid(container),
             "id": api.get_id(container),
             "title": api.get_title(container),
             "url": api.get_url(container),
             "position": position,
+            "display_title": display_title,
             "full_title": container.get_full_title(),
             "when": wf.getTransitionDate(self.context, "store"),
         }

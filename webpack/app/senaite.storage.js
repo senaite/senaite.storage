@@ -1,6 +1,7 @@
 import StoreContainerController from "./components/store_container.js"
 import StoreSamplesController from "./components/store_samples.js"
 import ControlPanelController from "./components/controlpanel.js"
+import UnmanagedEditController from "./components/unmanaged_edit.js"
 
 document.addEventListener("DOMContentLoaded", () => {
   console.debug("*** SENAITE STORAGE JS LOADED ***");
@@ -16,5 +17,6 @@ document.addEventListener("DOMContentLoaded", () => {
   if (class_list.contains("template-storage-controlpanel")) {
     window.storage_controlpanel_controller = new ControlPanelController();
   }
+  window.storage_unmanaged_edit_controller = new UnmanagedEditController();
 
 });
