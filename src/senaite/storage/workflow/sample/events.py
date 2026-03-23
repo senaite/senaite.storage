@@ -38,8 +38,9 @@ def is_store_primary_enabled():
 
 
 def is_recover_primary_enabled():
-    """Returns whether the transition 'recover' must be automatically triggered
-    for primary sample when all its partitions have been recovered
+    """Returns whether the 'recover' (retrieve) transition must be
+    automatically triggered for primary sample when all its partitions
+    have been retrieved
     """
     key = "{}.recover_primary".format(PRODUCT_NAME)
     return api.get_registry_record(key, default=True)
@@ -48,7 +49,7 @@ def is_recover_primary_enabled():
 def before_dispatch(sample):
     """Event triggered before "dispatch" transition takes place for a given sample
     """
-    # recover sample if the sample was stored
+    # retrieve sample if the sample was stored
     state = api.get_workflow_status_of(sample)
     if state == "stored":
         do_action_for(sample, "recover")
@@ -82,7 +83,7 @@ def after_store(sample):
 
 
 def after_recover(sample):
-    """Unassigns the sample from its storage container and "recover". It also
+    """Retrieves the sample from its storage container. Unassigns it and
     transitions the sample to its previous state before it was stored
     """
     # remove the sample from the container
@@ -103,7 +104,7 @@ def after_recover(sample):
     sample.reindexObject()
 
     if not is_recover_primary_enabled():
-        # Do not auto-recover the primary, if any
+        # Do not auto-retrieve the primary, if any
         return
 
     # If the sample is a partition, try to promote to the primary
@@ -111,7 +112,7 @@ def after_recover(sample):
     if not primary:
         return
 
-    # Recover primary sample if all its partitions have been recovered
+    # Retrieve primary sample if all its partitions have been retrieved
     parts = primary.getDescendants()
 
     # Partitions in some statuses won't be considered.

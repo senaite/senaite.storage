@@ -46,7 +46,7 @@
       <role name="StorageAssistant"/>
     </permission>
 
-    <!-- Store/Recover Sample Transition Permissions (sample objects) -->
+    <!-- Store/Retrieve Sample Transition Permissions (sample objects) -->
     <permission name="senaite.storage: Transition: Store Sample" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
@@ -62,7 +62,7 @@
       <role name="StorageAssistant"/>
     </permission>
 
-    <!-- Add/Recover Samples Transition Permissions (storage listings) -->
+    <!-- Add/Retrieve Samples Transition Permissions (storage listings) -->
     <permission name="senaite.storage: Transition: Add Samples" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>

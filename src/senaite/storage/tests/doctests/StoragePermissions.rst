@@ -260,10 +260,10 @@ And containers:
     False
 
 
-Add/Recover Samples transition permissions
-..........................................
+Add/Retrieve Samples transition permissions
+...........................................
 
-Both `StorageManager` and `StorageAssistant` can add and recover samples from
+Both `StorageManager` and `StorageAssistant` can add and retrieve samples from
 storage containers:
 
     >>> "StorageManager" in rolesForPermissionOn("senaite.storage: Transition: Add Samples", samples_container)

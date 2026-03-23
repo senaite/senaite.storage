@@ -113,13 +113,13 @@ class IStorageControlPanel(model.Schema):
     recover_primary = schema.Bool(
         title=_(
             u"label_storage_settings_recover_primary",
-            default=u"Auto-recover primary sample"
+            default=u"Auto-retrieve primary sample"
         ),
         description=_(
             u"description_storage_settings_recover_primary",
             default=u"Select this option to automatically transition back the "
                     u"primary from 'stored' to its preceding status when all "
-                    u"its partitions are recovered."
+                    u"its partitions are retrieved."
         ),
         default=True,
     )

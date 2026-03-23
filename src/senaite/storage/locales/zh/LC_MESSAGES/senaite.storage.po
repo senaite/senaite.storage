@@ -255,7 +255,7 @@ msgid "Print stickers"
 msgstr "打印标签"
 
 #: senaite/storage/profiles/default/workflows/senaite_storage_default_workflow/definition.xml
-msgid "Recover samples"
+msgid "Retrieve samples"
 msgstr "取出样本"
 
 #: senaite/storage/content/storagelayoutcontainer.py:48
@@ -361,7 +361,7 @@ msgstr "设施中的存储位置"
 msgid "Used positions:"
 msgstr "已使用位置："
 
-#. Default: "Select this option to automatically transition back the primary from 'stored' to its preceding status when all its partitions are recovered."
+#. Default: "Select this option to automatically transition back the primary from 'stored' to its preceding status when all its partitions are retrieved."
 #: senaite/storage/browser/controlpanel.py:52
 msgid "description_storage_settings_recover_primary"
 msgstr ""
@@ -376,7 +376,7 @@ msgstr ""
 msgid "header_storage_settings"
 msgstr ""
 
-#. Default: "Auto-recover primary sample"
+#. Default: "Auto-retrieve primary sample"
 #: senaite/storage/browser/controlpanel.py:48
 msgid "label_storage_settings_recover_primary"
 msgstr ""

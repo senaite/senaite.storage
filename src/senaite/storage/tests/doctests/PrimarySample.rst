@@ -3,8 +3,9 @@ Primary Sample
 
 When using partitions, `senaite.storage` automatically transitions the primary
 samples for them to follow the status of their partitions. This applies for
-both `store` and `recover` transitions. Although this is the behavior set by
-default, user can change it from Storage's control panel, under Site setup.
+both `store` and `recover` (retrieve) transitions. Although this is the
+behavior set by default, user can change it from Storage's control panel,
+under Site setup.
 
 Test Setup
 ..........
@@ -109,7 +110,7 @@ The primary is automatically transitioned to `stored` status too:
     >>> api.get_review_status(sample)
     'stored'
 
-Restore the partition 1:
+Retrieve the partition 1:
 
     >>> transitioned = do_action_for(part1, "recover")
     >>> api.get_review_status(part1)
@@ -119,7 +120,7 @@ Restore the partition 1:
     >>> api.get_review_status(sample)
     'stored'
 
-Restore the partition 2:
+Retrieve the partition 2:
 
     >>> transitioned = do_action_for(part2, "recover")
     >>> api.get_review_status(part2)
@@ -221,7 +222,7 @@ We can manually store the primary though:
     >>> api.get_review_status(sample)
     'stored'
 
-If we recover the partitions:
+If we retrieve the partitions:
 
     >>> do_action_for(part1, "recover")
     (True, '')
@@ -233,7 +234,7 @@ The primary remains in `stored` status:
     >>> api.get_review_status(sample)
     'stored'
 
-We can manually recover the primary:
+We can manually retrieve the primary:
 
     >>> success = do_action_for(sample, "recover")
     >>> api.get_review_status(sample)

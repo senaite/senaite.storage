@@ -569,3 +569,22 @@ def setup_days_before_expiration(tool):
     setup.runImportStepFromProfile(profile, "plone.app.registry")
 
     logger.info("Setup days before expiration [DONE]")
+
+
+def rename_recover_to_retrieve(tool):
+    """Renames the user-facing term 'recover' to 'retrieve', which aligns with
+    ISO 17025 and ISO 15189 standard terminology for the process of taking
+    samples out of storage. Internal transition IDs and permission strings
+    remain unchanged for backwards compatibility.
+    """
+    logger.info("Recover --> Retrieve ...")
+    portal = tool.aq_inner.aq_parent
+
+    # Update the sample workflow (transition title/action)
+    setup_workflows(portal)
+
+    # Re-import the storage workflow definition (transition title/action)
+    setup = portal.portal_setup
+    setup.runImportStepFromProfile(profile, "workflow")
+
+    logger.info("Recover --> Retrieve [DONE]")

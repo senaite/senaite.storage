@@ -309,15 +309,15 @@ StorageAssistant can store the sample:
     1
 
 
-StorageAssistant CAN recover samples
-....................................
+StorageAssistant CAN retrieve samples
+.....................................
 
-The `recover` transition is available for stored samples:
+The `recover` transition (retrieve) is available for stored samples:
 
     >>> "recover" in getAllowedTransitions(sample)
     True
 
-StorageAssistant can recover samples:
+StorageAssistant can retrieve samples:
 
     >>> transitioned = do_action_for(sample, "recover")
     >>> api.get_workflow_status_of(sample)
@@ -327,8 +327,8 @@ StorageAssistant can recover samples:
     0
 
 
-StorageAssistant CAN store and recover samples created by other users
-.....................................................................
+StorageAssistant CAN store and retrieve samples created by other users
+......................................................................
 
 Create a sample as LabClerk and store it:
 
@@ -342,7 +342,7 @@ Create a sample as LabClerk and store it:
     >>> api.get_workflow_status_of(sample2)
     'stored'
 
-Switch to StorageAssistant and recover the sample:
+Switch to StorageAssistant and retrieve the sample:
 
     >>> setRoles(portal, TEST_USER_ID, ["StorageAssistant"])
 
