@@ -70,8 +70,9 @@ class RetrieveSamplesView(BrowserView):
             logger.info("*** RETRIEVE SAMPLES ***")
             reasons = _api.get_retrieve_reasons()
             reason_required = _api.is_retrieve_reason_required()
-            processed = []
 
+            # first pass: validate all samples before transitioning any
+            to_process = []
             for sample_uid in form.get("samples", []):
                 sample = by_uid.get(sample_uid)
                 if not sample:
@@ -92,11 +93,13 @@ class RetrieveSamplesView(BrowserView):
                     self.add_status_message(msg, "error")
                     return self.template()
 
-                # set the retrieve reason
+                to_process.append((sample, reason))
+
+            # second pass: apply reasons and transition
+            processed = []
+            for sample, reason in to_process:
                 if reason:
                     sample.setRetrieveReason(reason)
-
-                # recover the sample
                 wf.doActionFor(sample, "recover")
                 processed.append(sample)
 
