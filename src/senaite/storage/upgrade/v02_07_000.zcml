@@ -3,6 +3,17 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="Add retrieve reasons settings"
+      description="
+        Registers retrieve reason fields in the registry: a list of
+        predefined reasons and a flag to require reason selection when
+        retrieving samples from storage."
+      source="2710"
+      destination="2711"
+      handler=".v02_07_000.setup_retrieve_reasons"
+      profile="senaite.storage:default"/>
+
+  <genericsetup:upgradeStep
       title="Rename 'Recover' to 'Retrieve' in workflow titles"
       description="
         Updates the user-facing workflow transition titles and action labels

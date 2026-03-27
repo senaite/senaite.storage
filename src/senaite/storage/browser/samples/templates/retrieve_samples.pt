@@ -1,0 +1,120 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="senaite.storage">
+  <head>
+    <title></title>
+  </head>
+  <body>
+
+    <!-- Title -->
+    <metal:title fill-slot="content-title">
+      <h1 i18n:translate="">
+        Retrieve samples
+      </h1>
+    </metal:title>
+
+    <!-- Description -->
+    <metal:description fill-slot="content-description">
+      <p i18n:translate="">
+        <a tal:attributes="href view/back_url"
+           i18n:name="back_link"
+           i18n:translate="">
+          &larr; Back
+        </a>
+      </p>
+    </metal:description>
+
+    <!-- Content -->
+    <metal:core fill-slot="content-core">
+      <div id="retrieve-samples-view"
+           class="row"
+           tal:define="reasons view/get_retrieve_reasons;
+                       reason_required view/is_reason_required">
+
+        <div class="col-sm-12">
+          <form class="form"
+                id="retrieve_samples_form"
+                name="retrieve_samples_form"
+                method="POST">
+
+            <!-- Hidden Fields -->
+            <input type="hidden" name="submitted" value="1"/>
+            <input tal:replace="structure context/@@authenticator/authenticator"/>
+
+            <tal:samples repeat="sample view/get_samples_data">
+
+              <!-- Remember the initial UIDs coming in -->
+              <input type="hidden" name="samples:list"
+                     tal:attributes="value sample/uid"/>
+
+              <table class="table table-bordered mb-2"
+                     tal:define="uid sample/uid">
+
+                <!-- Sample line header -->
+                <thead>
+                  <tr>
+                    <th class="info bg-light border">
+                      <div class="col-sm-12">
+                        <span class="text-primary"
+                              tal:content="sample/title"/>
+                        <span class="font-weight-normal"
+                              tal:content="sample/sample_type"/><br/>
+                        <span class="font-weight-normal"
+                              tal:content="sample/client_title"/>
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+
+                <!-- Retrieve reasons -->
+                <tbody tal:condition="reasons">
+                  <tr>
+                    <td>
+                      <div class="col-sm-12">
+                        <div class="form-group field">
+                          <div tal:repeat="reason reasons">
+                            <input type="radio"
+                                   tal:attributes="value reason;
+                                                   name string:${uid}.reason:record"/>
+                            <span tal:content="reason"/>
+                          </div>
+                          <div>
+                            <input type="radio"
+                                   tal:attributes="name string:${uid}.reason:record"
+                                   value="__other__"/>
+                            <input type="text" size="50"
+                                   tal:attributes="name string:${uid}.other_reason:record"
+                                   i18n:attributes="placeholder"
+                                   placeholder="Other reason"/>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </tal:samples>
+
+            <!-- Form Controls -->
+            <div>
+              <!-- Cancel -->
+              <input class="btn btn-default btn-sm"
+                     type="submit"
+                     name="button_cancel"
+                     i18n:attributes="value"
+                     value="Cancel"/>
+              <!-- Continue -->
+              <input class="btn btn-success btn-sm"
+                     type="submit"
+                     name="button_continue"
+                     i18n:attributes="value"
+                     value="Retrieve"/>
+            </div>
+          </form>
+        </div>
+      </div>
+    </metal:core>
+  </body>
+</html>

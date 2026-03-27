@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #68 Require selection of retrieve reason when retrieving samples from storage
 - #67 Rename "Recover" transtion to "Retrieve" to align with ISO 17025/15189
 - #66 Add visual warning for samples approaching retention expiration
 - #65 Add a "Past Retention" filter in samples listing

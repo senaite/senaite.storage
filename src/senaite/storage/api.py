@@ -129,6 +129,23 @@ def get_default_retention_period(sample):
     return None
 
 
+def get_retrieve_reasons():
+    """Return the list of predefined retrieve reasons from the registry
+    """
+    key = "{}.retrieve_reasons".format(PRODUCT_NAME)
+    reasons = api.get_registry_record(key, default=None)
+    if not reasons:
+        return []
+    return list(reasons)
+
+
+def is_retrieve_reason_required():
+    """Return whether selecting a retrieve reason is mandatory
+    """
+    key = "{}.require_retrieve_reason".format(PRODUCT_NAME)
+    return api.get_registry_record(key, default=False)
+
+
 def get_parents(obj, parents=None, predicate=None):
     """Return all parents of the object
     """
