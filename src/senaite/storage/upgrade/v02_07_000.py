@@ -145,6 +145,8 @@ def migrate_storage_facility_to_dx(src, destination):
 
     address = dict(src.getAddress())
     address["type"] = PHYSICAL_ADDRESS
+    for key in list(address.keys()):
+        address[key] = api.safe_unicode(address.get(key, u""))
     target.setAddress(address)
 
     cb = src.manage_copyObjects(ids=src.objectIds())
