@@ -1,0 +1,13 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:plone="http://namespaces.plone.org/plone">
+
+  <!-- Sticker templates for storage location objects. The resource name
+       ("senaite.storage") is used as the template id prefix, e.g.
+       "senaite.storage:StorageLocation_50x30mm.pt" -->
+  <plone:static
+      directory="templates"
+      type="stickers"
+      name="senaite.storage" />
+
+</configure>

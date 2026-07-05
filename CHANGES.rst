@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #72 Add printable barcode stickers for storage location objects
 - #71 Fix UnicodeDecodeError when running migrate_storage_facility_to_dx
 - #68 Require selection of retrieve reason when retrieving samples from storage
 - #67 Rename "Recover" transtion to "Retrieve" to align with ISO 17025/15189

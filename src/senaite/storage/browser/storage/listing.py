@@ -66,9 +66,26 @@ class StorageListing(ListingView):
 
     def before_render(self):
         super(StorageListing, self).before_render()
+        self.add_print_stickers_action()
         # disable column sorting when expaned
         if self.is_expanded():
             self.toggle_column_sorting(False)
+
+    def add_print_stickers_action(self):
+        """Offer a "Print stickers" action in every review state, so the
+        selected storage locations can be printed as barcode stickers
+        """
+        action = {
+            "id": "print_stickers",
+            "title": _("Print stickers"),
+            "url": "{}/workflow_action?action=print_stickers".format(
+                api.get_url(self.context)),
+        }
+        for review_state in self.review_states:
+            transitions = review_state.setdefault("custom_transitions", [])
+            ids = [transition.get("id") for transition in transitions]
+            if action["id"] not in ids:
+                transitions.append(action)
 
     def is_expanded(self):
         return self.review_state.get("id") == "expand"

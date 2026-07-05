@@ -1,0 +1,48 @@
+/*
+Sticker Dimensions: 50mm x 30mm
+Sticker margins: 1mm
+*/
+.sticker {
+    margin: 0 auto;
+    padding: 1mm;
+    width: 48mm;    /* Total width  = 1 + 1 + 48 = 50mm */
+    height: 28mm;   /* Total height = 1 + 1 + 28 = 30mm */
+    font-family: Helvetica, Arial;
+    text-align: center;
+    overflow: hidden;
+}
+
+.sticker .error {
+    color: red;
+    font-size: 8pt;
+    z-index: 1000;
+}
+
+.sticker .barcode {
+    margin: 0 auto;
+    padding: 1mm 0 !important;
+    text-align: center;
+}
+
+.sticker .storage-id {
+    font-size: 10pt;
+    font-weight: bold;
+}
+
+.sticker .storage-title {
+    font-size: 6pt;
+    color: #333;
+    line-height: 1.1;
+}
+
+@media print {
+    @page {
+        size: 50mm 30mm !important;
+        margin: 0mm !important;
+    }
+    html, body {
+        width: 50mm !important;
+        height: 30mm !important;
+        margin: 0mm !important;
+    }
+}

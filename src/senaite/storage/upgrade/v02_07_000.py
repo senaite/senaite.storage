@@ -585,6 +585,18 @@ def setup_retrieve_reasons(tool):
     logger.info("Setup retrieve reasons [DONE]")
 
 
+def setup_storage_sticker_action(tool):
+    """Register the 'Stickers preview' object action on storage location types
+    """
+    logger.info("Setup storage sticker action ...")
+
+    portal = tool.aq_inner.aq_parent
+    setup = portal.portal_setup  # noqa
+    setup.runImportStepFromProfile(profile, "typeinfo")
+
+    logger.info("Setup storage sticker action [DONE]")
+
+
 def rename_recover_to_retrieve(tool):
     """Renames the user-facing term 'recover' to 'retrieve', which aligns with
     ISO 17025 and ISO 15189 standard terminology for the process of taking
