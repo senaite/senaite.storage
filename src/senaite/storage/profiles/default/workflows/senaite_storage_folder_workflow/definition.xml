@@ -25,7 +25,6 @@
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Preserver</permission-role>
-      <permission-role>RegulatoryInspector</permission-role>
       <permission-role>Sampler</permission-role>
       <permission-role>SamplingCoordinator</permission-role>
       <permission-role>StorageManager</permission-role>
@@ -41,7 +40,6 @@
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Preserver</permission-role>
-      <permission-role>RegulatoryInspector</permission-role>
       <permission-role>Sampler</permission-role>
       <permission-role>SamplingCoordinator</permission-role>
       <permission-role>StorageManager</permission-role>
@@ -65,7 +63,6 @@
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Preserver</permission-role>
-      <permission-role>RegulatoryInspector</permission-role>
       <permission-role>Sampler</permission-role>
       <permission-role>SamplingCoordinator</permission-role>
       <permission-role>StorageManager</permission-role>
