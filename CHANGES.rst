@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #73 Compatibility with core#2962 (Remove RegulatoryInspector)
+- #74 Use flat_listing for the stored and past-retention sample listings
 - #71 Fix UnicodeDecodeError when running migrate_storage_facility_to_dx
 - #68 Require selection of retrieve reason when retrieving samples from storage
 - #67 Rename "Recover" transtion to "Retrieve" to align with ISO 17025/15189

@@ -98,6 +98,9 @@ ADD_REVIEW_STATES = (
             u"listing_samples_state_stored",
             default=u"Stored"
         ),
+        # flat pool: show every stored sample (partitions included) on its
+        # own row, without nesting them under their primary
+        "flat_listing": True,
         "contentFilter": {
             "review_state": ("stored",),
             "sort_on": "created",
@@ -112,6 +115,9 @@ ADD_REVIEW_STATES = (
             u"listing_samples_state_past_retention",
             default=u"Past Retention"
         ),
+        # flat pool: show every stored sample (partitions included) on its
+        # own row, without nesting them under their primary
+        "flat_listing": True,
         "contentFilter": {
             "review_state": ("stored",),
             "sort_on": "getStorageExpiryDate",
@@ -139,7 +145,6 @@ class AnalysisRequestsListingViewAdapter(object):
         self.listing = listing
         self.context = context
         self.installed = is_installed()
-        self.flat_listing = False
 
     @property
     def warning_days_before_expiration(self):
@@ -164,10 +169,10 @@ class AnalysisRequestsListingViewAdapter(object):
         # Additional custom transitions
         map(self.add_custom_transition, ADD_CUSTOM_TRANSITIONS)
 
-        # In "stored" status, display all samples in "flat style"
-        if self.is_stored_state():
-            self.flat_listing = True
-            self.listing.contentFilter.pop("isRootAncestor", None)
+        # The "stored" and "past_retention" review states are flagged as
+        # flat listings (see their `flat_listing` key), so senaite.core drops
+        # the root-ancestor restriction and renders every stored sample,
+        # partitions included, on its own row without nesting.
 
         # Update the contentFilter of the "past_retention" filter, so only
         # stored samples whose retention period has passed are displayed
