@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #72 Add printable barcode stickers for storage location objects
 - #73 Compatibility with core#2962 (Remove RegulatoryInspector)
 - #74 Use flat_listing for the stored and past-retention sample listings
 - #71 Fix UnicodeDecodeError when running migrate_storage_facility_to_dx

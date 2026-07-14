@@ -14,6 +14,24 @@
       for="senaite.storage.interfaces.IStorageContent"
       factory=".breadcrumbs.StorageBreadcrumbs" />
 
+  <!-- Sticker templates for storage location objects -->
+  <adapter
+      for="senaite.storage.interfaces.IStorageFacility"
+      factory=".stickers.GetStorageStickers"
+      provides="senaite.core.interfaces.stickers.IGetStickerTemplates" />
+  <adapter
+      for="senaite.storage.interfaces.IStoragePosition"
+      factory=".stickers.GetStorageStickers"
+      provides="senaite.core.interfaces.stickers.IGetStickerTemplates" />
+  <adapter
+      for="senaite.storage.interfaces.IStorageContainer"
+      factory=".stickers.GetStorageStickers"
+      provides="senaite.core.interfaces.stickers.IGetStickerTemplates" />
+  <adapter
+      for="senaite.storage.interfaces.IStorageSamplesContainer"
+      factory=".stickers.GetStorageStickers"
+      provides="senaite.core.interfaces.stickers.IGetStickerTemplates" />
+
   <!--
       Samples view with additional filters and columns
   -->

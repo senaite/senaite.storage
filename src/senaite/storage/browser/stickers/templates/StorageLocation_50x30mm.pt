@@ -1,0 +1,14 @@
+<tal:sticker define="item python:view.current_item;
+                     obj python:item.instance;
+                     location_id python:obj.getId();
+                     title python:obj.Title();">
+  <div class="barcode"
+       tal:attributes="data-id location_id"
+       data-code="code128"
+       data-barHeight="14"
+       data-addQuietZone="true"
+       data-showHRI="false">
+  </div>
+  <div class="storage-id" tal:content="location_id">L-1</div>
+  <div class="storage-title" tal:content="title">Location</div>
+</tal:sticker>

@@ -254,6 +254,11 @@ Deactivating a storage keeps all stored samples:
 Dispatching stored samples
 ..........................
 
+The dispatch workflow is optional, so we enable it first:
+
+    >>> senaite_setup = api.get_senaite_setup()
+    >>> senaite_setup.setDispatchWorkflowEnabled(True)
+
 Stored samples can be dispatched:
 
     >>> transitioned = do_action_for(sample, "dispatch")
