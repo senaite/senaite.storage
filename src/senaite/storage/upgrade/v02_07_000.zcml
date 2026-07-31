@@ -3,6 +3,17 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="Reindex 'Date stored' for samples in storage"
+      description="
+        getDateStored now returns a DateTime instead of a pre-formatted
+        string, so the 'getDateStored' index and metadata of samples already
+        in storage are rebuilt for the 'Date stored' column to show up."
+      source="2712"
+      destination="2713"
+      handler=".v02_07_000.reindex_date_stored"
+      profile="senaite.storage:default"/>
+
+  <genericsetup:upgradeStep
       title="Add stickers preview action to storage location types"
       description="
         Adds a 'Stickers preview' object action to the storage facility,

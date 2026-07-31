@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #75 Fix blank "Date stored" column in the samples listing
 - #72 Add printable barcode stickers for storage location objects
 - #73 Compatibility with core#2962 (Remove RegulatoryInspector)
 - #74 Use flat_listing for the stored and past-retention sample listings

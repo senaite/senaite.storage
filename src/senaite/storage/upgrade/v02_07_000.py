@@ -614,3 +614,27 @@ def rename_recover_to_retrieve(tool):
     setup.runImportStepFromProfile(profile, "workflow")
 
     logger.info("Recover --> Retrieve [DONE]")
+
+
+def reindex_date_stored(tool):
+    """Reindex 'getDateStored' for the samples already in storage
+
+    getDateStored now returns a DateTime instead of a pre-formatted string,
+    so the index and metadata column of samples already stored need to be
+    rebuilt for the "Date stored" column to show up.
+    """
+    logger.info("Reindex date stored ...")
+
+    cat = api.get_tool(SAMPLE_CATALOG)
+    brains = cat(review_state="stored")
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Processed objects: {0}/{1}".format(num, total))
+            transaction.savepoint()
+
+        obj = api.get_object(brain)
+        obj.reindexObject(idxs=["getDateStored"])
+        obj._p_deactivate()
+
+    logger.info("Reindex date stored [DONE]")
