@@ -27,8 +27,13 @@ from senaite.storage import check_installed
 @check_installed(None)
 def getDateStored(self):
     """Returns the date the sample was stored
+
+    Returned as a `DateTime` so it can be indexed by the `getDateStored`
+    DateIndex and localized by the samples listing. `getTransitionDate`
+    defaults to a pre-formatted string, which neither the index nor the
+    listing can consume, leaving the "Date stored" column blank.
     """
-    return wf.getTransitionDate(self, "store") or None
+    return wf.getTransitionDate(self, "store", return_as_datetime=True) or None
 
 
 @check_installed(None)
