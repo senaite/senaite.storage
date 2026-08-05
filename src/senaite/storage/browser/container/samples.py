@@ -116,6 +116,9 @@ class SampleListingView(ListingView):
                 "toggle": True}),
         ))
 
+        if not context.requires_position_tracking():
+            self.columns.pop("position")
+
         self.review_states = [
             {
                 "id": "default",
@@ -137,8 +140,11 @@ class SampleListingView(ListingView):
             context = self.context
             capacity = context.get_samples_capacity()
             utilization = context.get_samples_utilization()
-            message = _("Container utilization {} / {}".format(
-                utilization, capacity))
+            if context.requires_position_tracking() or context.get_capacity_limit() is not None:
+                message = _("Container utilization {} / {}".format(
+                    utilization, capacity))
+            else:
+                message = _("Stored samples {}".format(utilization))
             self.add_status_message(message, level="info")
 
     def add_status_message(self, message, level="info"):
@@ -157,6 +163,8 @@ class SampleListingView(ListingView):
         """We add this function to tell baselisting to use brains instead of
         full objects"""
         items = super(SampleListingView, self).folderitems()
+        if not self.context.requires_position_tracking():
+            return items
         return sorted(items, key=lambda item: item["position"])
 
     def folderitem(self, obj, item, index):
@@ -168,9 +176,10 @@ class SampleListingView(ListingView):
         sampled = obj.getDateSampled()
         item["getDateReceived"] = self.ulocalized_time(received, long_format=1)
         item["getDateSampled"] = self.ulocalized_time(sampled, long_format=1)
-        position = self.context.get_object_position(obj)
-        item["position"] = self.context.position_to_alpha(
-            position[0], position[1])
+        if self.context.requires_position_tracking():
+            position = self.context.get_object_position(obj)
+            item["position"] = self.context.position_to_alpha(
+                position[0], position[1])
         prev_state = api.get_previous_worfklow_status_of(obj, skip=("stored",))
         if prev_state:
             item["PreviousState"] = self.translate_review_state(

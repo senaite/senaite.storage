@@ -180,6 +180,11 @@ class StoreContainerView(BaseView):
 
         return allowed_states
 
+    def get_capacity_limit(self, container=None):
+        if container is None:
+            container = self.get_container()
+        return container.get_capacity_limit()
+
     def __call__(self):
         form = self.request.form
 
@@ -207,17 +212,25 @@ class StoreContainerView(BaseView):
         if form_submitted and form_store:
             alpha_position = form.get("position")
             sample_uid = form.get("sample")
-            if not alpha_position or not api.is_uid(sample_uid):
-                message = _("No position or not valid sample selected")
+            if not api.is_uid(sample_uid):
+                message = _("No valid sample selected")
                 return self.redirect(message=message)
 
             sample = api.get_object(sample_uid)
-            logger.info("Storing sample {} in {} at {}".format(
-                api.get_id(sample), api.get_id(container), alpha_position))
+            if container.requires_position_tracking():
+                if not alpha_position:
+                    message = _("No position selected")
+                    return self.redirect(message=message)
+                logger.info("Storing sample {} in {} at {}".format(
+                    api.get_id(sample), api.get_id(container), alpha_position))
+                position = container.alpha_to_position(alpha_position)
+                stored = container.add_object_at(sample, position[0], position[1])
+            else:
+                logger.info("Storing sample {} in {}".format(
+                    api.get_id(sample), api.get_id(container)))
+                stored = container.add_object(sample)
 
-            # Store
-            position = container.alpha_to_position(alpha_position)
-            if container.add_object_at(sample, position[0], position[1]):
+            if stored:
                 # Compute and store the expiry date
                 retention_days = form.get("retention_period")
                 retention_days = api.to_int(retention_days, default=-1)
@@ -227,8 +240,11 @@ class StoreContainerView(BaseView):
                 else:
                     sample.setStorageExpiryDate(None)
 
-                message = _("Stored sample {} at position {}").format(
-                    api.get_id(sample), alpha_position)
+                if container.requires_position_tracking():
+                    message = _("Stored sample {} at position {}").format(
+                        api.get_id(sample), alpha_position)
+                else:
+                    message = _("Stored sample {}").format(api.get_id(sample))
                 if container.is_full():
                     return self.redirect(redirect_url=self.get_next_url())
                 return self.redirect(redirect_url=self.get_fallback_url(),

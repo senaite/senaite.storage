@@ -19,7 +19,7 @@
         <span i18n:translate="">Location:</span>
         <a tal:define="info python:view.get_sample_container_info()"
            tal:attributes="href info/url"
-           tal:content="python: '{} ({})'.format(info['full_title'], info['position'])" />
+           tal:content="python: info['display_title']" />
       </p>
     </div>
   </div>
