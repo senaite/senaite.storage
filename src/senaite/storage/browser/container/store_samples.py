@@ -77,19 +77,22 @@ class StoreSamplesView(BaseView):
                 sample_uid = api.get_uid(sample)
                 container_uid = container_mapping.get(sample_uid)
                 alpha_position = container_position_mapping.get(sample_uid)
-                if not all([container_uid, alpha_position]):
+                if not container_uid:
                     continue
                 sample_obj = self.get_object_by_uid(sample_uid)
                 container = self.get_object_by_uid(container_uid)
                 logger.info("Storing sample {} in {}"
                             .format(sample.getId(), container.getId()))
-                # Store
-                position = container.alpha_to_position(alpha_position)
-                stored = container.add_object_at(sample_obj, position[0],
-                                                 position[1])
+                if container.requires_position_tracking():
+                    if not alpha_position:
+                        continue
+                    position = container.alpha_to_position(alpha_position)
+                    stored = container.add_object_at(sample_obj, position[0],
+                                                     position[1])
+                else:
+                    stored = container.add_object(sample_obj)
                 if stored:
-                    stored = container.get_object_at(position[0], position[1])
-                    stored_samples.append(stored)
+                    stored_samples.append(sample_obj)
                     # Compute and store the expiry date
                     retention_days = retention_mapping.get(sample_uid)
                     retention_days = api.to_int(retention_days, default=-1)

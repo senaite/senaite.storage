@@ -51,8 +51,8 @@ def StorageContentModifiedEventHandler(container, event):
     is created manually (e.g. using _createObjectByType), this event will not
     be fired.
     """
-    modified = [d.attributes[0] for d in event.descriptions if d.attributes]
-    if "rows" in modified or "columns" in modified:
+    modified = [attr for d in event.descriptions for attr in d.attributes]
+    if set(modified) & set(["rows", "columns", "managed"]):
         container.rebuild_layout()
 
     parent = api.get_parent(container)

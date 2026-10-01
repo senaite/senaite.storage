@@ -19,10 +19,18 @@
         <p tal:content="python: container.get_full_title()"
            tal:condition="python: container != view.context"></p>
         <p>
-          <span i18n:translate="">Used positions: </span>
-          <span tal:define="used python: container.get_samples_utilization();
-                            total python: container.get_samples_capacity();"
-                tal:content="python: '{}/{}'.format(used, total)"></span>
+          <tal:managed condition="python: container.requires_position_tracking()">
+            <span i18n:translate="">Used positions: </span>
+            <span tal:define="used python: container.get_samples_utilization();
+                              total python: container.get_samples_capacity();"
+                  tal:content="python: '{}/{}'.format(used, total)"></span>
+          </tal:managed>
+          <tal:unmanaged condition="python: not container.requires_position_tracking()">
+            <span i18n:translate="">Stored samples: </span>
+            <span tal:define="used python: container.get_samples_utilization();
+                              total python: view.get_capacity_limit(container);"
+                  tal:content="python: total is None and '{}'.format(used) or '{}/{}'.format(used, total)"></span>
+          </tal:unmanaged>
         </p>
         <hr/>
       </tal:desc>
@@ -53,7 +61,8 @@
             </div>
 
             <!-- Sample Position -->
-            <div class="mr-2">
+            <div class="mr-2"
+                 tal:condition="python: container.requires_position_tracking()">
               <div class="input-group input-group-sm">
                 <div class="input-group-prepend">
                   <div i18n:translate="" class="input-group-text">Position</div>
@@ -112,7 +121,8 @@
 
           <div class="row">
             <!-- Samples container layout view -->
-            <div class="col-sm-12">
+            <div class="col-sm-12"
+                 tal:condition="python: container.requires_position_tracking()">
               <table class="table table-bordered container-layout table-responsive"
                      tal:define="rows python: container.getRows();
                             columns python: container.getColumns();">
@@ -177,6 +187,14 @@
                   </tal:cols>
                 </tr>
               </table>
+            </div>
+            <div class="col-sm-12"
+                 tal:condition="python: not container.requires_position_tracking()">
+              <div class="alert alert-info">
+                <span i18n:translate="">
+                  Samples stored in this container are assigned automatically without fixed positions.
+                </span>
+              </div>
             </div>
           </div>
         </form>
