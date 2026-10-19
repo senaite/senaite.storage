@@ -5,6 +5,7 @@ from bika.lims import workflow as wf
 from bika.lims.interfaces import IAnalysisRequest
 from plone.autoform import directives
 from senaite.core.catalog import SAMPLE_CATALOG
+from senaite.storage import logger
 from senaite.storage import senaiteMessageFactory as _
 from senaite.storage.catalog import STORAGE_CATALOG
 from senaite.storage.content.storage_layout_container import \
@@ -14,6 +15,7 @@ from senaite.storage.content.storage_layout_container import \
 from senaite.storage.interfaces import IStorageSamplesContainer
 from zope import schema
 from zope.interface import implementer
+from zope.lifecycleevent import modified
 
 
 class IStorageSamplesContainerSchema(IStorageLayoutContainerSchema):
@@ -73,13 +75,28 @@ class StorageSamplesContainer(StorageLayoutContainer):
         if not stored:
             return False
 
-        # Transition the sample to "stored" state
-        # TODO check if the sample has a container assigned in BeforeTransition
-        # If it does not have a container assigned, change the workflow state
-        # to the previous one automatically (integrity-check)
-        self.reindexObject(idxs=["get_samples_uids", "is_full"])
+        # Transition the sample to "stored" state. The position has been
+        # written to the layout already, so if the transition is not allowed
+        # the write has to be undone: otherwise the sample occupies a
+        # position without being stored. Undone through the base class, so
+        # the rollback is not recorded as a retrieval
         sample = api.get_object(sample)
-        wf.doActionFor(sample, "store")
+        success, message = wf.doActionFor(sample, "store")
+        if not success:
+            logger.warn("Cannot store {} in {}: {}. Position released"
+                        .format(api.get_id(sample), self.getId(), message))
+            super(StorageSamplesContainer, self).remove_object(sample)
+            return False
+
+        # Notify the container has been modified. This both keeps the catalog
+        # in sync and makes the audit log record the placement: the link
+        # between a sample and its position lives only in this container's
+        # layout, and nothing is ever written to the sample itself. Without
+        # this notification the audit log only ever holds the snapshot taken
+        # when the container was created, while it was still empty, so a
+        # container that is emptied or deleted leaves no trace of what it
+        # used to hold
+        modified(self)
         return stored
 
     def remove_object(self, object_brain_uid, notify_parent=True):
@@ -87,6 +104,10 @@ class StorageSamplesContainer(StorageLayoutContainer):
         """
         removed = super(StorageSamplesContainer, self).remove_object(
             object_brain_uid, notify_parent=notify_parent)
+        if removed:
+            # See add_object_at: records the removal in the audit log and
+            # keeps the catalog in sync
+            modified(self)
         return removed
 
     def has_samples(self):
