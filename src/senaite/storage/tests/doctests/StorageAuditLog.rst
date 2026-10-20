@@ -28,10 +28,10 @@ Functional Helpers:
 
     >>> def new_sample(services, client, contact, sampletype):
     ...     values = {
-    ...         'Client': client.UID(),
-    ...         'Contact': contact.UID(),
-    ...         'DateSampled': date_now,
-    ...         'SampleType': sampletype.UID()}
+    ...         "Client": client.UID(),
+    ...         "Contact": contact.UID(),
+    ...         "DateSampled": date_now,
+    ...         "SampleType": sampletype.UID()}
     ...     service_uids = map(api.get_uid, services)
     ...     return create_analysisrequest(client, request, values, service_uids)
 
@@ -54,7 +54,7 @@ Variables:
 
 We need to create some basic objects for the test:
 
-    >>> setRoles(portal, TEST_USER_ID, ['LabManager',])
+    >>> setRoles(portal, TEST_USER_ID, ["LabManager"])
     >>> client = api.create(portal.clients, "Client", Name="Happy Hills", ClientID="HH")
     >>> contact = api.create(client, "Contact", Firstname="Rita", Lastname="Mohale")
     >>> sampletype = api.create(portal.setup.sampletypes, "SampleType", title="Water", Prefix="W")
@@ -155,6 +155,7 @@ occupies a position without being stored:
     >>> "store" in getAllowedTransitions(other)
     False
 
+    >>> snapshots_count = len(get_snapshots(ssc))
     >>> ssc.add_object_at(other, 2, 2)
     False
 
@@ -166,7 +167,7 @@ occupies a position without being stored:
 
 And nothing was recorded, because nothing happened:
 
-    >>> get_audited_layouts(ssc)[-1] == layouts[-1]
+    >>> len(get_snapshots(ssc)) == snapshots_count
     True
 
 

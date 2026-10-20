@@ -75,11 +75,9 @@ class StorageSamplesContainer(StorageLayoutContainer):
         if not stored:
             return False
 
-        # Transition the sample to "stored" state. The position has been
-        # written to the layout already, so if the transition is not allowed
-        # the write has to be undone: otherwise the sample occupies a
-        # position without being stored. Undone through the base class, so
-        # the rollback is not recorded as a retrieval
+        # Transition the sample to "stored". If not allowed, release the
+        # position through the base class, so the rollback is not audited
+        # as a retrieval
         sample = api.get_object(sample)
         success, message = wf.doActionFor(sample, "store")
         if not success:
@@ -88,14 +86,8 @@ class StorageSamplesContainer(StorageLayoutContainer):
             super(StorageSamplesContainer, self).remove_object(sample)
             return False
 
-        # Notify the container has been modified. This both keeps the catalog
-        # in sync and makes the audit log record the placement: the link
-        # between a sample and its position lives only in this container's
-        # layout, and nothing is ever written to the sample itself. Without
-        # this notification the audit log only ever holds the snapshot taken
-        # when the container was created, while it was still empty, so a
-        # container that is emptied or deleted leaves no trace of what it
-        # used to hold
+        # Reindex and take an audit log snapshot of the new layout. The
+        # sample-position link exists nowhere else
         modified(self)
         return stored
 
@@ -105,8 +97,7 @@ class StorageSamplesContainer(StorageLayoutContainer):
         removed = super(StorageSamplesContainer, self).remove_object(
             object_brain_uid, notify_parent=notify_parent)
         if removed:
-            # See add_object_at: records the removal in the audit log and
-            # keeps the catalog in sync
+            # Reindex and take an audit log snapshot of the new layout
             modified(self)
         return removed
 
