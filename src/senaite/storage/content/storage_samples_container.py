@@ -5,6 +5,7 @@ from bika.lims import workflow as wf
 from bika.lims.interfaces import IAnalysisRequest
 from plone.autoform import directives
 from senaite.core.catalog import SAMPLE_CATALOG
+from senaite.storage import logger
 from senaite.storage import senaiteMessageFactory as _
 from senaite.storage.catalog import STORAGE_CATALOG
 from senaite.storage.content.storage_layout_container import \
@@ -14,6 +15,7 @@ from senaite.storage.content.storage_layout_container import \
 from senaite.storage.interfaces import IStorageSamplesContainer
 from zope import schema
 from zope.interface import implementer
+from zope.lifecycleevent import modified
 
 
 class IStorageSamplesContainerSchema(IStorageLayoutContainerSchema):
@@ -73,13 +75,20 @@ class StorageSamplesContainer(StorageLayoutContainer):
         if not stored:
             return False
 
-        # Transition the sample to "stored" state
-        # TODO check if the sample has a container assigned in BeforeTransition
-        # If it does not have a container assigned, change the workflow state
-        # to the previous one automatically (integrity-check)
-        self.reindexObject(idxs=["get_samples_uids", "is_full"])
+        # Transition the sample to "stored". If not allowed, release the
+        # position through the base class, so the rollback is not audited
+        # as a retrieval
         sample = api.get_object(sample)
-        wf.doActionFor(sample, "store")
+        success, message = wf.doActionFor(sample, "store")
+        if not success:
+            logger.warn("Cannot store {} in {}: {}. Position released"
+                        .format(api.get_id(sample), self.getId(), message))
+            super(StorageSamplesContainer, self).remove_object(sample)
+            return False
+
+        # Reindex and take an audit log snapshot of the new layout. The
+        # sample-position link exists nowhere else
+        modified(self)
         return stored
 
     def remove_object(self, object_brain_uid, notify_parent=True):
@@ -87,6 +96,9 @@ class StorageSamplesContainer(StorageLayoutContainer):
         """
         removed = super(StorageSamplesContainer, self).remove_object(
             object_brain_uid, notify_parent=notify_parent)
+        if removed:
+            # Reindex and take an audit log snapshot of the new layout
+            modified(self)
         return removed
 
     def has_samples(self):
