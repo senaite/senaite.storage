@@ -70,11 +70,18 @@ class IStorageLayoutContainerSchema(model.Schema):
     # actually stores directly or indirectly.
     # The total capacity and utilization of this container is the sum of values
     # of the capacity and utilization of the objects this container stores.
+    #
+    # Both fields are read-only: only rebuild_layout writes them. The
+    # stored items are plain dicts and byte strings, which the declared
+    # value types do not accept, so a full validation of the object (as
+    # on creation through the JSON API) failed with WrongContainedType.
+    # Read-only fields are skipped there and cannot be set from outside.
     directives.widget("positions_layout", DataGridWidgetFactory)
     positions_layout = schema.List(
         title=_("Positions Layout"),
         value_type=schema.Object(schema=IPositionLayoutItem),
         required=False,
+        readonly=True,
         default=[],
     )
 
@@ -82,6 +89,7 @@ class IStorageLayoutContainerSchema(model.Schema):
     available_positions = schema.List(
         title=_("Available Positions"),
         required=False,
+        readonly=True,
         value_type=schema.TextLine(),
         default=[],
     )
@@ -168,8 +176,8 @@ class StorageLayoutContainer(Container):
 
     @security.protected(permissions.ModifyPortalContent)
     def setPositionsLayout(self, values):
-        mutator = self.mutator("positions_layout")
-        mutator(self, values)
+        # The field is read-only, so its mutator would refuse the value
+        self.positions_layout = values
         self.rebuild_layout()
 
     # BBB: AT schema field property
@@ -182,8 +190,8 @@ class StorageLayoutContainer(Container):
 
     @security.protected(permissions.ModifyPortalContent)
     def setAvailablePositions(self, values):
-        mutator = self.mutator("available_positions")
-        mutator(self, values)
+        # The field is read-only, so its mutator would refuse the value
+        self.available_positions = values
 
     # BBB: AT schema field property
     PositionsLayout = property(getPositionsLayout, setPositionsLayout)
