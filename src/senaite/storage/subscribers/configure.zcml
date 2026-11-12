@@ -8,11 +8,19 @@
     handler="senaite.storage.subscribers.upgrade.afterUpgradeStepHandler"
   />
 
-  <!-- Added a container. Rebuild layou -->
+  <!-- Added a container. Rebuild layout and add it to the parent -->
   <subscriber
     for="senaite.storage.interfaces.IStorageLayoutContainer
          zope.lifecycleevent.interfaces.IObjectAddedEvent"
     handler="senaite.storage.subscribers.StorageContentAddedEventHandler"
+  />
+
+  <!-- Created a container with api.create. Rebuild layout and add it to
+       the parent -->
+  <subscriber
+    for="senaite.storage.interfaces.IStorageLayoutContainer
+         senaite.core.events.lifecycle.IAfterAPICreatedObjectEvent"
+    handler="senaite.storage.subscribers.StorageContentCreatedByAPIEventHandler"
   />
 
   <!-- Modified a container. Updates capacity and usage to parent -->
