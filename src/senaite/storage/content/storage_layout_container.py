@@ -4,6 +4,8 @@ import re
 import string
 
 from AccessControl import ClassSecurityInfo
+from Acquisition import aq_inner
+from Acquisition import aq_parent
 from bika.lims import api
 from plone.autoform import directives
 from plone.supermodel import model
@@ -150,6 +152,9 @@ class StorageLayoutContainer(Container):
         mutator(self, value)
         # NOTE: we call the method also by a modified event subscriber
         self.rebuild_layout()
+        # The parent keeps the capacity of this container in its layout. Not
+        # every caller fires a modified event, e.g. the JSON API does not
+        self.notify_parent()
 
     # BBB: AT schema field property
     Rows = property(getRows, setRows)
@@ -165,6 +170,9 @@ class StorageLayoutContainer(Container):
         mutator(self, value)
         # NOTE: we call the method also by a modified event subscriber
         self.rebuild_layout()
+        # The parent keeps the capacity of this container in its layout. Not
+        # every caller fires a modified event, e.g. the JSON API does not
+        self.notify_parent()
 
     # BBB: AT schema field property
     Columns = property(getColumns, setColumns)
@@ -437,7 +445,9 @@ class StorageLayoutContainer(Container):
         """Notifies the parent to update the information it holds about this
         container
         """
-        parent = api.get_parent(self)
+        # A container that is not in a folder yet, e.g. while `createContent`
+        # sets its rows and columns, has no parent to notify
+        parent = aq_parent(aq_inner(self))
         if IStorageLayoutContainer.providedBy(parent):
             parent.update_object(self)
 
