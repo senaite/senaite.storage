@@ -3,6 +3,18 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="Restore the layouts of migrated storage containers"
+      description="
+        The migration to Dexterity swapped the rows and columns of samples
+        containers, lost the dimensions and layout of storage containers and
+        gave the contents of the migrated objects new UIDs. Restores them
+        from the attributes the migration kept of the AT objects."
+      source="2713"
+      destination="2714"
+      handler=".v02_07_000.restore_migrated_layouts"
+      profile="senaite.storage:default"/>
+
+  <genericsetup:upgradeStep
       title="Reindex 'Date stored' for samples in storage"
       description="
         getDateStored now returns a DateTime instead of a pre-formatted

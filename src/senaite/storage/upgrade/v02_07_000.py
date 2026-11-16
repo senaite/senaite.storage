@@ -22,6 +22,7 @@ from bika.lims import api
 from bika.lims.utils import tmpID
 from plone.dexterity.fti import DexterityFTI
 from plone.dexterity.utils import createContent
+from senaite.core.api import snapshot as snapshot_api
 from senaite.core.api import workflow as wapi
 from senaite.core.interfaces import IContentMigrator
 from senaite.core.schema.addressfield import PHYSICAL_ADDRESS
@@ -33,10 +34,13 @@ from senaite.storage import logger
 from senaite.storage import PRODUCT_NAME
 from senaite.storage.catalog import STORAGE_CATALOG
 from senaite.storage.config import STORAGE_WORKFLOW_ID
+from senaite.storage.interfaces import IStorageLayoutContainer
+from senaite.storage.interfaces import IStorageSamplesContainer
 from senaite.storage.setuphandlers import display_in_nav
 from senaite.storage.setuphandlers import setup_roles
 from senaite.storage.setuphandlers import setup_user_groups
 from senaite.storage.setuphandlers import setup_workflows
+from zope.annotation.interfaces import IAnnotations
 from zope.component import getMultiAdapter
 from senaite.core.catalog import SAMPLE_CATALOG
 import transaction
@@ -99,6 +103,18 @@ def remove_at_portal_types(tool):
     logger.info("Remove AT types from portal_types tool ... [DONE]")
 
 
+def move_contents(src, target):
+    """Moves the contents of the source object into the target
+
+    The contents are moved rather than copied, because a copy gets a new UID
+    and the layout of a storage container refers to its contents by UID
+    """
+    for obj in src.objectValues():
+        # the workflow of the storage contents does not grant the permission
+        # to delete them, which a cut and paste requires
+        api.move_object(obj, target, check_constraints=False)
+
+
 def migrate_storage_facilities_to_dx(tool):
     """Converts existing storage facility to DX
     """
@@ -149,8 +165,7 @@ def migrate_storage_facility_to_dx(src, destination):
         address[key] = api.safe_unicode(address.get(key, u""))
     target.setAddress(address)
 
-    cb = src.manage_copyObjects(ids=src.objectIds())
-    target.manage_pasteObjects(cb)
+    move_contents(src, target)
 
     # Migrate the contents from AT to DX
     migrator = getMultiAdapter(
@@ -231,9 +246,12 @@ def migrate_storage_container_to_dx(src, destination):
     # NOTE: always convert string values to unicode for dexterity fields!
     target.title = api.safe_unicode(src.Title() or "")
     target.temperature = src.getTemperature() or 0.0
+    target.rows = src.getRows() or 1
+    target.columns = src.getColumns() or 1
+    target.positions_layout = src.getPositionsLayout() or []
+    target.available_positions = src.getAvailablePositions() or []
 
-    cb = src.manage_copyObjects(ids=src.objectIds())
-    target.manage_pasteObjects(cb)
+    move_contents(src, target)
 
     # Migrate the contents from AT to DX
     migrator = getMultiAdapter(
@@ -315,13 +333,12 @@ def migrate_storage_samples_container_to_dx(src, destination):
     # NOTE: always convert string values to unicode for dexterity fields!
     target.title = api.safe_unicode(src.Title() or u"")
     target.description = api.safe_unicode(src.Description() or u"")
-    target.rows = src.getColumns() or 1
-    target.columns = src.getRows() or 1
+    target.rows = src.getRows() or 1
+    target.columns = src.getColumns() or 1
     target.positions_layout = src.getPositionsLayout() or []
     target.available_positions = src.getAvailablePositions() or []
 
-    cb = src.manage_copyObjects(ids=src.objectIds())
-    target.manage_pasteObjects(cb)
+    move_contents(src, target)
 
     # Migrate the contents from AT to DX
     migrator = getMultiAdapter(
@@ -389,8 +406,7 @@ def migrate_storage_root_folder_to_dx(tool):
     target.title = api.safe_unicode(src.Title() or u"")
     target.description = api.safe_unicode(src.Description() or u"")
 
-    cb = src.manage_copyObjects(ids=src.objectIds())
-    target.manage_pasteObjects(cb)
+    move_contents(src, target)
 
     # Migrate the contents from AT to DX
     migrator = getMultiAdapter(
@@ -638,3 +654,189 @@ def reindex_date_stored(tool):
         obj._p_deactivate()
 
     logger.info("Reindex date stored [DONE]")
+
+
+# Where the migrator of senaite.core keeps the attributes of the AT object
+MIGRATED_ATTRIBUTES = "senaite.core.contentmigration"
+
+
+def restore_migrated_layouts(tool):
+    """Restores the dimensions and layouts the migration to DX lost
+
+    The migration swapped the rows and columns of samples containers, did not
+    migrate the dimensions and layout of storage containers, and gave the
+    contents of every migrated object a new UID, so the layouts of storage
+    containers referred to children that no longer exist. The attributes of
+    the AT objects are still kept in an annotation, so they can be restored.
+    """
+    logger.info("Restore the layouts of migrated containers ...")
+
+    query = {"portal_type": ["StorageContainer", "StorageSamplesContainer"]}
+    brains = api.search(query, STORAGE_CATALOG)
+    containers = map(api.get_object, brains)
+
+    # children first, so the parents take their restored capacity in
+    containers.sort(key=lambda obj: len(obj.getPhysicalPath()), reverse=True)
+
+    # samples stored in any container now
+    stored = set()
+    for container in containers:
+        if IStorageSamplesContainer.providedBy(container):
+            stored.update(container.get_samples_uids())
+
+    for container in containers:
+        restore_migrated_layout(container, stored)
+
+    logger.info("Restore the layouts of migrated containers [DONE]")
+
+
+def get_migrated_attributes(obj):
+    """Returns the attributes the migration kept from the AT object
+    """
+    storage = IAnnotations(obj).get(MIGRATED_ATTRIBUTES)
+    return dict(storage or {})
+
+
+def get_occupied(layout):
+    """Returns the occupied items of the layout as (row, column, uid)
+    """
+    occupied = []
+    for item in layout or []:
+        uid = item.get("uid")
+        if not uid:
+            continue
+        row = api.to_int(item.get("row"), default=-1)
+        column = api.to_int(item.get("column"), default=-1)
+        occupied.append((row, column, uid))
+    return occupied
+
+
+def get_former_uids(obj):
+    """Returns the UIDs the object had before it was copied, as recorded in
+    its audit log
+    """
+    uids = set()
+    for snapshot in snapshot_api.get_snapshots(obj):
+        uid = snapshot.get("uid") or snapshot.get("UID")
+        if api.is_uid(uid):
+            uids.add(uid)
+    return uids
+
+
+def restore_migrated_layout(container, stored):
+    """Restores the dimensions and layout of a migrated container
+    """
+    attributes = get_migrated_attributes(container)
+    rows = api.to_int(attributes.get("Rows"), default=0)
+    columns = api.to_int(attributes.get("Columns"), default=0)
+    if rows < 1 or columns < 1:
+        # not migrated from AT
+        return
+
+    path = api.get_path(container)
+    is_samples_container = IStorageSamplesContainer.providedBy(container)
+    current = (container.getRows(), container.getColumns())
+    if current != (rows, columns):
+        # what the migration left: swapped for samples containers, the
+        # default dimensions for storage containers
+        migrated = (columns, rows) if is_samples_container else (1, 1)
+        if current != migrated:
+            logger.warn("Dimensions of {} changed since the migration "
+                        "({}x{}, {}x{} in AT), skipped"
+                        .format(path, current[0], current[1], rows, columns))
+            return
+        container.rows = rows
+        container.columns = columns
+        logger.info("Dimensions of {} restored to {}x{}"
+                    .format(path, rows, columns))
+
+    # objects that belong to this container, by UID
+    if is_samples_container:
+        def resolve(uid):
+            obj = api.get_object_by_uid(uid, default=None)
+            if obj is None or uid in stored:
+                return None
+            if api.get_review_status(obj) != "stored":
+                return None
+            return obj
+        children = []
+    else:
+        children = filter(IStorageLayoutContainer.providedBy,
+                          container.objectValues())
+        by_uid = dict((api.get_uid(child), child) for child in children)
+        for child in children:
+            for uid in get_former_uids(child):
+                by_uid.setdefault(uid, child)
+
+        def resolve(uid):
+            return by_uid.get(uid)
+
+    positions = dict(((row, column), None)
+                     for row in range(rows) for column in range(columns))
+    placed = []
+    displaced = []
+
+    def place(obj, row, column):
+        if obj in placed:
+            return True
+        if positions.get((row, column), False) is not None:
+            return False
+        positions[(row, column)] = obj
+        placed.append(obj)
+        return True
+
+    # positions taken now, in range of the restored dimensions
+    for row, column, uid in get_occupied(container.getPositionsLayout()):
+        obj = api.get_object_by_uid(uid, default=None)
+        if obj is None:
+            continue
+        if is_samples_container:
+            stored.discard(uid)
+        if not place(obj, row, column):
+            displaced.append(obj)
+
+    # positions taken in AT, for objects that are nowhere now
+    for row, column, uid in get_occupied(attributes.get("PositionsLayout")):
+        obj = resolve(uid)
+        if obj is None or obj in placed:
+            continue
+        if not place(obj, row, column):
+            displaced.append(obj)
+
+    # children that are not in the layout yet
+    displaced.extend(filter(lambda child: child not in placed, children))
+
+    for obj in displaced:
+        if obj in placed:
+            continue
+        free = sorted(pos for pos, item in positions.items() if item is None)
+        if not free:
+            logger.error("No free position in {} for {}, check by hand"
+                         .format(path, api.get_path(obj)))
+            continue
+        place(obj, *free[0])
+        logger.warn("{} placed at the free position {} of {}, check by hand"
+                    .format(api.get_path(obj), free[0], path))
+
+    layout = []
+    for (row, column), obj in sorted(positions.items()):
+        item = container.get_default_layout_item(row, column)
+        if obj is not None:
+            capacity = utilization = 1
+            if IStorageLayoutContainer.providedBy(obj):
+                capacity = obj.get_samples_capacity()
+                utilization = obj.get_samples_utilization()
+            item.update({
+                "uid": api.get_uid(obj),
+                "samples_capacity": capacity,
+                "samples_utilization": utilization,
+            })
+            if is_samples_container:
+                stored.add(api.get_uid(obj))
+        layout.append(item)
+
+    # bypass the setter, it notifies the parent before it is restored
+    container.positions_layout = layout
+    container.rebuild_layout()
+    container.reindexObject()
+    container.notify_parent()
