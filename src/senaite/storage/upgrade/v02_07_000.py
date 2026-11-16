@@ -25,6 +25,7 @@ from plone.dexterity.utils import createContent
 from senaite.core.api import snapshot as snapshot_api
 from senaite.core.api import workflow as wapi
 from senaite.core.interfaces import IContentMigrator
+from senaite.core.migration.migrator import ATTRIBUTE_STORAGE
 from senaite.core.schema.addressfield import PHYSICAL_ADDRESS
 from senaite.core.setuphandlers import add_catalog_index
 from senaite.core.upgrade import upgradestep
@@ -656,10 +657,6 @@ def reindex_date_stored(tool):
     logger.info("Reindex date stored [DONE]")
 
 
-# Where the migrator of senaite.core keeps the attributes of the AT object
-MIGRATED_ATTRIBUTES = "senaite.core.contentmigration"
-
-
 def restore_migrated_layouts(tool):
     """Restores the dimensions and layouts the migration to DX lost
 
@@ -693,7 +690,7 @@ def restore_migrated_layouts(tool):
 def get_migrated_attributes(obj):
     """Returns the attributes the migration kept from the AT object
     """
-    storage = IAnnotations(obj).get(MIGRATED_ATTRIBUTES)
+    storage = IAnnotations(obj).get(ATTRIBUTE_STORAGE)
     return dict(storage or {})
 
 

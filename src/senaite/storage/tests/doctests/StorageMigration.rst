@@ -24,6 +24,7 @@ Needed Imports:
     >>> from plone.app.testing import setRoles
     >>> from plone.app.testing import TEST_USER_ID
     >>> from senaite.core.api import snapshot as snapshot_api
+    >>> from senaite.core.migration.migrator import ATTRIBUTE_STORAGE
     >>> from senaite.storage.api import get_storage_sample
     >>> from senaite.storage.content.storagecontainer import \
     ...     StorageContainer as ATStorageContainer
@@ -163,10 +164,10 @@ still has the former one:
     ...             "uid": uid or api.get_uid(obj),
     ...             "samples_capacity": 1, "samples_utilization": 1}
 
-    >>> IAnnotations(old_rack)[steps.MIGRATED_ATTRIBUTES] = {
+    >>> IAnnotations(old_rack)[ATTRIBUTE_STORAGE] = {
     ...     "Rows": 2, "Columns": 2,
     ...     "PositionsLayout": [item(1, 0, None, uid=former_box_uid)]}
-    >>> IAnnotations(old_box)[steps.MIGRATED_ATTRIBUTES] = {
+    >>> IAnnotations(old_box)[ATTRIBUTE_STORAGE] = {
     ...     "Rows": 2, "Columns": 3,
     ...     "PositionsLayout": [item(0, 0, sample_a), item(0, 2, sample_b),
     ...                         item(1, 2, sample_c)]}
