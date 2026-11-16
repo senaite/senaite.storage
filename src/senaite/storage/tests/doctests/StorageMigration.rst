@@ -130,6 +130,23 @@ The box keeps its rows and columns:
     [6]
 
 
+The contents of a migrated storage facility are moved as well:
+
+    >>> from senaite.storage.content.storagefacility import \
+    ...     StorageFacility as ATStorageFacility
+    >>> storage._setObject("at-facility", ATStorageFacility("at-facility"))
+    'at-facility'
+    >>> at_facility = storage._getOb("at-facility")
+    >>> at_facility._setObject("at-freezer", ATStorageContainer("at-freezer"))
+    'at-freezer'
+    >>> freezer_uid = api.get_uid(at_facility._getOb("at-freezer"))
+    >>> steps.migrate_storage_facility_to_dx(at_facility, storage)
+    >>> migrated_facility = storage._getOb("at-facility")
+    >>> api.is_dexterity_content(migrated_facility)
+    True
+    >>> api.get_uid(migrated_facility._getOb("at-freezer")) == freezer_uid
+    True
+
 Restore of the containers migrated before the fix
 ..................................................
 
@@ -159,18 +176,19 @@ still has the former one:
     >>> sample_c = new_sample()
     >>> sample_d = new_sample()
 
-    >>> def item(row, column, obj, uid=None):
+    >>> def layout_item(row, column, obj, uid=None):
     ...     return {"row": row, "column": column,
     ...             "uid": uid or api.get_uid(obj),
     ...             "samples_capacity": 1, "samples_utilization": 1}
 
     >>> IAnnotations(old_rack)[ATTRIBUTE_STORAGE] = {
     ...     "Rows": 2, "Columns": 2,
-    ...     "PositionsLayout": [item(1, 0, None, uid=former_box_uid)]}
+    ...     "PositionsLayout": [layout_item(1, 0, None, uid=former_box_uid)]}
     >>> IAnnotations(old_box)[ATTRIBUTE_STORAGE] = {
     ...     "Rows": 2, "Columns": 3,
-    ...     "PositionsLayout": [item(0, 0, sample_a), item(0, 2, sample_b),
-    ...                         item(1, 2, sample_c)]}
+    ...     "PositionsLayout": [layout_item(0, 0, sample_a),
+    ...                         layout_item(0, 2, sample_b),
+    ...                         layout_item(1, 2, sample_c)]}
 
 The layout of the box was copied as it was, but the first sample stored
 afterwards, at E2 of the swapped box, rebuilt it with 3 x 2 positions. The
@@ -252,3 +270,63 @@ is:
     >>> steps.restore_migrated_layouts(portal_setup)
     >>> old_box.getRows(), old_box.getColumns()
     (4, 4)
+
+
+Restore edge cases
+..................
+
+A sample of the AT layout that is stored in another container now stays
+there, and a sample that is not stored any longer is not put back:
+
+    >>> cabinet = api.create(room, "StorageContainer", title="Cabinet",
+    ...                      rows=1, columns=2)
+    >>> moved_box = api.create(cabinet, "StorageSamplesContainer",
+    ...                        title="Moved box", rows=2, columns=1)
+    >>> other_box = api.create(cabinet, "StorageSamplesContainer",
+    ...                        title="Other box", rows=1, columns=1)
+    >>> sample_e = new_sample()
+    >>> sample_f = new_sample()
+    >>> other_box.add_object_at(sample_e, 0, 0)
+    True
+    >>> IAnnotations(moved_box)[ATTRIBUTE_STORAGE] = {
+    ...     "Rows": 1, "Columns": 2,
+    ...     "PositionsLayout": [layout_item(0, 0, sample_e),
+    ...                         layout_item(0, 1, sample_f)]}
+    >>> api.get_review_status(sample_f)
+    'sample_received'
+
+    >>> steps.restore_migrated_layouts(portal_setup)
+    >>> moved_box.getRows(), moved_box.getColumns()
+    (1, 2)
+    >>> get_layout(moved_box)
+    []
+    >>> get_storage_sample(sample_e) == other_box
+    True
+
+A container that cannot be found by its former UID, because the audit log
+of the site was disabled, takes the first free position. A parent that was
+not migrated learns the restored capacity of the child it holds:
+
+    >>> freezer = api.create(room, "StorageContainer", title="Freezer",
+    ...                      rows=1, columns=2)
+    >>> shelf = api.create(freezer, "StorageContainer", title="Shelf")
+    >>> freezer.add_object_at(shelf, 0, 1)
+    True
+    >>> unknown_box = api.create(shelf, "StorageSamplesContainer",
+    ...                          title="Unknown box", rows=2, columns=2)
+    >>> unknown_box.rebuild_layout()
+    >>> unknown_box.get_samples_capacity()
+    4
+    >>> IAnnotations(shelf)[ATTRIBUTE_STORAGE] = {
+    ...     "Rows": 1, "Columns": 3,
+    ...     "PositionsLayout": [layout_item(0, 2, None, uid="1" * 32)]}
+    >>> get_capacity(freezer, shelf)
+    [1]
+
+    >>> steps.restore_migrated_layouts(portal_setup)
+    >>> shelf.getRows(), shelf.getColumns()
+    (1, 3)
+    >>> get_layout(shelf) == [(0, 0, api.get_id(unknown_box))]
+    True
+    >>> get_capacity(freezer, shelf)
+    [6]
