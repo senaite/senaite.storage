@@ -97,6 +97,12 @@ B2:
     >>> at_box = at_rack._getOb("at-box")
     >>> at_box.setRows(2)
     >>> at_box.setColumns(3)
+
+The rack took the box in at its first free position when it was added. It
+is stored at B2:
+
+    >>> at_rack.remove_object(at_box)
+    True
     >>> at_rack.add_object_at(at_box, 1, 1)
     True
     >>> box_uid = api.get_uid(at_box)
@@ -310,13 +316,17 @@ not migrated learns the restored capacity of the child it holds:
     >>> freezer = api.create(room, "StorageContainer", title="Freezer",
     ...                      rows=1, columns=2)
     >>> shelf = api.create(freezer, "StorageContainer", title="Shelf")
-    >>> freezer.add_object_at(shelf, 0, 1)
+    >>> freezer.has_object(shelf)
     True
     >>> unknown_box = api.create(shelf, "StorageSamplesContainer",
     ...                          title="Unknown box", rows=2, columns=2)
-    >>> unknown_box.rebuild_layout()
     >>> unknown_box.get_samples_capacity()
     4
+
+The migration left the box out of the layout of the shelf:
+
+    >>> shelf.remove_object(unknown_box)
+    True
     >>> IAnnotations(shelf)[ATTRIBUTE_STORAGE] = {
     ...     "Rows": 1, "Columns": 3,
     ...     "PositionsLayout": [layout_item(0, 2, None, uid="1" * 32)]}
