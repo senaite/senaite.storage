@@ -23,38 +23,14 @@ from senaite.storage import logger
 from senaite.storage.interfaces import IStorageLayoutContainer
 
 
-def StorageContentAddedEventHandler(container, event):
-    """Event handler when a new layout container was added
+def update_parent_layout(container):
+    """Adds the container to the layout of its parent, or updates it there
+
+    The parent keeps the capacity and utilization of the container in its
+    own layout, so it has to learn about the container when it is added and
+    whenever its dimensions change. Does nothing when the parent is not a
+    layout container itself, e.g. a storage facility.
     """
-    container.rebuild_layout()
-
-
-def StorageContentModifiedEventHandler(container, event):
-    """Adds the object to the parent's layout (if the parent is a container)
-    We use a ObjectModifiedEvent from zope.lifecycleevent here instead of
-    ObjectAddedEvent or InitializedEvent because:
-
-    a) ObjectAddedEvent from zope.lifecycleevent is fired as soon as the object
-       is temporarily created, when fields do not have any value set. Since we
-       need the values from "PositionsLayout" field for the parent to get
-       updated in accordance, we cannot use this event.
-
-    b) InitializedEvent from Products.Archetypes is called as soon as the
-       object is created (with values) after the edit form submission, but this
-       event is not called by senaite.core's api. Hence, this cannot be used
-       because the event will not be fired if the object is created manually
-       unless we do a explicit call to processForm() on creation (which is not
-       always the case).
-
-    Caveats: Note that we assume the object is at least created by using
-    Plone's default edit form or by using senaite.core's api, but if the object
-    is created manually (e.g. using _createObjectByType), this event will not
-    be fired.
-    """
-    modified = [d.attributes[0] for d in event.descriptions if d.attributes]
-    if "rows" in modified or "columns" in modified:
-        container.rebuild_layout()
-
     parent = api.get_parent(container)
     if not IStorageLayoutContainer.providedBy(parent):
         # Parent doesn't care about the changes in his children
@@ -70,6 +46,41 @@ def StorageContentModifiedEventHandler(container, event):
         if not parent.add_object(container):
             logger.warn("Cannot add the container '{}' into '{}'"
                         .format(container.getId(), parent.getId()))
+
+
+def StorageContentAddedEventHandler(container, event):
+    """Event handler when a new layout container was added
+
+    The add form sets the fields before the container is added, so its
+    layout is complete here and the parent can take it in.
+    """
+    container.rebuild_layout()
+    update_parent_layout(container)
+
+
+def StorageContentCreatedByAPIEventHandler(container, event):
+    """Event handler when a layout container was created with `api.create`
+
+    `api.create` adds the container before it sets its fields, and sets
+    them through the fields rather than the setters, so neither the layout
+    of the container nor the one of its parent know its dimensions yet.
+    """
+    container.rebuild_layout()
+    update_parent_layout(container)
+
+
+def StorageContentModifiedEventHandler(container, event):
+    """Rebuilds the layout when the dimensions of the container changed, and
+    adds the container to the layout of its parent, or updates it there
+
+    A container the parent did not take in when it was added, e.g. because
+    it had no free position then, is added here on its next modification.
+    """
+    modified = [d.attributes[0] for d in event.descriptions if d.attributes]
+    if "rows" in modified or "columns" in modified:
+        container.rebuild_layout()
+
+    update_parent_layout(container)
 
 
 def StorageContentRemovedEventHandler(container, event):

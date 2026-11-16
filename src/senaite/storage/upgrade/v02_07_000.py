@@ -33,6 +33,7 @@ from senaite.storage import logger
 from senaite.storage import PRODUCT_NAME
 from senaite.storage.catalog import STORAGE_CATALOG
 from senaite.storage.config import STORAGE_WORKFLOW_ID
+from senaite.storage.interfaces import IStorageLayoutContainer
 from senaite.storage.setuphandlers import display_in_nav
 from senaite.storage.setuphandlers import setup_roles
 from senaite.storage.setuphandlers import setup_user_groups
@@ -227,6 +228,10 @@ def migrate_storage_container_to_dx(src, destination):
     destination._setObject(target_id, target)
     target = destination._getOb(target_id)
 
+    # the parent took the new container in, with its temporary UID
+    if IStorageLayoutContainer.providedBy(destination):
+        destination.remove_object(target, notify_parent=False)
+
     # Manually set the fields
     # NOTE: always convert string values to unicode for dexterity fields!
     target.title = api.safe_unicode(src.Title() or "")
@@ -310,6 +315,10 @@ def migrate_storage_samples_container_to_dx(src, destination):
     target = createContent(portal_type, id=target_id)
     destination._setObject(target_id, target)
     target = destination._getOb(target_id)
+
+    # the parent took the new container in, with its temporary UID
+    if IStorageLayoutContainer.providedBy(destination):
+        destination.remove_object(target, notify_parent=False)
 
     # Manually set the fields
     # NOTE: always convert string values to unicode for dexterity fields!
