@@ -908,3 +908,9 @@ def restore_migrated_layout(container, stored, original_ids):
     container.rebuild_layout()
     container.reindexObject()
     container.notify_parent()
+
+    # the samples put back show their container in the samples listing
+    if is_samples_container:
+        for obj in placed:
+            if obj not in current_objs:
+                obj.reindexObject(idxs=["getDateStored"])

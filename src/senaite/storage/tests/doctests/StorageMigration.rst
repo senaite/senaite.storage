@@ -22,6 +22,7 @@ Needed Imports:
     >>> from DateTime import DateTime
     >>> from plone.app.testing import setRoles
     >>> from plone.app.testing import TEST_USER_ID
+    >>> from senaite.core.catalog import SAMPLE_CATALOG
     >>> from senaite.core.migration.migrator import ATTRIBUTE_STORAGE
     >>> from senaite.storage.api import get_storage_sample
     >>> from senaite.storage.content.storagecontainer import \
@@ -187,6 +188,16 @@ the samples at A3 and B3 were dropped, while they are still stored:
     >>> api.get_review_status(sample_b)
     'stored'
 
+The samples listing shows no container for it, once it is reindexed:
+
+    >>> def get_listed_container(sample):
+    ...     query = {"UID": api.get_uid(sample)}
+    ...     return api.search(query, SAMPLE_CATALOG)[0].getSamplesContainerID
+
+    >>> sample_b.reindexObject()
+    >>> get_listed_container(sample_b)
+    ''
+
 The square box kept its dimensions and samples:
 
     >>> square.getRows(), square.getColumns(), get_samples(square)
@@ -230,6 +241,8 @@ box does not have takes the first free position:
     [(0, 0, 'a'), (0, 1, 'd'), (0, 2, 'b'), (1, 2, 'c')]
     >>> get_storage_sample(sample_b) == box
     True
+    >>> get_listed_container(sample_b)
+    'box'
 
 The migration did not damage the square box, so the restore leaves it as it
 is:
