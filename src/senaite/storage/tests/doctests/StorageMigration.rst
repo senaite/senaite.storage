@@ -156,12 +156,18 @@ They are stored at A1 and B2:
 
 The former migration runs:
 
+    >>> former_uids = map(api.get_uid, [at_rack, at_square, at_box])
     >>> old_migration.migrate(portal_setup)
     >>> rack = portal.senaite_storage.facility.rack
     >>> box = rack.box
     >>> square = rack.square
     >>> api.is_dexterity_content(rack), api.is_dexterity_content(box)
     (True, True)
+
+The rack and the boxes got new UIDs:
+
+    >>> [api.get_uid(obj) in former_uids for obj in (rack, square, box)]
+    [False, False, False]
 
 The rack lost its dimensions and its layout, and the box got its rows and
 columns swapped:
@@ -193,6 +199,11 @@ A sample is stored afterwards at E2 of the swapped box:
     >>> box.add_object_at(sample_d, 2, 1)
     True
 
+The box was modified, so the rack took it in at its single position:
+
+    >>> get_layout(rack)
+    [(0, 0, 'box')]
+
 The upgrade step restores the dimensions:
 
     >>> steps.restore_migrated_layouts(portal_setup)
@@ -214,11 +225,23 @@ The square box is as it was:
     >>> square.getRows(), square.getColumns(), get_samples(square)
     (2, 2, [(1, 1, 'g')])
 
+The rack holds the boxes at their AT positions, with their capacities, rather
+than where it took them in after the migration. Its AT layout refers to them
+by the UIDs they had before the migration, which the original objects the
+migration kept still have:
+
+    >>> get_layout(rack)
+    [(0, 0, 'square'), (1, 1, 'box')]
+    >>> get_capacity(rack, square), get_capacity(rack, box)
+    ([4], [6])
+
 Running the step again changes nothing:
 
     >>> steps.restore_migrated_layouts(portal_setup)
     >>> get_samples(box)
     [(0, 0, 'a'), (0, 1, 'd'), (0, 2, 'b'), (1, 2, 'c')]
+    >>> get_layout(rack)
+    [(0, 0, 'square'), (1, 1, 'box')]
 
 A container whose dimensions were changed since the migration is left as it
 is:
@@ -337,9 +360,9 @@ there, and a sample that is not stored any longer is not put back:
     >>> get_storage_sample(sample_e) == other_box
     True
 
-A container that cannot be found by its former UID, because the audit log
-of the site was disabled, takes the first free position. A parent that was
-not migrated learns the restored capacity of the child it holds:
+A container held under a UID that no original object has takes the first
+free position. A parent that was not migrated learns the restored capacity of
+the child it holds:
 
     >>> freezer = api.create(room, "StorageContainer", title="Freezer",
     ...                      rows=1, columns=2)

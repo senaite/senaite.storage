@@ -18,11 +18,11 @@
 # Copyright 2019-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from Acquisition import aq_base
 from bika.lims import api
 from bika.lims.utils import tmpID
 from plone.dexterity.fti import DexterityFTI
 from plone.dexterity.utils import createContent
-from senaite.core.api import snapshot as snapshot_api
 from senaite.core.api import workflow as wapi
 from senaite.core.interfaces import IContentMigrator
 from senaite.core.migration.migrator import ATTRIBUTE_STORAGE
@@ -689,8 +689,11 @@ def restore_migrated_layouts(tool):
         if IStorageSamplesContainer.providedBy(container):
             stored.update(container.get_samples_uids())
 
+    # ids of the objects the former migration copied, by their former UID
+    original_ids = get_original_ids(api.get_portal().senaite_storage)
+
     for container in containers:
-        restore_migrated_layout(container, stored)
+        restore_migrated_layout(container, stored, original_ids)
 
     logger.info("Restore the layouts of migrated containers [DONE]")
 
@@ -716,19 +719,43 @@ def get_occupied(layout):
     return occupied
 
 
-def get_former_uids(obj):
-    """Returns the UIDs the object had before it was copied, as recorded in
-    its audit log
+def get_original_ids(root):
+    """Returns the ids of the storage objects by the UIDs they ever had
+
+    The former migration copied the contents of the migrated objects, so
+    they got new UIDs, while the layouts of the containers kept the former
+    ones. It kept the attributes of each AT object in an annotation, its
+    folder tree included, so the original objects are still there, with
+    their ids and UIDs.
+
+    :param root: the storage root folder
+    :returns: dict of UID -> id
     """
-    uids = set()
-    for snapshot in snapshot_api.get_snapshots(obj):
-        uid = snapshot.get("uid") or snapshot.get("UID")
-        if api.is_uid(uid):
-            uids.add(uid)
-    return uids
+    ids = {}
+    seen = set()
+
+    def walk(obj):
+        obj = aq_base(obj)
+        if id(obj) in seen:
+            return
+        seen.add(id(obj))
+        annotations = getattr(obj, "__annotations__", None) or {}
+        attributes = annotations.get(ATTRIBUTE_STORAGE) or {}
+        for tree in (getattr(obj, "_tree", None), attributes.get("_tree")):
+            if not tree:
+                continue
+            for child_id, child in tree.items():
+                uid = getattr(aq_base(child), "_at_uid", None) or \
+                    getattr(aq_base(child), "_plone.uuid", None)
+                if uid:
+                    ids.setdefault(uid, child_id)
+                walk(child)
+
+    walk(root)
+    return ids
 
 
-def restore_migrated_layout(container, stored):
+def restore_migrated_layout(container, stored, original_ids):
     """Restores the dimensions and layout of a migrated container
     """
     attributes = get_migrated_attributes(container)
@@ -741,7 +768,8 @@ def restore_migrated_layout(container, stored):
     path = api.get_path(container)
     is_samples_container = IStorageSamplesContainer.providedBy(container)
     current = (container.getRows(), container.getColumns())
-    if current != (rows, columns):
+    restored = current != (rows, columns)
+    if restored:
         # what the migration left: swapped for samples containers, the
         # default dimensions for storage containers
         migrated = (columns, rows) if is_samples_container else (1, 1)
@@ -769,12 +797,14 @@ def restore_migrated_layout(container, stored):
         children = filter(IStorageLayoutContainer.providedBy,
                           container.objectValues())
         by_uid = dict((api.get_uid(child), child) for child in children)
-        for child in children:
-            for uid in get_former_uids(child):
-                by_uid.setdefault(uid, child)
+        by_id = dict((api.get_id(child), child) for child in children)
 
         def resolve(uid):
-            return by_uid.get(uid)
+            # the child kept its UID, or got a new one when it was copied
+            child = by_uid.get(uid)
+            if child is None and uid in original_ids:
+                child = by_id.get(original_ids[uid])
+            return child
 
     positions = dict(((row, column), None)
                      for row in range(rows) for column in range(columns))
@@ -790,20 +820,33 @@ def restore_migrated_layout(container, stored):
         placed.append(obj)
         return True
 
-    # positions taken now, in range of the restored dimensions
+    # positions taken now
+    current_items = []
     for row, column, uid in get_occupied(container.getPositionsLayout()):
         obj = api.get_object_by_uid(uid, default=None)
         if obj is None:
             continue
         if is_samples_container:
             stored.discard(uid)
-        if not place(obj, row, column):
-            displaced.append(obj)
+        current_items.append((row, column, obj))
 
     # positions taken in AT, for objects that are nowhere now
+    at_items = []
     for row, column, uid in get_occupied(attributes.get("PositionsLayout")):
         obj = resolve(uid)
-        if obj is None or obj in placed:
+        if obj is not None:
+            at_items.append((row, column, obj))
+
+    # The current positions of a samples container are the ones chosen when
+    # the samples were stored after the migration. A storage container the
+    # migration left with a single position got the containers it holds at
+    # the first free one instead, so its AT positions come first
+    items = current_items + at_items
+    if restored and not is_samples_container:
+        items = at_items + current_items
+
+    for row, column, obj in items:
+        if obj in placed:
             continue
         if not place(obj, row, column):
             displaced.append(obj)
