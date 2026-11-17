@@ -783,6 +783,11 @@ def restore_migrated_layout(container, stored, original_ids):
         logger.info("Dimensions of {} restored to {}x{}"
                     .format(path, rows, columns))
 
+    if is_samples_container and not restored:
+        # the migration did not swap the dimensions, so the samples kept
+        # their positions
+        return
+
     # objects that belong to this container, by UID
     if is_samples_container:
         def resolve(uid):
@@ -837,6 +842,13 @@ def restore_migrated_layout(container, stored, original_ids):
         if obj is not None:
             at_items.append((row, column, obj))
 
+    # A storage container that kept its dimensions is damaged when the
+    # containers it held in AT are missing in its layout
+    current_objs = [item[2] for item in current_items]
+    missing = [item[2] for item in at_items if item[2] not in current_objs]
+    if not restored and not missing:
+        return
+
     # The current positions of a samples container are the ones chosen when
     # the samples were stored after the migration. A storage container the
     # migration left with a single position got the containers it holds at
@@ -865,6 +877,14 @@ def restore_migrated_layout(container, stored, original_ids):
         place(obj, *free[0])
         logger.warn("{} placed at the free position {} of {}, check by hand"
                     .format(api.get_path(obj), free[0], path))
+
+    before = sorted((row, column, api.get_uid(obj))
+                    for row, column, obj in current_items)
+    after = sorted((row, column, api.get_uid(obj))
+                   for (row, column), obj in positions.items()
+                   if obj is not None)
+    if not restored and before == after:
+        return
 
     layout = []
     for (row, column), obj in sorted(positions.items()):

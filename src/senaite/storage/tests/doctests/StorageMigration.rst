@@ -204,6 +204,17 @@ The box was modified, so the rack took it in at its single position:
     >>> get_layout(rack)
     [(0, 0, 'box')]
 
+A sample of the square box lost its position for a reason that has nothing
+to do with the migration:
+
+    >>> square.positions_layout = [
+    ...     item for item in square.getPositionsLayout()
+    ...     if item.get("uid") != api.get_uid(sample_g)]
+    >>> square.rebuild_layout()
+    >>> square.reindexObject()
+    >>> get_storage_sample(sample_g) is None
+    True
+
 The upgrade step restores the dimensions:
 
     >>> steps.restore_migrated_layouts(portal_setup)
@@ -220,10 +231,13 @@ box does not have takes the first free position:
     >>> get_storage_sample(sample_b) == box
     True
 
-The square box is as it was:
+The migration did not damage the square box, so the restore leaves it as it
+is:
 
     >>> square.getRows(), square.getColumns(), get_samples(square)
-    (2, 2, [(1, 1, 'g')])
+    (2, 2, [])
+    >>> get_storage_sample(sample_g) is None
+    True
 
 The rack holds the boxes at their AT positions, with their capacities, rather
 than where it took them in after the migration. Its AT layout refers to them
@@ -311,6 +325,19 @@ The box keeps its rows and columns:
     [(1, 1, 'at-box')]
     >>> get_capacity(rack, box)
     [6]
+
+The restore leaves the containers migrated with the fix as they are, also
+when their layout misses a container for another reason:
+
+    >>> spare = api.create(rack, "StorageSamplesContainer", title="Spare",
+    ...                    rows=1, columns=1)
+    >>> rack.remove_object(spare)
+    True
+    >>> steps.restore_migrated_layouts(portal_setup)
+    >>> rack.getRows(), rack.getColumns(), get_layout(rack)
+    (2, 2, [(1, 1, 'at-box')])
+    >>> box.getRows(), box.getColumns(), get_capacity(rack, box)
+    (2, 3, [6])
 
 
 The contents of a migrated storage facility are moved as well:
