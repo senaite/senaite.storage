@@ -53,9 +53,15 @@ Functional Helpers:
 
     >>> def get_layout(container):
     ...     layout = container.getPositionsLayout()
-    ...     return [(item["row"], item["column"],
-    ...              api.get_object_by_uid(item["uid"]).getId())
-    ...             for item in layout if item.get("uid")]
+    ...     result = []
+    ...     for item in layout:
+    ...         uid = item.get("uid")
+    ...         if not uid:
+    ...             continue
+    ...         obj = api.get_object_by_uid(uid, default=None)
+    ...         name = obj.getId() if obj else "missing " + uid[:4]
+    ...         result.append((item["row"], item["column"], name))
+    ...     return result
 
     >>> def layout_item(row, column, obj, uid=None):
     ...     return {"row": row, "column": column,
@@ -153,7 +159,7 @@ They are stored at A1 and B2:
     ...     (sample_a, "a"), (sample_b, "b"), (sample_c, "c"),
     ...     (sample_g, "g")])
     >>> def get_samples(container):
-    ...     return [(row, column, names[sid])
+    ...     return [(row, column, names.get(sid, sid))
     ...             for row, column, sid in get_layout(container)]
 
 The former migration runs:
@@ -204,6 +210,21 @@ The square box kept its dimensions and samples:
     >>> square.getRows(), square.getColumns(), get_samples(square)
     (2, 2, [(1, 1, 'g')])
 
+Two positions of the box refer to objects that cannot be found any longer,
+e.g. samples deleted afterwards, at B2 and C1 of the swapped box:
+
+    >>> def set_uid(container, row, column, uid):
+    ...     layout = container.getPositionsLayout()
+    ...     for item in layout:
+    ...         if (item["row"], item["column"]) == (row, column):
+    ...             item["uid"] = uid
+    ...     container.positions_layout = layout
+
+    >>> set_uid(box, 1, 1, "1" * 32)
+    >>> set_uid(box, 2, 0, "2" * 32)
+    >>> get_samples(box)
+    [(0, 0, 'a'), (1, 1, 'missing 1111'), (2, 0, 'missing 2222')]
+
 A sample is stored afterwards at E2 of the swapped box:
 
     >>> sample_d = new_sample()
@@ -239,9 +260,15 @@ The samples are back at their AT positions. The one stored at a position the
 box does not have takes the first free position:
 
     >>> get_samples(box)
-    [(0, 0, 'a'), (0, 1, 'd'), (0, 2, 'b'), (1, 2, 'c')]
+    [(0, 0, 'a'), (0, 1, 'd'), (0, 2, 'b'), (1, 1, 'missing 1111'),
+     (1, 2, 'c')]
     >>> get_storage_sample(sample_b) == box
     True
+
+The position that refers to an object that cannot be found is kept as it is,
+as long as the box still has it. What it holds is unknown, so the restore
+does not drop it. The one at C1 is out of the restored dimensions, it is
+dropped and named in the audit log of the box, see below.
     >>> get_listed_container(sample_b)
     'box'
 
@@ -264,7 +291,8 @@ migration kept still have:
     ([4], [6])
 
 The audit log of the restored containers records the restore, with the
-objects placed at a free position to check by hand:
+objects placed at a free position and the positions of missing objects that
+were dropped, to check by hand:
 
     >>> def get_comments(obj):
     ...     snapshot = snapshot_api.get_last_snapshot(obj)
@@ -274,7 +302,9 @@ objects placed at a free position to check by hand:
     u'Layout restored after the migration to Dexterity'
     >>> get_comments(box) == (
     ...     "Layout restored after the migration to Dexterity. Placed at a "
-    ...     "free position, check by hand: {}".format(api.get_id(sample_d)))
+    ...     "free position, check by hand: {}. Positions of missing objects "
+    ...     "out of the restored dimensions, check by hand: {} at C1"
+    ...     .format(api.get_id(sample_d), "2" * 32))
     True
     >>> snapshot_api.get_snapshot_metadata(
     ...     snapshot_api.get_last_snapshot(box))["action"]
@@ -289,7 +319,8 @@ Running the step again changes nothing:
 
     >>> steps.restore_migrated_layouts(portal_setup)
     >>> get_samples(box)
-    [(0, 0, 'a'), (0, 1, 'd'), (0, 2, 'b'), (1, 2, 'c')]
+    [(0, 0, 'a'), (0, 1, 'd'), (0, 2, 'b'), (1, 1, 'missing 1111'),
+     (1, 2, 'c')]
     >>> get_layout(rack)
     [(0, 0, 'square'), (1, 1, 'box')]
 

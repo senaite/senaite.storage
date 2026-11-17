@@ -837,9 +837,11 @@ def restore_migrated_layout(container, stored, original_ids):
 
     # positions taken now
     current_items = []
+    unknown_items = []
     for row, column, uid in get_occupied(container.getPositionsLayout()):
         obj = api.get_object_by_uid(uid, default=None)
         if obj is None:
+            unknown_items.append((row, column, uid))
             continue
         if is_samples_container:
             stored.discard(uid)
@@ -867,6 +869,18 @@ def restore_migrated_layout(container, stored, original_ids):
     if restored and not is_samples_container:
         items = at_items + current_items
 
+    # Positions taken by objects that cannot be found are kept as they are,
+    # as long as the container still has them: what they hold is unknown
+    lost = []
+    for row, column, uid in unknown_items:
+        if positions.get((row, column), False) is not None:
+            lost.append((row, column, uid))
+            logger.error("Position {} of {} refers to the missing object {} "
+                         "and is out of the restored dimensions, check by "
+                         "hand".format((row, column), path, uid))
+            continue
+        positions[(row, column)] = uid
+
     for row, column, obj in items:
         if obj in placed:
             continue
@@ -890,9 +904,13 @@ def restore_migrated_layout(container, stored, original_ids):
         logger.warn("{} placed at the free position {} of {}, check by hand"
                     .format(api.get_path(obj), free[0], path))
 
-    before = sorted((row, column, api.get_uid(obj))
-                    for row, column, obj in current_items)
-    after = sorted((row, column, api.get_uid(obj))
+    def get_uid(obj):
+        # an object, or the UID of a missing one
+        return obj if api.is_string(obj) else api.get_uid(obj)
+
+    before = sorted((row, column, get_uid(obj))
+                    for row, column, obj in current_items + unknown_items)
+    after = sorted((row, column, get_uid(obj))
                    for (row, column), obj in positions.items()
                    if obj is not None)
     if not restored and before == after:
@@ -901,7 +919,10 @@ def restore_migrated_layout(container, stored, original_ids):
     layout = []
     for (row, column), obj in sorted(positions.items()):
         item = container.get_default_layout_item(row, column)
-        if obj is not None:
+        if api.is_string(obj):
+            # missing object, kept with the default capacity
+            item["uid"] = obj
+        elif obj is not None:
             capacity = utilization = 1
             if IStorageLayoutContainer.providedBy(obj):
                 capacity = obj.get_samples_capacity()
@@ -933,6 +954,11 @@ def restore_migrated_layout(container, stored, original_ids):
         if free_placed:
             comments += ". Placed at a free position, check by hand: {}"\
                 .format(", ".join(map(api.get_id, free_placed)))
+        if lost:
+            comments += ". Positions of missing objects out of the restored " \
+                "dimensions, check by hand: {}".format(", ".join(
+                    "{} at {}".format(uid, container.position_to_alpha(
+                        row, column)) for row, column, uid in lost))
         snapshot_api.take_snapshot(container, action="edit",
                                    comments=comments)
         reindex_auditlog(container)
