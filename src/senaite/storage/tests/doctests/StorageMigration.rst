@@ -22,6 +22,7 @@ Needed Imports:
     >>> from DateTime import DateTime
     >>> from plone.app.testing import setRoles
     >>> from plone.app.testing import TEST_USER_ID
+    >>> from senaite.core.api import snapshot as snapshot_api
     >>> from senaite.core.catalog import SAMPLE_CATALOG
     >>> from senaite.core.migration.migrator import ATTRIBUTE_STORAGE
     >>> from senaite.storage.api import get_storage_sample
@@ -261,6 +262,28 @@ migration kept still have:
     [(0, 0, 'square'), (1, 1, 'box')]
     >>> get_capacity(rack, square), get_capacity(rack, box)
     ([4], [6])
+
+The audit log of the restored containers records the restore, with the
+objects placed at a free position to check by hand:
+
+    >>> def get_comments(obj):
+    ...     snapshot = snapshot_api.get_last_snapshot(obj)
+    ...     return snapshot_api.get_snapshot_metadata(snapshot)["comments"]
+
+    >>> get_comments(rack)
+    u'Layout restored after the migration to Dexterity'
+    >>> get_comments(box) == (
+    ...     "Layout restored after the migration to Dexterity. Placed at a "
+    ...     "free position, check by hand: {}".format(api.get_id(sample_d)))
+    True
+    >>> snapshot_api.get_snapshot_metadata(
+    ...     snapshot_api.get_last_snapshot(box))["action"]
+    u'edit'
+
+The square box was not restored, so it has no such record:
+
+    >>> "restored" in get_comments(square)
+    False
 
 Running the step again changes nothing:
 

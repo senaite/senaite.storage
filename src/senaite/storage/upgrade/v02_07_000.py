@@ -23,11 +23,14 @@ from bika.lims import api
 from bika.lims.utils import tmpID
 from plone.dexterity.fti import DexterityFTI
 from plone.dexterity.utils import createContent
+from senaite.core.api import snapshot as snapshot_api
 from senaite.core.api import workflow as wapi
 from senaite.core.interfaces import IContentMigrator
 from senaite.core.migration.migrator import ATTRIBUTE_STORAGE
 from senaite.core.schema.addressfield import PHYSICAL_ADDRESS
 from senaite.core.setuphandlers import add_catalog_index
+from senaite.core.subscribers.auditlog import reindex_object as \
+    reindex_auditlog
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.workflow import SAMPLE_WORKFLOW
@@ -757,6 +760,13 @@ def get_original_ids(root):
 
 def restore_migrated_layout(container, stored, original_ids):
     """Restores the dimensions and layout of a migrated container
+
+    Only the containers the former migration damaged are restored: samples
+    containers with their rows and columns swapped, and storage containers
+    left with a single position or without the containers they held in AT.
+    What cannot take its former position, or has no known one, takes the
+    first free position. The restore is recorded in the audit log of the
+    container, with what has to be checked by hand.
     """
     attributes = get_migrated_attributes(container)
     rows = api.to_int(attributes.get("Rows"), default=0)
@@ -866,6 +876,7 @@ def restore_migrated_layout(container, stored, original_ids):
     # children that are not in the layout yet
     displaced.extend(filter(lambda child: child not in placed, children))
 
+    free_placed = []
     for obj in displaced:
         if obj in placed:
             continue
@@ -875,6 +886,7 @@ def restore_migrated_layout(container, stored, original_ids):
                          .format(path, api.get_path(obj)))
             continue
         place(obj, *free[0])
+        free_placed.append(obj)
         logger.warn("{} placed at the free position {} of {}, check by hand"
                     .format(api.get_path(obj), free[0], path))
 
@@ -914,3 +926,13 @@ def restore_migrated_layout(container, stored, original_ids):
         for obj in placed:
             if obj not in current_objs:
                 obj.reindexObject(idxs=["getDateStored"])
+
+    # record the restore in the audit log of the container
+    if snapshot_api.supports_snapshots(container):
+        comments = "Layout restored after the migration to Dexterity"
+        if free_placed:
+            comments += ". Placed at a free position, check by hand: {}"\
+                .format(", ".join(map(api.get_id, free_placed)))
+        snapshot_api.take_snapshot(container, action="edit",
+                                   comments=comments)
+        reindex_auditlog(container)
