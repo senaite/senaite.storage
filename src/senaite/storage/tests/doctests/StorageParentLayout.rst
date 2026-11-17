@@ -16,11 +16,17 @@ Running this test from the buildout directory:
 
 Needed Imports:
 
+    >>> import transaction
     >>> from bika.lims import api
     >>> from plone.app.testing import setRoles
     >>> from plone.app.testing import TEST_USER_ID
 
 Functional Helpers:
+
+    >>> def get_items(parent, child):
+    ...     uid = api.get_uid(child)
+    ...     items = parent.getPositionsLayout()
+    ...     return [item for item in items if item.get("uid") == uid]
 
     >>> def get_item(parent, child):
     ...     uid = api.get_uid(child)
@@ -110,3 +116,49 @@ The capacity of a box reaches the freezer through the rack that stores it:
     11
     >>> get_item(freezer, rack)["samples_capacity"]
     11
+
+
+Moved containers
+................
+
+A container moved to another one, as the "Move container" view does, leaves
+the layout of its former parent and takes the first free position of the new
+one. Both update the capacity they keep:
+
+    >>> freezer_b = api.create(sp, "StorageContainer", title="Freezer B",
+    ...                        rows=2, columns=2)
+    >>> box = api.move_object(box, freezer_b, check_constraints=False)
+    >>> rack.has_object(box), freezer_b.has_object(box)
+    (False, True)
+    >>> freezer_b.get_object_position(box)
+    (0, 0)
+    >>> get_item(freezer_b, box)["samples_capacity"]
+    10
+    >>> rack.get_samples_capacity()
+    2
+    >>> get_item(freezer, rack)["samples_capacity"]
+    2
+
+A container moved out of a container to a storage position leaves the layout
+of the former, and the one moved into a container from a storage position
+takes its first free position:
+
+    >>> rack = api.move_object(rack, sp, check_constraints=False)
+    >>> freezer.has_object(rack)
+    False
+    >>> rack = api.move_object(rack, freezer_b, check_constraints=False)
+    >>> freezer_b.has_object(rack)
+    True
+    >>> freezer_b.get_object_position(rack)
+    (0, 1)
+
+A container renamed in its parent keeps its position:
+
+    >>> position = freezer_b.get_object_position(box)
+    >>> _ = transaction.savepoint(optimistic=True)
+    >>> freezer_b.manage_renameObject(box.getId(), "box-c")
+    >>> box = freezer_b["box-c"]
+    >>> freezer_b.get_object_position(box) == position
+    True
+    >>> len(get_items(freezer_b, box))
+    1
