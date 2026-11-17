@@ -16,20 +16,23 @@ Test Setup
 
 Needed Imports:
 
-    >>> import json
     >>> from bika.lims import api
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
     >>> from bika.lims.workflow import doActionFor as do_action_for
     >>> from DateTime import DateTime
     >>> from plone.app.testing import setRoles
     >>> from plone.app.testing import TEST_USER_ID
-    >>> from senaite.core.api import snapshot as snapshot_api
     >>> from senaite.core.migration.migrator import ATTRIBUTE_STORAGE
     >>> from senaite.storage.api import get_storage_sample
     >>> from senaite.storage.content.storagecontainer import \
     ...     StorageContainer as ATStorageContainer
+    >>> from senaite.storage.content.storagefacility import \
+    ...     StorageFacility as ATStorageFacility
+    >>> from senaite.storage.content.storagerootfolder import \
+    ...     StorageRootFolder as ATStorageRootFolder
     >>> from senaite.storage.content.storagesamplescontainer import \
     ...     StorageSamplesContainer as ATSamplesContainer
+    >>> from senaite.storage.tests import old_migration
     >>> from senaite.storage.upgrade import v02_07_000 as steps
     >>> from zope.annotation.interfaces import IAnnotations
 
@@ -52,6 +55,11 @@ Functional Helpers:
     ...              api.get_object_by_uid(item["uid"]).getId())
     ...             for item in layout if item.get("uid")]
 
+    >>> def layout_item(row, column, obj, uid=None):
+    ...     return {"row": row, "column": column,
+    ...             "uid": uid or api.get_uid(obj),
+    ...             "samples_capacity": 1, "samples_utilization": 1}
+
     >>> def get_capacity(container, child):
     ...     uid = api.get_uid(child)
     ...     layout = container.getPositionsLayout()
@@ -64,7 +72,6 @@ Variables:
     >>> request = self.request
     >>> setup = api.get_setup()
     >>> portal_setup = portal.portal_setup
-    >>> storage = portal.senaite_storage
     >>> setRoles(portal, TEST_USER_ID, ["LabManager", "Manager"])
 
 Baseline objects:
@@ -77,15 +84,162 @@ Baseline objects:
     ...                         title="Water", Prefix="W")
     >>> Cu = api.create(setup.bika_analysisservices, "AnalysisService",
     ...                 title="Copper", Keyword="Cu")
-    >>> facility = api.create(storage, "StorageFacility", title="Facility")
-    >>> room = api.create(facility, "StoragePosition", title="Room")
+
+
+Sites migrated before the fix
+.............................
+
+The former migration copied the contents of the migrated objects, so they got
+new UIDs, did not migrate the dimensions and layout of the storage containers,
+and swapped the rows and columns of the samples containers. It kept the
+attributes of the AT objects though, which the restore relies on.
+
+A site with the AT storage of the former versions has a rack of 2 x 2
+positions, with a square box at A1 and a box of 2 rows and 3 columns at B2.
+The box has samples at A1, A3 and B3, the square box one at B2:
+
+    >>> portal._delObject("senaite_storage", suppress_events=True)
+    >>> portal._setObject("senaite_storage",
+    ...                   ATStorageRootFolder("senaite_storage"))
+    'senaite_storage'
+    >>> at_root = portal._getOb("senaite_storage")
+    >>> at_root._setObject("facility", ATStorageFacility("facility"))
+    'facility'
+    >>> at_facility = at_root._getOb("facility")
+    >>> at_facility._setObject("rack", ATStorageContainer("rack"))
+    'rack'
+    >>> at_rack = at_facility._getOb("rack")
+    >>> at_rack.setRows(2)
+    >>> at_rack.setColumns(2)
+    >>> at_rack._setObject("square", ATSamplesContainer("square"))
+    'square'
+    >>> at_rack._setObject("box", ATSamplesContainer("box"))
+    'box'
+    >>> at_square = at_rack._getOb("square")
+    >>> at_square.setRows(2)
+    >>> at_square.setColumns(2)
+    >>> at_box = at_rack._getOb("box")
+    >>> at_box.setRows(2)
+    >>> at_box.setColumns(3)
+
+The rack took the boxes in at its first free positions when they were added.
+They are stored at A1 and B2:
+
+    >>> at_rack.remove_object(at_square)
+    True
+    >>> at_rack.remove_object(at_box)
+    True
+    >>> at_rack.add_object_at(at_square, 0, 0)
+    True
+    >>> at_rack.add_object_at(at_box, 1, 1)
+    True
+
+    >>> sample_a = new_sample()
+    >>> sample_b = new_sample()
+    >>> sample_c = new_sample()
+    >>> sample_g = new_sample()
+    >>> at_box.add_object_at(sample_a, 0, 0)
+    True
+    >>> at_box.add_object_at(sample_b, 0, 2)
+    True
+    >>> at_box.add_object_at(sample_c, 1, 2)
+    True
+    >>> at_square.add_object_at(sample_g, 1, 1)
+    True
+
+    >>> names = dict((api.get_id(obj), name) for obj, name in [
+    ...     (sample_a, "a"), (sample_b, "b"), (sample_c, "c"),
+    ...     (sample_g, "g")])
+    >>> def get_samples(container):
+    ...     return [(row, column, names[sid])
+    ...             for row, column, sid in get_layout(container)]
+
+The former migration runs:
+
+    >>> old_migration.migrate(portal_setup)
+    >>> rack = portal.senaite_storage.facility.rack
+    >>> box = rack.box
+    >>> square = rack.square
+    >>> api.is_dexterity_content(rack), api.is_dexterity_content(box)
+    (True, True)
+
+The rack lost its dimensions and its layout, and the box got its rows and
+columns swapped:
+
+    >>> rack.getRows(), rack.getColumns(), get_layout(rack)
+    (1, 1, [])
+    >>> box.getRows(), box.getColumns()
+    (3, 2)
+
+The migration rebuilt the layout of the box with the swapped dimensions, so
+the samples at A3 and B3 were dropped, while they are still stored:
+
+    >>> get_samples(box)
+    [(0, 0, 'a')]
+    >>> get_storage_sample(sample_b) is None
+    True
+    >>> api.get_review_status(sample_b)
+    'stored'
+
+The square box kept its dimensions and samples:
+
+    >>> square.getRows(), square.getColumns(), get_samples(square)
+    (2, 2, [(1, 1, 'g')])
+
+A sample is stored afterwards at E2 of the swapped box:
+
+    >>> sample_d = new_sample()
+    >>> names[api.get_id(sample_d)] = "d"
+    >>> box.add_object_at(sample_d, 2, 1)
+    True
+
+The upgrade step restores the dimensions:
+
+    >>> steps.restore_migrated_layouts(portal_setup)
+    >>> rack.getRows(), rack.getColumns()
+    (2, 2)
+    >>> box.getRows(), box.getColumns()
+    (2, 3)
+
+The samples are back at their AT positions. The one stored at a position the
+box does not have takes the first free position:
+
+    >>> get_samples(box)
+    [(0, 0, 'a'), (0, 1, 'd'), (0, 2, 'b'), (1, 2, 'c')]
+    >>> get_storage_sample(sample_b) == box
+    True
+
+The square box is as it was:
+
+    >>> square.getRows(), square.getColumns(), get_samples(square)
+    (2, 2, [(1, 1, 'g')])
+
+Running the step again changes nothing:
+
+    >>> steps.restore_migrated_layouts(portal_setup)
+    >>> get_samples(box)
+    [(0, 0, 'a'), (0, 1, 'd'), (0, 2, 'b'), (1, 2, 'c')]
+
+A container whose dimensions were changed since the migration is left as it
+is:
+
+    >>> box.rows = 4
+    >>> box.columns = 4
+    >>> box.rebuild_layout()
+    >>> steps.restore_migrated_layouts(portal_setup)
+    >>> box.getRows(), box.getColumns()
+    (4, 4)
 
 
 Migration of the containers
 ...........................
 
-A rack of 2 x 2 positions holds a box of 2 rows and 3 columns, at the position
-B2:
+With the fix, a rack of 2 x 2 positions holding a box of 2 rows and 3
+columns at B2:
+
+    >>> storage = portal.senaite_storage
+    >>> facility = api.create(storage, "StorageFacility", title="Facility")
+    >>> room = api.create(facility, "StoragePosition", title="Room")
 
     >>> room._setObject("at-rack", ATStorageContainer("at-rack"))
     'at-rack'
@@ -138,8 +292,6 @@ The box keeps its rows and columns:
 
 The contents of a migrated storage facility are moved as well:
 
-    >>> from senaite.storage.content.storagefacility import \
-    ...     StorageFacility as ATStorageFacility
     >>> storage._setObject("at-facility", ATStorageFacility("at-facility"))
     'at-facility'
     >>> at_facility = storage._getOb("at-facility")
@@ -152,130 +304,6 @@ The contents of a migrated storage facility are moved as well:
     True
     >>> api.get_uid(migrated_facility._getOb("at-freezer")) == freezer_uid
     True
-
-Restore of the containers migrated before the fix
-..................................................
-
-The former migration swapped the rows and columns of the samples containers,
-did not migrate the dimensions and layout of the storage containers, and gave
-the contents of the migrated objects new UIDs. It kept the attributes of the
-AT objects though, which the restore relies on.
-
-A rack that was 2 x 2 in AT was left with 1 x 1 positions:
-
-    >>> old_rack = api.create(room, "StorageContainer", title="Old rack")
-    >>> old_rack.getRows(), old_rack.getColumns()
-    (1, 1)
-
-The box it holds was 2 rows and 3 columns in AT, with three samples at A1, A3
-and B3, and became 3 rows and 2 columns. It got a new UID, and its audit log
-still has the former one:
-
-    >>> old_box = api.create(old_rack, "StorageSamplesContainer",
-    ...                      title="Old box", rows=3, columns=2)
-    >>> former_box_uid = "0" * 32
-    >>> snapshot_api.get_storage(old_box).append(
-    ...     json.dumps({"uid": former_box_uid}))
-
-    >>> sample_a = new_sample()
-    >>> sample_b = new_sample()
-    >>> sample_c = new_sample()
-    >>> sample_d = new_sample()
-
-    >>> def layout_item(row, column, obj, uid=None):
-    ...     return {"row": row, "column": column,
-    ...             "uid": uid or api.get_uid(obj),
-    ...             "samples_capacity": 1, "samples_utilization": 1}
-
-    >>> IAnnotations(old_rack)[ATTRIBUTE_STORAGE] = {
-    ...     "Rows": 2, "Columns": 2,
-    ...     "PositionsLayout": [layout_item(1, 0, None, uid=former_box_uid)]}
-    >>> IAnnotations(old_box)[ATTRIBUTE_STORAGE] = {
-    ...     "Rows": 2, "Columns": 3,
-    ...     "PositionsLayout": [layout_item(0, 0, sample_a),
-    ...                         layout_item(0, 2, sample_b),
-    ...                         layout_item(1, 2, sample_c)]}
-
-The layout of the box was copied as it was, but the first sample stored
-afterwards, at E2 of the swapped box, rebuilt it with 3 x 2 positions. The
-samples at A3 and B3 were dropped, while they are still stored:
-
-    >>> old_box.add_object_at(sample_a, 0, 0)
-    True
-    >>> old_box.add_object_at(sample_b, 1, 0)
-    True
-    >>> old_box.add_object_at(sample_c, 1, 1)
-    True
-    >>> old_box.positions_layout = [
-    ...     item for item in old_box.getPositionsLayout()
-    ...     if item.get("uid") not in map(api.get_uid, [sample_b, sample_c])]
-    >>> old_box.rebuild_layout()
-    >>> old_box.reindexObject()
-    >>> old_box.add_object_at(sample_d, 2, 1)
-    True
-    >>> get_storage_sample(sample_b) is None
-    True
-    >>> api.get_review_status(sample_b)
-    'stored'
-
-The rack does not know the box at its former position:
-
-    >>> old_rack.positions_layout = [old_rack.get_default_layout_item()]
-    >>> old_rack.rebuild_layout()
-    >>> get_layout(old_rack)
-    []
-
-The upgrade step restores the dimensions:
-
-    >>> steps.restore_migrated_layouts(portal_setup)
-    >>> old_rack.getRows(), old_rack.getColumns()
-    (2, 2)
-    >>> old_box.getRows(), old_box.getColumns()
-    (2, 3)
-
-The samples are back at their AT positions. The one stored at a position the
-box does not have takes the first free position:
-
-    >>> ids = dict((api.get_id(s), name) for s, name in [
-    ...     (sample_a, "a"), (sample_b, "b"), (sample_c, "c"),
-    ...     (sample_d, "d")])
-    >>> [(row, column, ids[sid]) for row, column, sid in get_layout(old_box)]
-    [(0, 0, 'a'), (0, 1, 'd'), (0, 2, 'b'), (1, 2, 'c')]
-    >>> get_storage_sample(sample_b) == old_box
-    True
-
-The rack holds the box at its AT position, found by its former UID, with the
-capacity of the box:
-
-    >>> get_layout(old_rack) == [(1, 0, api.get_id(old_box))]
-    True
-    >>> get_capacity(old_rack, old_box)
-    [6]
-
-The containers migrated with the fix are left as they are:
-
-    >>> rack.getRows(), rack.getColumns(), get_layout(rack)
-    (2, 2, [(1, 1, 'at-box')])
-    >>> box.getRows(), box.getColumns()
-    (2, 3)
-
-Running the step again changes nothing:
-
-    >>> steps.restore_migrated_layouts(portal_setup)
-    >>> [(row, column, ids[sid]) for row, column, sid in get_layout(old_box)]
-    [(0, 0, 'a'), (0, 1, 'd'), (0, 2, 'b'), (1, 2, 'c')]
-    >>> get_layout(old_rack) == [(1, 0, api.get_id(old_box))]
-    True
-
-A container whose dimensions were changed since the migration is left as it
-is:
-
-    >>> old_box.rows = 4
-    >>> old_box.columns = 4
-    >>> old_box.rebuild_layout()
-    >>> steps.restore_migrated_layouts(portal_setup)
-    >>> old_box.getRows(), old_box.getColumns()
-    (4, 4)
 
 
 Restore edge cases
