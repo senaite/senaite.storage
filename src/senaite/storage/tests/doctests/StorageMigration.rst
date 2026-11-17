@@ -94,6 +94,32 @@ Baseline objects:
     ...                 title="Copper", Keyword="Cu")
 
 
+Sites without migrated containers
+.................................
+
+The containers created after the migration, or on a site that was never
+migrated, have no attributes of an AT object. The upgrade step does not look
+any further on such a site, e.g. for the original objects:
+
+    >>> new_facility = api.create(portal.senaite_storage, "StorageFacility",
+    ...                           title="New facility")
+    >>> new_room = api.create(new_facility, "StoragePosition", title="Room")
+    >>> new_rack = api.create(new_room, "StorageContainer", title="New rack",
+    ...                       rows=2, columns=2)
+    >>> new_box = api.create(new_rack, "StorageSamplesContainer",
+    ...                      title="New box", rows=2, columns=3)
+
+    >>> def not_expected(root):
+    ...     raise AssertionError("The original objects were looked for")
+    >>> get_original_ids = steps.get_original_ids
+    >>> steps.get_original_ids = not_expected
+    >>> steps.restore_migrated_layouts(portal_setup)
+    >>> steps.get_original_ids = get_original_ids
+
+    >>> get_layout(new_rack) == [(0, 0, api.get_id(new_box))]
+    True
+
+
 Sites migrated before the fix
 .............................
 
@@ -106,6 +132,7 @@ A site with the AT storage of the former versions has a rack of 2 x 2
 positions, with a square box at A1 and a box of 2 rows and 3 columns at B2.
 The box has samples at A1, A3 and B3, the square box one at B2:
 
+    >>> api.uncatalog_object(portal.senaite_storage, recursive=True)
     >>> portal._delObject("senaite_storage", suppress_events=True)
     >>> portal._setObject("senaite_storage",
     ...                   ATStorageRootFolder("senaite_storage"))

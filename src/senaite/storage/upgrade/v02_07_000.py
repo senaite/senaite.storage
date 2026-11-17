@@ -684,8 +684,16 @@ def restore_migrated_layouts(tool):
     brains = api.search(query, STORAGE_CATALOG)
     containers = map(api.get_object, brains)
 
+    # only the containers migrated from AT keep the attributes of the AT
+    # object, the others have nothing to restore
+    migrated = filter(get_migrated_attributes, containers)
+    if not migrated:
+        logger.info("Restore the layouts of migrated containers: no container "
+                    "migrated from AT [SKIP]")
+        return
+
     # children first, so the parents take their restored capacity in
-    containers.sort(key=lambda obj: len(obj.getPhysicalPath()), reverse=True)
+    migrated.sort(key=lambda obj: len(obj.getPhysicalPath()), reverse=True)
 
     # samples stored in any container now
     stored = set()
@@ -696,7 +704,11 @@ def restore_migrated_layouts(tool):
     # ids of the objects the former migration copied, by their former UID
     original_ids = get_original_ids(api.get_portal().senaite_storage)
 
-    for container in containers:
+    total = len(migrated)
+    for num, container in enumerate(migrated):
+        if num and num % 100 == 0:
+            logger.info("Restore the layouts of migrated containers {}/{}"
+                        .format(num, total))
         restore_migrated_layout(container, stored, original_ids)
 
     logger.info("Restore the layouts of migrated containers [DONE]")
