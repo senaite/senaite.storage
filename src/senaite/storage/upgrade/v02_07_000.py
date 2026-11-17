@@ -758,6 +758,122 @@ def get_original_ids(root):
     return ids
 
 
+def get_migrated_dimensions(container, rows, columns):
+    """Returns the dimensions the former migration left to a container that
+    had the given ones in AT: swapped for a samples container, the default
+    ones for a storage container
+    """
+    if IStorageSamplesContainer.providedBy(container):
+        return (columns, rows)
+    return (1, 1)
+
+
+def get_current_items(container):
+    """Returns the occupied positions of the container, as a list of
+    (row, column, object), and the ones whose object cannot be found, as a
+    list of (row, column, UID)
+    """
+    found = []
+    missing = []
+    for row, column, uid in get_occupied(container.getPositionsLayout()):
+        obj = api.get_object_by_uid(uid, default=None)
+        if obj is None:
+            missing.append((row, column, uid))
+        else:
+            found.append((row, column, obj))
+    return found, missing
+
+
+def get_at_items(container, attributes, stored, original_ids):
+    """Returns the occupied positions of the AT layout whose object belongs to
+    the container now, as a list of (row, column, object)
+
+    For a samples container, these are the samples that are still stored but
+    in no container. For a storage container, the containers it holds, that
+    kept their UID or got a new one when the former migration copied them.
+    """
+    if IStorageSamplesContainer.providedBy(container):
+        def resolve(uid):
+            if uid in stored:
+                return None
+            obj = api.get_object_by_uid(uid, default=None)
+            if obj is None or api.get_review_status(obj) != "stored":
+                return None
+            return obj
+    else:
+        children = get_child_containers(container)
+        by_uid = dict((api.get_uid(child), child) for child in children)
+        by_id = dict((api.get_id(child), child) for child in children)
+
+        def resolve(uid):
+            child = by_uid.get(uid)
+            if child is None and uid in original_ids:
+                child = by_id.get(original_ids[uid])
+            return child
+
+    items = []
+    for row, column, uid in get_occupied(attributes.get("PositionsLayout")):
+        obj = resolve(uid)
+        if obj is not None:
+            items.append((row, column, obj))
+    return items
+
+
+def get_child_containers(container):
+    """Returns the storage containers the container holds
+    """
+    return filter(IStorageLayoutContainer.providedBy,
+                  container.objectValues())
+
+
+class Positions(object):
+    """The positions of a container while its layout is restored. A position
+    holds an object, the UID of an object that cannot be found, or nothing
+    """
+
+    def __init__(self, rows, columns):
+        self.held = dict(((row, column), None)
+                         for row in range(rows) for column in range(columns))
+
+    def holds(self, obj):
+        return obj in self.held.values()
+
+    def put(self, obj, row, column):
+        """Puts the object at the position, if the container has it and it is
+        free. Returns whether the object was put there
+        """
+        if self.held.get((row, column), False) is not None:
+            return False
+        self.held[(row, column)] = obj
+        return True
+
+    def put_free(self, obj):
+        """Puts the object at the first free position and returns it, or None
+        if there is no free position left
+        """
+        free = sorted(pos for pos, held in self.held.items() if held is None)
+        if not free:
+            return None
+        self.held[free[0]] = obj
+        return free[0]
+
+    def get_items(self):
+        """Returns the occupied positions as a sorted list of (row, column,
+        object or UID)
+        """
+        return sorted((row, column, held)
+                      for (row, column), held in self.held.items()
+                      if held is not None)
+
+
+def to_uids(items):
+    """Returns the items (row, column, object or UID) with UIDs only, sorted
+    """
+    def get_uid(obj):
+        return obj if api.is_string(obj) else api.get_uid(obj)
+    return sorted((row, column, get_uid(obj)) for row, column, obj in items)
+
+
 def restore_migrated_layout(container, stored, original_ids):
     """Restores the dimensions and layout of a migrated container
 
@@ -777,164 +893,126 @@ def restore_migrated_layout(container, stored, original_ids):
 
     path = api.get_path(container)
     is_samples_container = IStorageSamplesContainer.providedBy(container)
-    current = (container.getRows(), container.getColumns())
-    restored = current != (rows, columns)
-    if restored:
-        # what the migration left: swapped for samples containers, the
-        # default dimensions for storage containers
-        migrated = (columns, rows) if is_samples_container else (1, 1)
-        if current != migrated:
+    dimensions = (container.getRows(), container.getColumns())
+    damaged_dimensions = dimensions != (rows, columns)
+    if damaged_dimensions:
+        if dimensions != get_migrated_dimensions(container, rows, columns):
             logger.warn("Dimensions of {} changed since the migration "
-                        "({}x{}, {}x{} in AT), skipped"
-                        .format(path, current[0], current[1], rows, columns))
+                        "({}x{}, {}x{} in AT), skipped".format(
+                            path, dimensions[0], dimensions[1], rows,
+                            columns))
             return
-        container.rows = rows
-        container.columns = columns
-        logger.info("Dimensions of {} restored to {}x{}"
-                    .format(path, rows, columns))
-
-    if is_samples_container and not restored:
+    elif is_samples_container:
         # the migration did not swap the dimensions, so the samples kept
         # their positions
         return
 
-    # objects that belong to this container, by UID
+    current_items, missing_items = get_current_items(container)
+    current_objs = [obj for row, column, obj in current_items]
     if is_samples_container:
-        def resolve(uid):
-            obj = api.get_object_by_uid(uid, default=None)
-            if obj is None or uid in stored:
-                return None
-            if api.get_review_status(obj) != "stored":
-                return None
-            return obj
-        children = []
-    else:
-        children = filter(IStorageLayoutContainer.providedBy,
-                          container.objectValues())
-        by_uid = dict((api.get_uid(child), child) for child in children)
-        by_id = dict((api.get_id(child), child) for child in children)
-
-        def resolve(uid):
-            # the child kept its UID, or got a new one when it was copied
-            child = by_uid.get(uid)
-            if child is None and uid in original_ids:
-                child = by_id.get(original_ids[uid])
-            return child
-
-    positions = dict(((row, column), None)
-                     for row in range(rows) for column in range(columns))
-    placed = []
-    displaced = []
-
-    def place(obj, row, column):
-        if obj in placed:
-            return True
-        if positions.get((row, column), False) is not None:
-            return False
-        positions[(row, column)] = obj
-        placed.append(obj)
-        return True
-
-    # positions taken now
-    current_items = []
-    unknown_items = []
-    for row, column, uid in get_occupied(container.getPositionsLayout()):
-        obj = api.get_object_by_uid(uid, default=None)
-        if obj is None:
-            unknown_items.append((row, column, uid))
-            continue
-        if is_samples_container:
-            stored.discard(uid)
-        current_items.append((row, column, obj))
-
-    # positions taken in AT, for objects that are nowhere now
-    at_items = []
-    for row, column, uid in get_occupied(attributes.get("PositionsLayout")):
-        obj = resolve(uid)
-        if obj is not None:
-            at_items.append((row, column, obj))
+        stored.difference_update(map(api.get_uid, current_objs))
+    at_items = get_at_items(container, attributes, stored, original_ids)
 
     # A storage container that kept its dimensions is damaged when the
     # containers it held in AT are missing in its layout
-    current_objs = [item[2] for item in current_items]
-    missing = [item[2] for item in at_items if item[2] not in current_objs]
-    if not restored and not missing:
+    if not damaged_dimensions and all(
+            obj in current_objs for row, column, obj in at_items):
         return
+
+    positions = Positions(rows, columns)
+
+    # Positions that refer to objects that cannot be found are kept as they
+    # are, as long as the container still has them: what they hold is unknown
+    lost = []
+    for row, column, uid in missing_items:
+        if not positions.put(uid, row, column):
+            lost.append((row, column, uid))
+            logger.error("Position {} of {} refers to the missing object {} "
+                         "and is out of the restored dimensions, check by "
+                         "hand".format((row, column), path, uid))
 
     # The current positions of a samples container are the ones chosen when
     # the samples were stored after the migration. A storage container the
     # migration left with a single position got the containers it holds at
     # the first free one instead, so its AT positions come first
     items = current_items + at_items
-    if restored and not is_samples_container:
+    if damaged_dimensions and not is_samples_container:
         items = at_items + current_items
 
-    # Positions taken by objects that cannot be found are kept as they are,
-    # as long as the container still has them: what they hold is unknown
-    lost = []
-    for row, column, uid in unknown_items:
-        if positions.get((row, column), False) is not None:
-            lost.append((row, column, uid))
-            logger.error("Position {} of {} refers to the missing object {} "
-                         "and is out of the restored dimensions, check by "
-                         "hand".format((row, column), path, uid))
-            continue
-        positions[(row, column)] = uid
-
+    displaced = []
     for row, column, obj in items:
-        if obj in placed:
-            continue
-        if not place(obj, row, column):
+        if not positions.holds(obj) and not positions.put(obj, row, column):
             displaced.append(obj)
-
-    # children that are not in the layout yet
-    displaced.extend(filter(lambda child: child not in placed, children))
+    if not is_samples_container:
+        # child containers in no layout
+        displaced.extend(get_child_containers(container))
 
     free_placed = []
     for obj in displaced:
-        if obj in placed:
+        if positions.holds(obj):
             continue
-        free = sorted(pos for pos, item in positions.items() if item is None)
-        if not free:
+        position = positions.put_free(obj)
+        if position is None:
             logger.error("No free position in {} for {}, check by hand"
                          .format(path, api.get_path(obj)))
             continue
-        place(obj, *free[0])
         free_placed.append(obj)
         logger.warn("{} placed at the free position {} of {}, check by hand"
-                    .format(api.get_path(obj), free[0], path))
+                    .format(api.get_path(obj), position, path))
 
-    def get_uid(obj):
-        # an object, or the UID of a missing one
-        return obj if api.is_string(obj) else api.get_uid(obj)
-
-    before = sorted((row, column, get_uid(obj))
-                    for row, column, obj in current_items + unknown_items)
-    after = sorted((row, column, get_uid(obj))
-                   for (row, column), obj in positions.items()
-                   if obj is not None)
-    if not restored and before == after:
+    occupied = positions.get_items()
+    if not damaged_dimensions and \
+            to_uids(occupied) == to_uids(current_items + missing_items):
         return
 
+    container.rows = rows
+    container.columns = columns
+    write_layout(container, occupied)
+    if damaged_dimensions:
+        logger.info("Dimensions of {} restored to {}x{}"
+                    .format(path, rows, columns))
+
+    if is_samples_container:
+        samples = [obj for row, column, obj in occupied
+                   if not api.is_string(obj)]
+        stored.update(map(api.get_uid, samples))
+        # the samples put back show their container in the samples listing
+        for sample in samples:
+            if sample not in current_objs:
+                sample.reindexObject(idxs=["getDateStored"])
+
+    # record the restore in the audit log of the container
+    if snapshot_api.supports_snapshots(container):
+        comments = get_restore_comments(container, free_placed, lost)
+        snapshot_api.take_snapshot(container, action="edit",
+                                   comments=comments)
+        reindex_auditlog(container)
+
+
+def write_layout(container, occupied):
+    """Writes the layout of the container with the occupied positions given
+    as a list of (row, column, object or UID of a missing object)
+    """
+    held = dict(((row, column), obj) for row, column, obj in occupied)
     layout = []
-    for (row, column), obj in sorted(positions.items()):
-        item = container.get_default_layout_item(row, column)
-        if api.is_string(obj):
-            # missing object, kept with the default capacity
-            item["uid"] = obj
-        elif obj is not None:
-            capacity = utilization = 1
-            if IStorageLayoutContainer.providedBy(obj):
-                capacity = obj.get_samples_capacity()
-                utilization = obj.get_samples_utilization()
-            item.update({
-                "uid": api.get_uid(obj),
-                "samples_capacity": capacity,
-                "samples_utilization": utilization,
-            })
-            if is_samples_container:
-                stored.add(api.get_uid(obj))
-        layout.append(item)
+    for row in range(container.getRows()):
+        for column in range(container.getColumns()):
+            item = container.get_default_layout_item(row, column)
+            obj = held.get((row, column))
+            if api.is_string(obj):
+                # missing object, kept with the default capacity
+                item["uid"] = obj
+            elif obj is not None:
+                capacity = utilization = 1
+                if IStorageLayoutContainer.providedBy(obj):
+                    capacity = obj.get_samples_capacity()
+                    utilization = obj.get_samples_utilization()
+                item.update({
+                    "uid": api.get_uid(obj),
+                    "samples_capacity": capacity,
+                    "samples_utilization": utilization,
+                })
+            layout.append(item)
 
     # bypass the setter, it notifies the parent before it is restored
     container.positions_layout = layout
@@ -942,23 +1020,17 @@ def restore_migrated_layout(container, stored, original_ids):
     container.reindexObject()
     container.notify_parent()
 
-    # the samples put back show their container in the samples listing
-    if is_samples_container:
-        for obj in placed:
-            if obj not in current_objs:
-                obj.reindexObject(idxs=["getDateStored"])
 
-    # record the restore in the audit log of the container
-    if snapshot_api.supports_snapshots(container):
-        comments = "Layout restored after the migration to Dexterity"
-        if free_placed:
-            comments += ". Placed at a free position, check by hand: {}"\
-                .format(", ".join(map(api.get_id, free_placed)))
-        if lost:
-            comments += ". Positions of missing objects out of the restored " \
-                "dimensions, check by hand: {}".format(", ".join(
-                    "{} at {}".format(uid, container.position_to_alpha(
-                        row, column)) for row, column, uid in lost))
-        snapshot_api.take_snapshot(container, action="edit",
-                                   comments=comments)
-        reindex_auditlog(container)
+def get_restore_comments(container, free_placed, lost):
+    """Returns the comments for the audit log entry of the restore
+    """
+    comments = "Layout restored after the migration to Dexterity"
+    if free_placed:
+        comments += ". Placed at a free position, check by hand: {}".format(
+            ", ".join(map(api.get_id, free_placed)))
+    if lost:
+        comments += ". Positions of missing objects out of the restored " \
+            "dimensions, check by hand: {}".format(", ".join(
+                "{} at {}".format(uid, container.position_to_alpha(
+                    row, column)) for row, column, uid in lost))
+    return comments
