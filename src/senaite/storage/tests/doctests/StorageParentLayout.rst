@@ -162,3 +162,32 @@ A container renamed in its parent keeps its position:
     True
     >>> len(get_items(freezer_b, box))
     1
+
+A container moved into a container with no free position leaves the layout of
+its former parent all the same. The new one does not have it in its layout:
+
+    >>> full = api.create(sp, "StorageContainer", title="Full", rows=1,
+    ...                   columns=1)
+    >>> api.create(full, "StorageContainer", title="Only")
+    <StorageContainer at ...>
+    >>> box = api.move_object(box, full, check_constraints=False)
+    >>> freezer_b.has_object(box), full.has_object(box)
+    (False, False)
+
+The contents of an AT container are only moved by the migration to Dexterity,
+which keeps the layouts itself, so its layout is left as it is:
+
+    >>> from senaite.storage.content.storagecontainer import \
+    ...     StorageContainer as ATStorageContainer
+    >>> sp._setObject("at-rack", ATStorageContainer("at-rack"))
+    'at-rack'
+    >>> at_rack = sp._getOb("at-rack")
+    >>> at_rack.setRows(1)
+    >>> at_rack.setColumns(2)
+    >>> shelf = api.create(sp, "StorageContainer", title="Shelf")
+    >>> shelf = api.move_object(shelf, at_rack, check_constraints=False)
+    >>> at_rack.has_object(shelf)
+    True
+    >>> shelf = api.move_object(shelf, sp, check_constraints=False)
+    >>> at_rack.has_object(shelf)
+    True
