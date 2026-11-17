@@ -23,6 +23,7 @@ from bika.lims import api
 from bika.lims.utils import tmpID
 from plone.dexterity.fti import DexterityFTI
 from plone.dexterity.utils import createContent
+from Products.CMFCore.indexing import processQueue
 from senaite.core.api import snapshot as snapshot_api
 from senaite.core.api import workflow as wapi
 from senaite.core.interfaces import IContentMigrator
@@ -948,11 +949,13 @@ def restore_migrated_layout(container, stored, original_ids):
         displaced.extend(get_child_containers(container))
 
     free_placed = []
+    unplaced = []
     for obj in displaced:
         if positions.holds(obj):
             continue
         position = positions.put_free(obj)
         if position is None:
+            unplaced.append(obj)
             logger.error("No free position in {} for {}, check by hand"
                          .format(path, api.get_path(obj)))
             continue
@@ -976,14 +979,18 @@ def restore_migrated_layout(container, stored, original_ids):
         samples = [obj for row, column, obj in occupied
                    if not api.is_string(obj)]
         stored.update(map(api.get_uid, samples))
-        # the samples put back show their container in the samples listing
+        # The samples put back show their container in the samples listing.
+        # Their metadata is computed from the storage catalog, so the
+        # reindex of the container must be done before theirs
+        processQueue()
         for sample in samples:
             if sample not in current_objs:
                 sample.reindexObject(idxs=["getDateStored"])
 
     # record the restore in the audit log of the container
     if snapshot_api.supports_snapshots(container):
-        comments = get_restore_comments(container, free_placed, lost)
+        comments = get_restore_comments(
+            container, free_placed, unplaced, lost)
         snapshot_api.take_snapshot(container, action="edit",
                                    comments=comments)
         reindex_auditlog(container)
@@ -1021,13 +1028,16 @@ def write_layout(container, occupied):
     container.notify_parent()
 
 
-def get_restore_comments(container, free_placed, lost):
+def get_restore_comments(container, free_placed, unplaced, lost):
     """Returns the comments for the audit log entry of the restore
     """
     comments = "Layout restored after the migration to Dexterity"
     if free_placed:
         comments += ". Placed at a free position, check by hand: {}".format(
             ", ".join(map(api.get_id, free_placed)))
+    if unplaced:
+        comments += ". No free position, check by hand: {}".format(
+            ", ".join(map(api.get_id, unplaced)))
     if lost:
         comments += ". Positions of missing objects out of the restored " \
             "dimensions, check by hand: {}".format(", ".join(

@@ -155,6 +155,22 @@ They are stored at A1 and B2:
     >>> at_square.add_object_at(sample_g, 1, 1)
     True
 
+The facility has also a shelf with a single position, that holds a box of 1
+row and 2 columns:
+
+    >>> at_facility._setObject("shelf", ATStorageContainer("shelf"))
+    'shelf'
+    >>> at_shelf = at_facility._getOb("shelf")
+    >>> at_shelf.setRows(1)
+    >>> at_shelf.setColumns(1)
+    >>> at_shelf._setObject("small", ATSamplesContainer("small"))
+    'small'
+    >>> at_small = at_shelf._getOb("small")
+    >>> at_small.setRows(1)
+    >>> at_small.setColumns(2)
+    >>> get_layout(at_shelf)
+    [(0, 0, 'small')]
+
     >>> names = dict((api.get_id(obj), name) for obj, name in [
     ...     (sample_a, "a"), (sample_b, "b"), (sample_c, "c"),
     ...     (sample_g, "g")])
@@ -169,6 +185,8 @@ The former migration runs:
     >>> rack = portal.senaite_storage.facility.rack
     >>> box = rack.box
     >>> square = rack.square
+    >>> shelf = portal.senaite_storage.facility.shelf
+    >>> small = shelf.small
     >>> api.is_dexterity_content(rack), api.is_dexterity_content(box)
     (True, True)
 
@@ -176,6 +194,14 @@ The rack and the boxes got new UIDs:
 
     >>> [api.get_uid(obj) in former_uids for obj in (rack, square, box)]
     [False, False, False]
+
+The shelf kept its single position, but lost the box it holds from its
+layout, as the box got a new UID. The box got its rows and columns swapped:
+
+    >>> shelf.getRows(), shelf.getColumns(), get_layout(shelf)
+    (1, 1, [])
+    >>> small.getRows(), small.getColumns()
+    (2, 1)
 
 The rack lost its dimensions and its layout, and the box got its rows and
 columns swapped:
@@ -290,6 +316,14 @@ migration kept still have:
     >>> get_capacity(rack, square), get_capacity(rack, box)
     ([4], [6])
 
+The shelf holds its box again, found the same way, although the migration did
+not change the dimensions of the shelf:
+
+    >>> get_layout(shelf)
+    [(0, 0, 'small')]
+    >>> small.getRows(), small.getColumns()
+    (1, 2)
+
 The audit log of the restored containers records the restore, with the
 objects placed at a free position and the positions of missing objects that
 were dropped, to check by hand:
@@ -333,6 +367,76 @@ is:
     >>> steps.restore_migrated_layouts(portal_setup)
     >>> box.getRows(), box.getColumns()
     (4, 4)
+
+
+Migration with the fix
+......................
+
+The same AT storage, migrated with the fix, keeps everything:
+
+    >>> api.uncatalog_object(portal.senaite_storage, recursive=True)
+    >>> portal._delObject("senaite_storage", suppress_events=True)
+    >>> portal._setObject("senaite_storage",
+    ...                   ATStorageRootFolder("senaite_storage"))
+    'senaite_storage'
+    >>> at_root = portal._getOb("senaite_storage")
+    >>> at_root._setObject("facility", ATStorageFacility("facility"))
+    'facility'
+    >>> at_facility = at_root._getOb("facility")
+    >>> at_facility._setObject("rack", ATStorageContainer("rack"))
+    'rack'
+    >>> at_rack = at_facility._getOb("rack")
+    >>> at_rack.setRows(2)
+    >>> at_rack.setColumns(2)
+    >>> at_rack._setObject("box", ATSamplesContainer("box"))
+    'box'
+    >>> at_box = at_rack._getOb("box")
+    >>> at_box.setRows(2)
+    >>> at_box.setColumns(3)
+    >>> at_rack.remove_object(at_box)
+    True
+    >>> at_rack.add_object_at(at_box, 1, 1)
+    True
+    >>> sample_h = new_sample()
+    >>> names[api.get_id(sample_h)] = "h"
+    >>> at_box.add_object_at(sample_h, 0, 2)
+    True
+    >>> uids = map(api.get_uid, [at_facility, at_rack, at_box])
+
+    >>> steps.migrate_storage_facilities_to_dx(portal_setup)
+    >>> steps.migrate_storage_containers_to_dx(portal_setup)
+    >>> steps.migrate_storage_sample_containers_to_dx(portal_setup)
+    >>> steps.migrate_storage_root_folder_to_dx(portal_setup)
+
+    >>> facility = portal.senaite_storage.facility
+    >>> rack = facility.rack
+    >>> box = rack.box
+    >>> map(api.is_dexterity_content, [facility, rack, box])
+    [True, True, True]
+    >>> map(api.get_uid, [facility, rack, box]) == uids
+    True
+    >>> rack.getRows(), rack.getColumns(), get_layout(rack)
+    (2, 2, [(1, 1, 'box')])
+    >>> get_capacity(rack, box)
+    [6]
+    >>> box.getRows(), box.getColumns(), get_samples(box)
+    (2, 3, [(0, 2, 'h')])
+    >>> get_storage_sample(sample_h) == box
+    True
+
+The restore finds nothing to do:
+
+    >>> steps.restore_migrated_layouts(portal_setup)
+    >>> rack.getRows(), rack.getColumns(), get_layout(rack)
+    (2, 2, [(1, 1, 'box')])
+    >>> box.getRows(), box.getColumns(), get_samples(box)
+    (2, 3, [(0, 2, 'h')])
+    >>> def is_restored(obj):
+    ...     return any(
+    ...         "restored" in snapshot_api.get_snapshot_metadata(snapshot)
+    ...         ["comments"] for snapshot in snapshot_api.get_snapshots(obj))
+    >>> is_restored(rack), is_restored(box)
+    (False, False)
 
 
 Migration of the containers
@@ -485,3 +589,31 @@ The migration left the box out of the layout of the shelf:
     True
     >>> get_capacity(freezer, shelf)
     [6]
+
+A container with no free position left for a container it holds leaves it
+out of its layout, and names it in its audit log:
+
+    >>> cupboard = api.create(room, "StorageContainer", title="Cupboard",
+    ...                       rows=1, columns=1)
+    >>> first = api.create(cupboard, "StorageSamplesContainer",
+    ...                    title="First", rows=1, columns=1)
+    >>> second = api.create(cupboard, "StorageSamplesContainer",
+    ...                     title="Second", rows=1, columns=1)
+    >>> get_layout(cupboard) == [(0, 0, api.get_id(first))]
+    True
+
+The migration left the first one out of the layout:
+
+    >>> cupboard.remove_object(first)
+    True
+    >>> IAnnotations(cupboard)[ATTRIBUTE_STORAGE] = {
+    ...     "Rows": 1, "Columns": 1,
+    ...     "PositionsLayout": [layout_item(0, 0, first)]}
+
+    >>> steps.restore_migrated_layouts(portal_setup)
+    >>> get_layout(cupboard) == [(0, 0, api.get_id(first))]
+    True
+    >>> get_comments(cupboard) == (
+    ...     "Layout restored after the migration to Dexterity. No free "
+    ...     "position, check by hand: {}".format(api.get_id(second)))
+    True
