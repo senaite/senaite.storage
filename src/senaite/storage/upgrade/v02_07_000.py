@@ -944,7 +944,8 @@ def restore_migrated_layout(container, stored, original_ids):
                    if api.get_uid(obj) not in layout_uids]
     if not damaged_dimensions and not former_uids and all(
             obj in current_objs for row, column, obj in at_items):
-        return
+        if is_samples_container or not missing_items:
+            return
 
     positions = Positions(rows, columns)
 
@@ -952,6 +953,12 @@ def restore_migrated_layout(container, stored, original_ids):
     # are, as long as the container still has them: what they hold is unknown
     lost = []
     for row, column, uid in missing_items:
+        if not is_samples_container:
+            # A storage container holds containers only, and all of them are
+            # known, e.g. the UID is the temporary one of a migrated container
+            logger.warn("Position {} of {} refers to the unknown object {}, "
+                        "dropped".format((row, column), path, uid))
+            continue
         if not positions.put(uid, row, column):
             lost.append((row, column, uid))
             logger.error("Position {} of {} refers to the missing object {} "

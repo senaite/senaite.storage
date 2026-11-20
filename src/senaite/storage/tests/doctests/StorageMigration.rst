@@ -397,22 +397,34 @@ object and replaces the UID:
     >>> get_layout(shelf)
     [(0, 0, 'small')]
 
+A storage container holds containers only, and all of them are known. A
+position that refers to an object that cannot be found, e.g. the temporary
+UID the former migration gave a container, is dropped, so the container that
+held it in AT takes it again:
+
+    >>> set_uid(shelf, 0, 0, "5" * 32)
+    >>> get_layout(shelf)
+    [(0, 0, 'missing 5555')]
+    >>> steps.restore_migrated_layouts(portal_setup)
+    >>> get_layout(shelf)
+    [(0, 0, 'small')]
+
 A container that cannot take its AT position, as another one holds it now,
 and finds no free position either, is named once in the audit log. The rack
-holds a container added after the migration at the AT position of the square
-box, the box by its former UID, and its free positions refer to objects that
-cannot be found:
+holds containers added after the migration, one at the AT position of the
+square box, and the box by its former UID:
 
-    >>> extra = api.create(rack, "StorageSamplesContainer", title="Extra",
-    ...                    rows=1, columns=1)
-    >>> set_uid(rack, 0, 0, api.get_uid(extra))
-    >>> set_uid(rack, 0, 1, "3" * 32)
-    >>> set_uid(rack, 1, 0, "4" * 32)
+    >>> extras = [api.create(rack, "StorageSamplesContainer",
+    ...                      title="Extra", rows=1, columns=1)
+    ...           for num in range(3)]
+    >>> set_uid(rack, 0, 0, api.get_uid(extras[0]))
+    >>> set_uid(rack, 0, 1, api.get_uid(extras[1]))
+    >>> set_uid(rack, 1, 0, api.get_uid(extras[2]))
     >>> set_uid(rack, 1, 1, former_uids[2])
     >>> steps.restore_migrated_layouts(portal_setup)
     >>> get_layout(rack) == [
-    ...     (0, 0, api.get_id(extra)), (0, 1, "missing 3333"),
-    ...     (1, 0, "missing 4444"), (1, 1, "box")]
+    ...     (0, 0, api.get_id(extras[0])), (0, 1, api.get_id(extras[1])),
+    ...     (1, 0, api.get_id(extras[2])), (1, 1, "box")]
     True
     >>> print(get_comments(rack))
     Layout restored after the migration to Dexterity. No free position, check by hand: square
