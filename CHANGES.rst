@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #80 Fix the dimensions and layouts of storage containers migrated to DX
 - #78 Fix creation of storage containers through the JSON API
 - #77 Record sample placements and removals in the audit log
 - #75 Fix blank "Date stored" column in the samples listing
