@@ -18,6 +18,7 @@ Needed Imports:
 
     >>> import transaction
     >>> from bika.lims import api
+    >>> from zope.component import getMultiAdapter
     >>> from plone.app.testing import setRoles
     >>> from plone.app.testing import TEST_USER_ID
 
@@ -155,7 +156,7 @@ takes its first free position:
 A container renamed in its parent keeps its position:
 
     >>> position = freezer_b.get_object_position(box)
-    >>> _ = transaction.savepoint(optimistic=True)
+    >>> savepoint = transaction.savepoint(optimistic=True)
     >>> freezer_b.manage_renameObject(box.getId(), "box-c")
     >>> box = freezer_b["box-c"]
     >>> freezer_b.get_object_position(box) == position
@@ -173,6 +174,21 @@ its former parent all the same. The new one does not have it in its layout:
     >>> box = api.move_object(box, full, check_constraints=False)
     >>> freezer_b.has_object(box), full.has_object(box)
     (False, False)
+
+The "Move container" view does not offer a container with no free position as
+a target, and refuses to move a container there:
+
+    >>> box = api.move_object(box, freezer_b, check_constraints=False)
+    >>> view = getMultiAdapter((box, self.request),
+    ...                        name="storage_move_container")
+    >>> full in view.get_move_targets_for(box)
+    False
+    >>> freezer in view.get_move_targets_for(box)
+    True
+    >>> view.move_container(box, full)
+    False
+    >>> api.get_parent(box) == freezer_b
+    True
 
 The contents of an AT container are only moved by the migration to Dexterity,
 which keeps the layouts itself, so its layout is left as it is:
