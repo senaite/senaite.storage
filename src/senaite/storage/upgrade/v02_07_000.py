@@ -781,7 +781,7 @@ def get_migrated_dimensions(container, rows, columns):
     return (1, 1)
 
 
-def get_current_items(container):
+def get_current_items(container, original_ids):
     """Returns the occupied positions of the container, as a list of
     (row, column, object), and the ones whose object cannot be found, as a
     list of (row, column, UID)
@@ -790,6 +790,9 @@ def get_current_items(container):
     missing = []
     for row, column, uid in get_occupied(container.getPositionsLayout()):
         obj = api.get_object_by_uid(uid, default=None)
+        if obj is None and not IStorageSamplesContainer.providedBy(container):
+            # the former UID of a child the former migration copied
+            obj = get_child_container(container, uid, original_ids)
         if obj is None:
             missing.append((row, column, uid))
         else:
@@ -814,15 +817,8 @@ def get_at_items(container, attributes, stored, original_ids):
                 return None
             return obj
     else:
-        children = get_child_containers(container)
-        by_uid = dict((api.get_uid(child), child) for child in children)
-        by_id = dict((api.get_id(child), child) for child in children)
-
         def resolve(uid):
-            child = by_uid.get(uid)
-            if child is None and uid in original_ids:
-                child = by_id.get(original_ids[uid])
-            return child
+            return get_child_container(container, uid, original_ids)
 
     items = []
     for row, column, uid in get_occupied(attributes.get("PositionsLayout")):
@@ -837,6 +833,18 @@ def get_child_containers(container):
     """
     return filter(IStorageLayoutContainer.providedBy,
                   container.objectValues())
+
+
+def get_child_container(container, uid, original_ids):
+    """Returns the storage container the container holds with the given UID,
+    or the one that was copied from the object with this UID
+    """
+    for child in get_child_containers(container):
+        if api.get_uid(child) == uid:
+            return child
+        if api.get_id(child) == original_ids.get(uid):
+            return child
+    return None
 
 
 class Positions(object):
@@ -920,15 +928,21 @@ def restore_migrated_layout(container, stored, original_ids):
         # their positions
         return
 
-    current_items, missing_items = get_current_items(container)
+    current_items, missing_items = get_current_items(
+        container, original_ids)
     current_objs = [obj for row, column, obj in current_items]
     if is_samples_container:
         stored.difference_update(map(api.get_uid, current_objs))
     at_items = get_at_items(container, attributes, stored, original_ids)
 
     # A storage container that kept its dimensions is damaged when the
-    # containers it held in AT are missing in its layout
-    if not damaged_dimensions and all(
+    # containers it held in AT are missing in its layout, or its layout
+    # refers to them by a former UID
+    layout_uids = [uid for row, column, uid
+                   in get_occupied(container.getPositionsLayout())]
+    former_uids = [obj for obj in current_objs
+                   if api.get_uid(obj) not in layout_uids]
+    if not damaged_dimensions and not former_uids and all(
             obj in current_objs for row, column, obj in at_items):
         return
 
@@ -963,7 +977,7 @@ def restore_migrated_layout(container, stored, original_ids):
     free_placed = []
     unplaced = []
     for obj in displaced:
-        if positions.holds(obj):
+        if positions.holds(obj) or obj in unplaced:
             continue
         position = positions.put_free(obj)
         if position is None:
@@ -975,9 +989,11 @@ def restore_migrated_layout(container, stored, original_ids):
         logger.warn("{} placed at the free position {} of {}, check by hand"
                     .format(api.get_path(obj), position, path))
 
+    # compared with the UIDs of the layout, as a former UID of a child
+    # resolved above has to be replaced
     occupied = positions.get_items()
-    if not damaged_dimensions and \
-            to_uids(occupied) == to_uids(current_items + missing_items):
+    current = sorted(get_occupied(container.getPositionsLayout()))
+    if not damaged_dimensions and to_uids(occupied) == current:
         return
 
     container.rows = rows

@@ -208,6 +208,7 @@ row and 2 columns:
 The former migration runs:
 
     >>> former_uids = map(api.get_uid, [at_rack, at_square, at_box])
+    >>> former_small = api.get_uid(at_small)
     >>> old_migration.migrate(portal_setup)
     >>> rack = portal.senaite_storage.facility.rack
     >>> box = rack.box
@@ -384,6 +385,37 @@ Running the step again changes nothing:
      (1, 2, 'c')]
     >>> get_layout(rack)
     [(0, 0, 'square'), (1, 1, 'box')]
+
+A position of the current layout can refer to the UID a container had before
+the migration. The restore finds the container by the id of the original
+object and replaces the UID:
+
+    >>> set_uid(shelf, 0, 0, former_small)
+    >>> get_layout(shelf) == [(0, 0, "missing " + former_small[:4])]
+    True
+    >>> steps.restore_migrated_layouts(portal_setup)
+    >>> get_layout(shelf)
+    [(0, 0, 'small')]
+
+A container that cannot take its AT position, as another one holds it now,
+and finds no free position either, is named once in the audit log. The rack
+holds a container added after the migration at the AT position of the square
+box, the box by its former UID, and its free positions refer to objects that
+cannot be found:
+
+    >>> extra = api.create(rack, "StorageSamplesContainer", title="Extra",
+    ...                    rows=1, columns=1)
+    >>> set_uid(rack, 0, 0, api.get_uid(extra))
+    >>> set_uid(rack, 0, 1, "3" * 32)
+    >>> set_uid(rack, 1, 0, "4" * 32)
+    >>> set_uid(rack, 1, 1, former_uids[2])
+    >>> steps.restore_migrated_layouts(portal_setup)
+    >>> get_layout(rack) == [
+    ...     (0, 0, api.get_id(extra)), (0, 1, "missing 3333"),
+    ...     (1, 0, "missing 4444"), (1, 1, "box")]
+    True
+    >>> print(get_comments(rack))
+    Layout restored after the migration to Dexterity. No free position, check by hand: square
 
 A container whose dimensions were changed since the migration is left as it
 is:
