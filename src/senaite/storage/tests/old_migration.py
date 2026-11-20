@@ -25,6 +25,9 @@ not migrate the dimensions and layout of the storage containers and swapped
 the rows and columns of the samples containers. It ran with the event
 handlers of that time, which did not add a container to the layout of its
 parent when it was added.
+
+NOTE: Remove this module, with the `StorageMigration` doctest, together with
+the AT classes and the 2.7.0 migration steps.
 """
 
 from contextlib import contextmanager

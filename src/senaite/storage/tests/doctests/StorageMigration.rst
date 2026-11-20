@@ -7,6 +7,12 @@ so the migration must keep the dimensions and layouts of the containers and
 the UIDs of their contents. Sites migrated before this was fixed get their
 dimensions and layouts restored by an upgrade step.
 
+NOTE: This test builds the storage with the AT classes, and the restore reads
+the AT objects the migration kept in the attribute storage. Remove it, with
+`tests/old_migration.py`, together with the AT classes and the 2.7.0
+migration steps. Before, the attribute storage has to be flushed, otherwise
+the AT objects remain there as broken objects.
+
 Running this test from the buildout directory:
 
     bin/test test_textual_doctests -t StorageMigration
