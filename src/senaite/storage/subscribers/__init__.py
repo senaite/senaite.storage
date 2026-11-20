@@ -18,9 +18,12 @@
 # Copyright 2019-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from Acquisition import aq_base
 from bika.lims import api
 from senaite.storage import logger
 from senaite.storage.interfaces import IStorageLayoutContainer
+from zope.lifecycleevent.interfaces import IObjectAddedEvent
+from zope.lifecycleevent.interfaces import IObjectRemovedEvent
 
 
 def update_parent_layout(container):
@@ -94,3 +97,32 @@ def StorageContentRemovedEventHandler(container, event):
         logger.warn("Cannot remove the container '{}' from '{}'"
                     .format(container.getId(), parent.getId()))
 
+
+def StorageContentMovedEventHandler(container, event):
+    """Moves the container from the layout of its former parent to the one of
+    its new parent, at its first free position
+
+    Added and removed containers fire a moved event as well, they are handled
+    by their own event handlers. So are containers renamed in their parent.
+    """
+    if IObjectAddedEvent.providedBy(event):
+        return
+    if IObjectRemovedEvent.providedBy(event):
+        return
+    old_parent = event.oldParent
+    new_parent = event.newParent
+    if old_parent is None or new_parent is None:
+        return
+    if aq_base(old_parent) is aq_base(new_parent):
+        # renamed, the layout refers to the container by UID
+        return
+    if api.is_at_content(old_parent):
+        # moved out of an AT container by the migration to Dexterity, which
+        # keeps the layouts itself
+        return
+
+    if IStorageLayoutContainer.providedBy(old_parent):
+        if old_parent.has_object(container):
+            old_parent.remove_object(container)
+
+    update_parent_layout(container)

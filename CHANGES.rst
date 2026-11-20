@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #81 Fix moved containers not updated in the layouts of their parents
 - #80 Fix the dimensions and layouts of storage containers migrated to DX
 - #78 Fix creation of storage containers through the JSON API
 - #77 Record sample placements and removals in the audit log

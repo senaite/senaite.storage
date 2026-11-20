@@ -28,6 +28,7 @@ from senaite.storage.browser import BaseView
 from senaite.storage.catalog import STORAGE_CATALOG
 from senaite.storage.interfaces import IStorageContainer
 from senaite.storage.interfaces import IStorageFacility
+from senaite.storage.interfaces import IStorageLayoutContainer
 from senaite.storage.interfaces import IStorageSamplesContainer
 from senaite.storage.permissions import TransitionMoveContainer
 
@@ -108,6 +109,13 @@ class MoveContainerView(BaseView):
             self.add_status_message(message, level="warning")
             return False
 
+        # the container would end up in no layout
+        if not self.has_free_position(destination):
+            message = _(u"Container {} has no free position left!"
+                        .format(self.get_container_path(destination)))
+            self.add_status_message(message, level="error")
+            return False
+
         # move w/o permission check (better than granting "Delete" wide)
         api.move_object(source, destination, check_constraints=False)
 
@@ -115,6 +123,14 @@ class MoveContainerView(BaseView):
             self.get_title(source), self.get_container_path(destination)))
         self.add_status_message(message, level="info")
         return True
+
+    def has_free_position(self, obj):
+        """Returns whether the object can take in another container
+        """
+        if not IStorageLayoutContainer.providedBy(obj):
+            # storage facilities and positions have no layout
+            return True
+        return len(obj.get_available_positions()) > 0
 
     def get_parents_for(self, container):
         """Get the parent objects for the container
@@ -176,7 +192,10 @@ class MoveContainerView(BaseView):
             path = api.get_path(brain)
             if path.startswith(container_path):
                 continue
-            targets.append(api.get_object(brain))
+            target = api.get_object(brain)
+            if not self.has_free_position(target):
+                continue
+            targets.append(target)
         return targets
 
     def get_container_data(self):

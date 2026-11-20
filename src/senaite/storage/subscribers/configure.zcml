@@ -30,6 +30,14 @@
     handler="senaite.storage.subscribers.StorageContentModifiedEventHandler"
   />
 
+  <!-- Moved a container. Moves it from the layout of its former parent to
+       the one of its new parent -->
+  <subscriber
+    for="senaite.storage.interfaces.IStorageLayoutContainer
+         zope.lifecycleevent.interfaces.IObjectMovedEvent"
+    handler="senaite.storage.subscribers.StorageContentMovedEventHandler"
+  />
+
   <!-- Removed a container. Updates capacity and usage to parent -->
   <subscriber
     for="senaite.storage.interfaces.IStorageLayoutContainer
